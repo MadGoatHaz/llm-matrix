@@ -20,12 +20,35 @@ from .template import page_shell
 #: Guides live two levels below the repo root: ``guides/<slug>/index.html``.
 GUIDE_DEPTH = 2
 
+#: Human-readable display names for the known guide slugs, used in the
+#: auto-generated "Related guides" section. The naive fallback
+#: (``slug.replace("-", " ").title()``) mangles acronyms — ``kv-cache`` ->
+#: "Kv Cache", ``multi-gpu`` -> "Multi Gpu" — so the eight known guides carry
+#: explicit labels. Any slug not listed here (future guides) uses the
+#: title-cased fallback.
+GUIDE_LABELS = {
+    "quantization": "Quantization Basics",
+    "file-formats": "File Formats",
+    "quantization-methods": "Quantization Methods",
+    "model-architectures": "Model Architectures",
+    "kv-cache": "KV Cache",
+    "context-extension": "Context Extension",
+    "backends": "Backends",
+    "multi-gpu": "Multi-GPU & Hybrid",
+}
+
+
+def _label_for(slug: str) -> str:
+    """Display name for a guide slug (known label, else title-cased slug)."""
+    return GUIDE_LABELS.get(slug, slug.replace("-", " ").title())
+
 
 def _related_links(meta: dict[str, Any]) -> str:
     """Build the "Related guides" section from the front-matter.
 
     ``related`` is a comma-separated list of guide slugs. Each becomes a link
-    to the sibling guide's directory URL. Returns ``""`` when none are given.
+    to the sibling guide's directory URL, labelled from :data:`GUIDE_LABELS`.
+    Returns ``""`` when none are given.
     """
     related = meta.get("related")
     if not related:
@@ -37,7 +60,7 @@ def _related_links(meta: dict[str, Any]) -> str:
     if not slugs:
         return ""
     items = "\n".join(
-        f'      <li><a href="{slug}/">{utils.html_escape(slug.replace("-", " ").title())}</a></li>'
+        f'      <li><a href="{slug}/">{utils.html_escape(_label_for(slug))}</a></li>'
         for slug in slugs
     )
     return f'''

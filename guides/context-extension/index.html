@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Context Extension</title>
+    <meta name="description" content="Running models beyond their trained window — how RoPE sets the limit, what &quot;lost in the middle&quot; means, how YaRN and NTK stretch the context, the honest 2×/4×/8× quality rule, and which 2026 models already have big native windows.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="../../index.html">Home</a></li>
+        <li><a href="../../matrix.html">Matrix</a></li>
+        <li><a href="../../community.html">Community</a></li>
+        <li><a href="../../guides.html">Guides</a></li>
+        <li><a href="../../about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
+
+<div class="guide">
+<h1 id="going-longer-context-extension-with-rope-yarn-and-ntk">Going Longer: Context Extension with RoPE, YaRN, and NTK</h1>
+<div class="callout"><p><b>The 30-second version:</b> Every model is trained to expect positions up to some number — 32k, 128k, 1M. That ceiling is set by **RoPE** (Rotary Position Embeddings), the mechanism that tells the model *where* each token sits. Push past it and the model has never seen those positions, so quality degrades — the famous **"lost in the middle"** — and eventually fails. **YaRN** and **NTK** are the two standard ways to stretch the window by rescaling RoPE. The honest rule: <b>2× native is safe, 4× degrades, 8× is risky.</b> And before you reach for any of it — <b>many 2026 models already have 128k–1M native context, so you may not need extension at all.</b></p></div>
+
+<h2 id="rope-in-one-breath">RoPE, in one breath</h2>
+<p>A transformer does not inherently know the order of its tokens. <strong>RoPE (Rotary Position Encoding)</strong> fixes that by rotating each token's query and key vectors by an amount that depends on its position in the sequence. The rotation is what lets the model tell "the 3rd token" from "the 3,000th" and attend with the right relative offsets. Crucially, the rotation is <em>trained</em> over a specific range of positions — the model's <strong>native context length</strong>. A model trained on 32k positions has a RoPE that is only known-good up to 32k.</p>
+<p>That trained range is the whole constraint. It is not a hard wall baked into the file size — it is a <em>geometric</em> limit on the positions the model learned to reason about. Extension techniques work by gently bending that geometry.</p>
+<h2 id="what-happens-past-the-native-context">What happens past the native context</h2>
+<p>Feed a 32k-trained model a 64k prompt and you are asking it to use position values it never saw during training. Three things tend to follow, in order:</p>
+<ol>
+<li><strong>Quiet degradation.</strong> The model still produces fluent text, but its grasp of <em>where</em> things are in the sequence loosens. Long-range references get fuzzy.</li>
+<li><strong>"Lost in the middle."</strong> The model attends well to the very start and the very end of the context but poorly to the middle. A fact buried at token 30,000 of a 60,000 context is far easier to miss than one at token 100 or 59,900.</li>
+<li><strong>Hard failure.</strong> Far enough out, the rotation values leave the trained manifold entirely and the output collapses — repetition, incoherence, or a flat refusal.</li>
+</ol>
+<p>None of this is about the model being "too small." It is purely a position-encoding problem, which is why it can be addressed without retraining.</p>
+<h2 id="yarn-scale-the-frequencies">YaRN: scale the frequencies</h2>
+<p><strong>YaRN</strong> ("Yet another RoPE handling") is the current standard for context extension. The insight: RoPE encodes position using a set of rotating frequencies, some fast (fine position detail) and some slow (coarse, long-range structure). When you stretch the context, the <em>fast</em> frequencies oscillate too quickly over the new, longer range and stop carrying signal. YaRN's fix is to <strong>interpolate the frequencies</strong> — slow the fast ones down and rescale the whole set — so the rotation stays well-behaved at the longer length. You express this as a <strong>scaling factor</strong>: 2× for double the window, 4× for quadruple.</p>
+<p>How to set it:</p>
+<p><strong>llama.cpp</strong> (GGUF — the common local path):</p>
+<pre><code>llama-server -m model.gguf -c 65536 --rope-scaling yarn --rope-scale 2
+</code></pre>
+<p><code>-c</code> is the new context length; <code>--rope-scaling yarn</code> selects the method; <code>--rope-scale 2</code> is the factor. Flag names have shifted a little across llama.cpp releases (some builds use <code>--rope-type</code>), so check <code>llama-server --help</code> for yours.</p>
+<p><strong>vLLM</strong> (safetensors — the serving path):</p>
+<pre><code>vllm serve my-model --max-model-len 65536
+</code></pre>
+<p>vLLM reads the <code>rope_scaling</code> block from the model's <code>config.json</code>. A YaRN setup looks like:</p>
+<pre><code>&quot;rope_scaling&quot;: {
+  &quot;rope_type&quot;: &quot;yarn&quot;,
+  &quot;factor&quot;: 2.0,
+  &quot;original_max_position_embeddings&quot;: 32768
+}
+</code></pre>
+<p>If the checkpoint ships no <code>rope_scaling</code> block, vLLM has nothing to rescale — so for the serving path, pick a model whose config already carries it.</p>
+<h2 id="ntk-aware-scaling-the-llamacpp-alternative">NTK-aware scaling: the llama.cpp alternative</h2>
+<p><strong>NTK-aware</strong> scaling is the other common method, and the one you will most often meet in llama.cpp. Where YaRN interpolates the <em>frequencies</em>, NTK modifies the <em>interpolation of the rotation angle itself</em> — it leaves the low (slow) frequencies unchanged and only bends the high (fast) ones, with a smooth blend in between. In practice the two are close cousins: NTK is a slightly simpler, very effective default in llama.cpp and holds up well at 2×. YaRN tends to have the edge at the more aggressive 4×. Use whichever your engine exposes cleanly; at 2× the difference between them is small.</p>
+<pre><code>llama-server -m model.gguf -c 65536 --rope-scaling ntk --rope-scale 2
+</code></pre>
+<h2 id="the-honest-rule">The honest rule</h2>
+<div class="diagram diagram--kv">
+  <div class="diagram-row"><span class="diagram-label">1× · native</span><div class="diagram-bar" style="width:100%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">2×</span><div class="diagram-bar" style="width:90%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">4×</span><div class="diagram-bar" style="width:60%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">8×</span><div class="diagram-bar" style="width:25%"></div></div>
+</div>
+
+<p><em>Same model, scaled. Bar length ≈ quality retention. </em><em>2× is safe</em><em> (a clean, useful gain). </em><em>4× degrades</em><em> (workable for chat, risky for precise recall). </em><em>8× is risky</em><em> (expect real "lost in the middle" effects and verify hard). Every rung also costs more KV-cache VRAM — see below.</em></p>
+<p>The practical mapping, for a model with a given native window:</p>
+<table>
+<thead>
+<tr>
+<th>Native</th>
+<th>2× (safe)</th>
+<th>4× (degraded)</th>
+<th>8× (risky)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>32k</td>
+<td>64k</td>
+<td>128k</td>
+<td>256k</td>
+</tr>
+<tr>
+<td>128k</td>
+<td>256k</td>
+<td>512k</td>
+<td>1M</td>
+</tr>
+<tr>
+<td>256k</td>
+<td>512k</td>
+<td>(probably overkill)</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>If a cell in that table reads "probably overkill," stop — you do not need it.</p>
+<h2 id="models-that-already-have-big-native-context">Models that already have big native context</h2>
+<p>Before you extend anything, check whether you need to. The 2026 flagship family ships with large <em>trained</em> windows, so for many tasks the honest answer is "just use the bigger model":</p>
+<table>
+<thead>
+<tr>
+<th>Model (2026 / Matrix)</th>
+<th>Native context</th>
+<th>Extension needed?</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>DeepSeek-R1-8B (Matrix)</td>
+<td>16k</td>
+<td>Often — the small model that wants more room</td>
+</tr>
+<tr>
+<td>Qwen3.5-4B / Qwen3.6-MoE-35B-A3B (Matrix)</td>
+<td>65k</td>
+<td>Rarely</td>
+</tr>
+<tr>
+<td>Qwen3.8-27B (Matrix)</td>
+<td>256k</td>
+<td>No — the ~240k runs are native</td>
+</tr>
+<tr>
+<td>Qwen3.8-Flash-Next 125B MoE (Matrix)</td>
+<td>128k+</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Gemma 4</td>
+<td>256k</td>
+<td>No</td>
+</tr>
+<tr>
+<td>DeepSeek V4 / GLM 5.3</td>
+<td>1M</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>The pattern: <strong>the distilled and small models are the ones that actually benefit from extension</strong> (a 16k 8B reaching 32k is a real win); <strong>the flagships already have the window built in</strong>. If your 27B/128k+ model is hitting its limit, the problem is usually not "extend it" — it is "the context is genuinely too long for the task," and a model with a bigger native window is the cleaner fix.</p>
+<h2 id="do-you-actually-need-extension">Do you actually need extension?</h2>
+<ul>
+<li><strong>You need it</strong> when a smaller/older model (16k–32k native) genuinely must see more than it was trained for, and no bigger-native alternative fits your VRAM.</li>
+<li><strong>You do not need it</strong> when a 128k–1M-native model is available to you — just run it. Extending a 32k model to 128k is usually a worse result than running a model that was <em>trained</em> at 128k, because the trained model learned the long-range positions properly.</li>
+</ul>
+<h2 id="the-vram-cost">The VRAM cost</h2>
+<p>Extension and the <a href="kv-cache/">KV Cache</a> are the same coin. Doubling the context <strong>doubles the KV cache</strong> — a 27B at 32k/FP16 (~8 GiB of cache) becomes ~16 GiB at 64k, before a single weight is added. So a context extension is only as good as your memory allows: you can set <code>-c 131072</code> freely, but if the resulting KV cache does not fit, you out-of-memory. This is why the two guides pair up — <strong>extension lets you stretch the window; KV quantization lets you afford it.</strong> A YaRN 2× stretch on a model with FP8 KV is a very different VRAM story than the same stretch on FP16 KV.</p>
+<h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
+<p>The <code>context.stable</code> column is where extension shows up. Read it two ways: a <strong>"native"</strong> note (the 4B and 35B-A3B at 65k, the DeepSeek-8B at its 16k server cap) means the model was used within its trained window; a <strong>configured-beyond-native</strong> note (the 27B at ~240k, the 125B at 131k) means the engine is running it past a smaller trained base — and the cleanest reading of the 2026 data is that most of those big numbers are <em>native</em> to the model, not stretched. When you submit, say which it is: the native window, and whether you applied YaRN/NTK at what factor. That single line tells the next person whether your long-context number is earned by the model or borrowed by the encoder. The memory side of that number — what the longer context costs in VRAM — is the <a href="kv-cache/">KV Cache</a> guide, and the models with the biggest native windows are the <a href="model-architectures/">Model Architectures</a> story.</p>
+
+  <section class="guide-related">
+    <h2>Related guides</h2>
+    <ul>
+      <li><a href="kv-cache/">KV Cache</a></li>
+      <li><a href="model-architectures/">Model Architectures</a></li>
+      <li><a href="backends/">Backends</a></li>
+    </ul>
+  </section>
+</div>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="../../js/main.js"></script>
+</body>
+</html>
