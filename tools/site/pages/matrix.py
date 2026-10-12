@@ -10,11 +10,17 @@ from __future__ import annotations
 from .. import utils
 from ..template import page_shell
 
-#: Column order for the table (also the ``colspan`` for tier headers).
+#: Column order for the data columns of the table.
 MATRIX_COLUMNS = [
     "Contributor", "Hardware", "Vendor", "Backend", "Model", "Quant",
     "Use Case", "Speed", "Context", "KV", "Power", "Mode",
 ]
+
+#: The trailing "Actions" column (a compare checkbox + a launch-command button
+#: per row, P2-2/P2-3). It is never a sort target.
+ACTIONS_LABEL = "Actions"
+#: Total columns (data + actions) — the ``colspan`` for tier headers.
+TOTAL_COLUMNS = len(MATRIX_COLUMNS) + 1
 
 
 def td(value) -> str:
@@ -64,12 +70,13 @@ def render(subs: list[dict], schema: dict, stats: dict,
     for tier_id, _label, tier_subs in utils.group_by_tier(subs, tiers):
         body_rows.append(
             f'        <tr class="tier-header" data-tier="{utils.html_escape(tier_id)}">'
-            f'<td colspan="{len(MATRIX_COLUMNS)}">{utils.html_escape(labels.get(tier_id, tier_id))}</td></tr>'
+            f'<td colspan="{TOTAL_COLUMNS}">{utils.html_escape(labels.get(tier_id, tier_id))}</td></tr>'
         )
         for s in tier_subs:
             highlight = ' highlighted' if s.get("highlight") else ''
             vendor = utils.clean_value(utils.hw(s).get("vendor"))
             backend = utils.normalize_backend(s.get("backend", ""), schema)
+            label = utils.html_escape(utils.short_model(utils.model_name(s)))
             body_rows.append(f'''        <tr id="{utils.html_escape(s["id"])}" class="{utils.html_escape(tier_id)}{highlight}" data-tier="{utils.html_escape(tier_id)}" data-vendor="{utils.html_escape(vendor)}" data-backend="{utils.html_escape(backend)}">
           {td(s["source"]["username"])}
           {td(utils.hw(s).get("description"))}
@@ -83,9 +90,14 @@ def render(subs: list[dict], schema: dict, stats: dict,
           {td(utils.ctx(s).get("kv_cache"))}
           {td(utils.perf(s).get("power_w"))}
           {td(s.get("engine_mode"))}
+          <td class="cell-actions">
+            <label class="compare-check-wrap"><input type="checkbox" class="compare-check" data-sub-id="{utils.html_escape(s["id"])}" aria-label="Compare {label}"></label>
+            <button class="launch-btn" data-launch-sub="{utils.html_escape(s["id"])}" aria-label="Copy launch command for {label}" title="Copy launch command">🚀</button>
+          </td>
         </tr>''')
 
     header_cells = "".join(f"<th>{c}</th>" for c in MATRIX_COLUMNS)
+    header_cells += f'<th class="no-sort" data-nosort>{ACTIONS_LABEL}</th>'
 
     updated = schema.get("last_updated", "")
     body = f'''
@@ -112,6 +124,12 @@ def render(subs: list[dict], schema: dict, stats: dict,
     <button id="filter-reset" class="btn">Reset</button>
   </div>
 
+  <div class="compare-bar" id="compare-bar" role="region" aria-label="Compare selected setups">
+    <span class="compare-bar-label">🔍 <span class="compare-count">0</span> selected — tick 2–4 rows to compare</span>
+    <button class="btn btn-primary compare-go" type="button" disabled>Compare →</button>
+    <button class="btn compare-clear" type="button" disabled>Clear</button>
+  </div>
+
   <div class="table-wrapper">
     <table id="data-table">
       <thead>
@@ -130,9 +148,13 @@ def render(subs: list[dict], schema: dict, stats: dict,
        stable context tested; <strong>KV</strong> is the KV-cache precision; <strong>Mode</strong> is how the
        engine splits weights across VRAM/RAM/SSD. All data is community-reported — treat numbers as
        user-experienced, not lab-tested. <a href="{utils.FORUM_THREAD}">Discussion lives in the forum thread →</a></p>
-  </div>'''
+    <p class="matrix-actions-help">The <strong>Actions</strong> column: tick the checkbox to add a row to a <a href="compare/">comparison</a>, or hit <strong>🚀</strong> to copy a launch command for that setup.</p>
+  </div>
+{utils.commands_config_island(subs, schema)}'''
 
     title = "The Matrix — The Local AI Stack"
     desc = ("All community submissions, filterable and sortable: VRAM tier, hardware, vendor, "
-            "backend, model, quant, use case, speed, context, KV cache, power, engine mode.")
-    return page_shell(title, desc, body, guides_menu=guides_menu)
+            "backend, model, quant, use case, speed, context, KV cache, power, engine mode. "
+            "Compare 2–4 setups side by side and copy a launch command for any of them.")
+    return page_shell(title, desc, body, guides_menu=guides_menu,
+                      extra_scripts=["js/compare.js", "js/commands.js"])

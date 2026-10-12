@@ -26,7 +26,7 @@ from pathlib import Path
 
 from . import guides
 from . import utils
-from .pages import about, community, guides_index, homepage, matrix, recommend
+from .pages import about, community, compare, guides_index, homepage, matrix, recommend
 
 __all__ = ["main"]
 
@@ -109,11 +109,21 @@ def main(workspace: str | Path | None = None,
     # --- Recommend page (recommend/index.html, depth 1; P2-1) ---
     content_dir = ws / "content"
     try:
-        rec_html = recommend.render(schema, content_dir, guides_menu)
+        rec_html = recommend.render(subs, schema, content_dir, guides_menu)
         rec_path = ws / "recommend" / "index.html"
         rec_path.parent.mkdir(parents=True, exist_ok=True)
         rec_path.write_text(rec_html, encoding="utf-8")
         print(f"  wrote recommend/index.html ({len(rec_html)} bytes)")
+    except FileNotFoundError as e:
+        print(f"WARNING: {e}", file=sys.stderr)
+
+    # --- Compare page (compare/index.html, depth 1; P2-2) ---
+    try:
+        cmp_html = compare.render(subs, schema, guides_menu)
+        cmp_path = ws / "compare" / "index.html"
+        cmp_path.parent.mkdir(parents=True, exist_ok=True)
+        cmp_path.write_text(cmp_html, encoding="utf-8")
+        print(f"  wrote compare/index.html ({len(cmp_html)} bytes)")
     except FileNotFoundError as e:
         print(f"WARNING: {e}", file=sys.stderr)
 
@@ -135,7 +145,7 @@ def main(workspace: str | Path | None = None,
         print(f"WARNING: {e}", file=sys.stderr)
 
     # --- Individual guides (guides/<slug>/index.html, depth 2) ---
-    for slug in guides.generate_guides(content_guides, ws, guides_menu):
+    for slug in guides.generate_guides(content_guides, ws, guides_menu, subs, schema):
         print(f"  wrote guides/{slug}/index.html")
 
     print(f"\nSite generated: {stats['submissions']} submissions, "

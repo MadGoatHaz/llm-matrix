@@ -1,0 +1,65 @@
+=== Backend normalization ===
+PASS  llamacpp -> llama.cpp
+PASS  vLLM (…MTP=8) -> vLLM
+PASS  Strata 0.1.42 -> Strata
+PASS  llama-swap (…ROCm) -> llama-swap
+
+=== Every one of the 12 submissions yields output ===
+  post_2_madgoat_1  [llama-swap]  llama-swap serve --port 8080
+       vram: ~12.7 GB (community-reported)
+PASS    post_2_madgoat_1 produces output  [cmd len 28]
+  post_2_madgoat_2  [vLLM]  vllm serve d0xin/Swift-Qwen3.8-27B-Uncensored-FP8 --max-model-len 240000 --tensor-parallel-size 2
+       vram: ~48 GB (community-reported)
+PASS    post_2_madgoat_2 produces output  [cmd len 97]
+  post_2_madgoat_3  [Strata]  strata serve Qwen3.8-Flash-Next.gguf
+       vram: ~24 GB (community-reported)
+PASS    post_2_madgoat_3 produces output  [cmd len 36]
+  post_5_digitalscream_0  [vLLM]  vllm serve d0xin/Swift-Qwen3.8-27B-Uncensored-FP8 --max-model-len 240000 --tensor-parallel-size 2
+       vram: Fits the 48-64GB tier
+PASS    post_5_digitalscream_0 produces output  [cmd len 97]
+  post_6_burhan_0  [Ollama]  ollama run qwen3.6:27b-q4_km
+       vram: ~20 GB (community-reported)
+PASS    post_6_burhan_0 produces output  [cmd len 28]
+  post_8_s1ugh34d_0  [llama-swap]  llama-swap serve --port 8080
+       vram: ~12.7 GB (community-reported)
+PASS    post_8_s1ugh34d_0 produces output  [cmd len 28]
+  post_8_s1ugh34d_1  [llama-swap]  llama-swap serve --port 8080
+       vram: ~5 GB (community-reported)
+PASS    post_8_s1ugh34d_1 produces output  [cmd len 28]
+  post_8_s1ugh34d_2  [llama-swap]  llama-swap serve --port 8080
+       vram: ~13.8 GB (community-reported)
+PASS    post_8_s1ugh34d_2 produces output  [cmd len 28]
+  post_8_s1ugh34d_3  [llama-swap]  llama-swap serve --port 8080
+       vram: ~7.4 GB (community-reported)
+PASS    post_8_s1ugh34d_3 produces output  [cmd len 28]
+  post_8_s1ugh34d_4  [llama-swap]  llama-swap serve --port 8080
+       vram: ~16 GB (community-reported)
+PASS    post_8_s1ugh34d_4 produces output  [cmd len 28]
+  post_21_pawingunplug_0  [llama.cpp]  llama-server -m Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf -ngl 99 -c 262000 --tensor-parallel-size 2
+       vram: Fits the 48-64GB tier
+PASS    post_21_pawingunplug_0 produces output  [cmd len 99]
+  post_21_pawingunplug_1  [llama.cpp]  llama-server -m Qwen3.8-Flash-Next-Q4_K_M.gguf -ngl 99 -c 262000 --tensor-parallel-size 2
+       vram: Fits the 48-64GB tier
+PASS    post_21_pawingunplug_1 produces output  [cmd len 89]
+
+=== Acceptance-criteria command shapes ===
+PASS  llama.cpp -> llama-server -m *.gguf -ngl 99 -c N  [llama-server -m Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf -ngl 99 -c 262000 --tensor-parallel-size 2]
+PASS  vLLM 2-GPU -> vllm serve <model> --tensor-parallel-size 2  [vllm serve d0xin/Swift-Qwen3.8-27B-Uncensored-FP8 --max-model-len 240000 --tensor-parallel-size 2]
+PASS  Ollama -> ollama run <tag>  [ollama run qwen3.6:27b-q4_km]
+PASS  llama-swap -> llama-swap serve  [llama-swap serve --port 8080]
+PASS  Strata -> strata serve <model>  [strata serve Qwen3.8-Flash-Next.gguf]
+
+=== GUI backends: steps, no fabricated CLI ===
+PASS  LM Studio is GUI (steps, empty command)  [4 steps]
+PASS  Unsloth Desktop is GUI (steps, empty command)  [3 steps]
+
+=== Unknown backend degrades gracefully ===
+PASS  unknown -> isUnknown + empty command  [isUnknown=true]
+PASS  unknown -> "check the guide" note  [Check the Backends guide for how to run SomeBrandNewEngine.]
+
+=== VRAM estimate + contextual tips ===
+PASS  VRAM pulled from notes (~12.7 GB)  [~12.7 GB (community-reported)]
+PASS  MoE tip present for the A3B model  [1 tips]
+PASS  hybrid tip present for the Strata submission  [1 tips]
+
+ALL COMMAND CHECKS PASS

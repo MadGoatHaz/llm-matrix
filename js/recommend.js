@@ -266,7 +266,8 @@
       if (s.precision.key !== 'unknown') badges.push('<span class="badge badge-purple">' + esc(s.precision.key) + '</span>');
       badges.push('<span class="badge badge-amber">' + esc(tierLabel[s.tier] || s.tier) + '</span>');
 
-      var actions = '<a href="../matrix.html#' + esc(s.id) + '">View in the Matrix →</a>';
+      var actions = '<button class="btn launch-card-btn" data-launch-sub="' + esc(s.id) + '" aria-label="Copy launch command for ' + esc(shortModel(s.model)) + '">🚀 Copy launch command</button>' +
+        ' <a href="../matrix.html#' + esc(s.id) + '">View in the Matrix →</a>';
       if (s.modelUrl && /^https?:/.test(s.modelUrl)) {
         actions += ' <a href="' + esc(s.modelUrl) + '" target="_blank" rel="noopener">Download</a>';
       }

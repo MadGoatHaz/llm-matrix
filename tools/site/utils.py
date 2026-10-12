@@ -97,6 +97,61 @@ def real_submissions(data: dict) -> list[dict]:
     return [s for s in data.get("submissions", []) if not is_template_submission(s)]
 
 
+#: The fields the client-side tools (launch-command generator, comparison
+#: view) actually need from a submission. The verbose ``raw`` block and the
+#: ``source``/``confidence``/``lifecycle``/``highlight``/``tags`` metadata are
+#: dropped to keep the baked JSON island small.
+CLIENT_SUBMISSION_FIELDS = (
+    "id", "tier", "hardware", "backend", "model", "quant",
+    "weight_precision", "use_cases", "context", "performance",
+    "engine_mode", "notes",
+)
+
+
+def trim_for_client(s: dict) -> dict:
+    """A submission reduced to the fields the client tools consume.
+
+    ``hardware`` / ``model`` / ``context`` / ``performance`` are kept whole
+    (they are small structured objects); the flat scalar fields are copied
+    verbatim. The submitter's ``username`` is lifted out of ``source`` for
+    display. Missing keys default to empty so the JSON shape is stable.
+    """
+    out: dict[str, Any] = {}
+    for key in CLIENT_SUBMISSION_FIELDS:
+        val = s.get(key)
+        out[key] = val if val is not None else (
+            {} if key in ("hardware", "model", "context", "performance") else "")
+    out["username"] = (s.get("source") or {}).get("username", "")
+    return out
+
+
+def commands_config_island(subs: list[dict], schema: dict) -> str:
+    """Embed the trimmed submission set + schema pick-lists as a JSON island.
+
+    The launch-command generator (``js/commands.js``) and the comparison
+    view (``js/compare.js``) run entirely in the browser. Baking what they
+    need — every submission's data (minus the verbose ``raw`` block) plus the
+    schema's ``backends`` and ``tiers`` lists (for client-side normalization
+    and VRAM labels) — into a ``<script type="application/json">`` island
+    means these tools make **no network request**: the page works offline
+    straight from disk and stays fast.
+
+    ``indent=2`` puts every brace on its own line, so the serialized JSON can
+    never form a ``{{``/``}}`` sequence (the template-leak check).
+    """
+    config = {
+        "backends": schema.get("backends", []),
+        "tiers": schema.get("tiers", []),
+        "submissions": [trim_for_client(s) for s in subs],
+    }
+    payload = json.dumps(config, indent=2)
+    return (
+        '  <script type="application/json" id="commands-config">\n'
+        f"{payload}\n"
+        "  </script>"
+    )
+
+
 # ---------------------------------------------------------------------------
 # Field accessors + display helpers
 # ---------------------------------------------------------------------------

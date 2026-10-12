@@ -94,6 +94,7 @@ def nav(depth: int = 0, guides_menu: list[tuple[str, str]] | None = None) -> str
       <ul class="nav-links">
         <li><a href="{p}index.html">Home</a></li>
         <li><a href="{p}matrix.html">Matrix</a></li>
+        <li><a href="{p}compare/">Compare</a></li>
         <li><a href="{p}recommend/">Recommend</a></li>
         <li><a href="{p}community.html">Community</a></li>
 {guides_item}

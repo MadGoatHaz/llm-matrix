@@ -81,11 +81,13 @@ def _vendor_options(schema: dict) -> str:
     return "\n".join(opts)
 
 
-def render(schema: dict, content_dir: Path,
+def render(subs: list[dict], schema: dict, content_dir: Path,
            guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render the recommendation page document.
 
     Args:
+        subs: Real (non-template) submissions (baked into the
+            ``#commands-config`` island for the launch-command generator).
         schema: The parsed ``schema.json`` (tiers, use cases, vendors).
         content_dir: The authored-content directory (``content/``); the
             explainer is read from ``content_dir/recommend.md``.
@@ -166,10 +168,11 @@ def render(schema: dict, content_dir: Path,
 {intro_html}
 {form_html}
 {how_html}
-{_config_island(schema)}'''
+{_config_island(schema)}
+{utils.commands_config_island(subs, schema)}'''
 
     title = f'{meta.get("title", "Find Your Model")} — The Local AI Stack'
     desc = meta.get("description", "")
     return page_shell(title, desc, body, depth=RECOMMEND_DEPTH,
                       guides_menu=guides_menu,
-                      extra_scripts=["js/recommend.js"])
+                      extra_scripts=["js/recommend.js", "js/commands.js"])

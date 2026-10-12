@@ -52,6 +52,9 @@ function initSorting() {
 
     let sortState = {};
     table.querySelectorAll('th').forEach((th, colIdx) => {
+        // The "Actions" column (compare checkbox + launch button) is not a
+        // data column — it carries data-nosort and is skipped here.
+        if (th.hasAttribute('data-nosort')) return;
         th.addEventListener('click', () => {
             sortState[colIdx] = -(sortState[colIdx] || -1);
             sortTable(table, colIdx, sortState);

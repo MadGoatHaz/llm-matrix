@@ -1,0 +1,61 @@
+WARNING: Guides index not found: /tmp/las_commands_miyih0k_/content/guides/index.md
+......WARNING: Guides index not found: /tmp/las_compare_0l2z927u/content/guides/index.md
+.................WARNING: [Errno 2] No such file or directory: '/tmp/las_test_l0nrnwgj/content/recommend.md'
+WARNING: Guides index not found: /tmp/las_test_l0nrnwgj/content/guides/index.md
+......WARNING: [Errno 2] No such file or directory: '/tmp/las_golden_0y5080t9/content/recommend.md'
+WARNING: Guides index not found: /tmp/las_golden_0y5080t9/content/guides/index.md
+..WARNING: Guides index not found: /tmp/las_recommend_7akrw_at/content/guides/index.md
+......................
+----------------------------------------------------------------------
+Ran 53 tests in 0.080s
+
+OK
+  wrote index.html (8666 bytes)
+  wrote matrix.html (38006 bytes)
+  wrote community.html (6580 bytes)
+  wrote guides.html (2325 bytes)
+  wrote about.html (4263 bytes)
+  wrote recommend/index.html (24302 bytes)
+  wrote compare/index.html (18764 bytes)
+  wrote data.json (27112 bytes)
+  wrote guides/backends/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (8666 bytes)
+  wrote matrix.html (38006 bytes)
+  wrote community.html (6580 bytes)
+  wrote guides.html (2325 bytes)
+  wrote about.html (4263 bytes)
+  wrote recommend/index.html (24302 bytes)
+  wrote compare/index.html (18764 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (8666 bytes)
+  wrote matrix.html (38006 bytes)
+  wrote community.html (6580 bytes)
+  wrote guides.html (2325 bytes)
+  wrote about.html (4263 bytes)
+  wrote compare/index.html (18764 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (8666 bytes)
+  wrote matrix.html (38006 bytes)
+  wrote community.html (6580 bytes)
+  wrote guides.html (2325 bytes)
+  wrote about.html (4263 bytes)
+  wrote compare/index.html (18764 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (8666 bytes)
+  wrote matrix.html (38006 bytes)
+  wrote community.html (6580 bytes)
+  wrote guides.html (2325 bytes)
+  wrote about.html (4263 bytes)
+  wrote recommend/index.html (24302 bytes)
+  wrote compare/index.html (18764 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.

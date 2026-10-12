@@ -7,11 +7,35 @@ tags: backends, inference, llama.cpp, ollama, vllm, strata, radiance, mlx, colib
 difficulty: intermediate
 icon: ⚡
 related: file-formats, multi-gpu, quantization
+extra_scripts: js/commands.js
 ---
 
 # Choosing Your Backend: Every Local LLM Inference Engine Compared
 
 <div class="callout"><p><b>The 30-second version:</b> A *backend* is the program that loads your model file and turns tokens in, tokens out. It decides what formats you can run, what hardware you can use, how fast things go, and how much control you get. There is no single "best" backend — there is a best one *for your situation*. The short version: <b>Ollama or LM Studio</b> if you want it working in five minutes, <b>llama.cpp</b> if you want control on a single GPU, <b>vLLM or Radiance</b> if you are serving production workloads, and <b>Strata</b> if you are running a big MoE model on a consumer card with lots of RAM. The decision matrix at the end of this guide makes it concrete.</p></div>
+
+<div class="cmd-picker" data-cmd-picker>
+  <h3>🚀 Try the launch-command generator</h3>
+  <p>Pick a backend and get a representative command you can copy. It's the same generator that powers the 🚀 buttons on the <a href="../../matrix.html">Matrix</a>, <a href="../../recommend/">Recommend</a>, and <a href="../../compare/">Compare</a> pages — over there it's tailored to a *specific* community submission (its exact model, quant, context, and VRAM); here it shows a generic example for the backend you choose.</p>
+  <div class="cmd-picker-row">
+    <label for="cmd-picker-select">Backend</label>
+    <select id="cmd-picker-select" class="cmd-picker-select">
+      <option value="llama.cpp">llama.cpp</option>
+      <option value="llama-swap">llama-swap</option>
+      <option value="Ollama">Ollama</option>
+      <option value="LM Studio">LM Studio</option>
+      <option value="vLLM">vLLM</option>
+      <option value="Strata">Strata</option>
+      <option value="Radiance">Radiance</option>
+      <option value="MLX">MLX</option>
+      <option value="TensorRT-LLM">TensorRT-LLM</option>
+      <option value="Colibri">Colibri</option>
+      <option value="Unsloth Desktop">Unsloth Desktop</option>
+    </select>
+    <button class="btn btn-primary" data-cmd-generate type="button">Generate example</button>
+  </div>
+  <div class="cmd-picker-output" data-cmd-output></div>
+</div>
 
 ## Why the backend matters
 

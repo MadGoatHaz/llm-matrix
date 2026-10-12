@@ -43,6 +43,21 @@ def _label_for(slug: str) -> str:
     return GUIDE_LABELS.get(slug, slug.replace("-", " ").title())
 
 
+def _parse_extra_scripts(value: Any) -> list[str] | None:
+    """Front-matter ``extra_scripts`` -> a list of script paths (or ``None``).
+
+    A guide can opt in to a client-side tool (e.g. the launch-command
+    generator) by declaring ``extra_scripts: js/commands.js``. Comma-separated
+    values are split into a list.
+    """
+    if not value:
+        return None
+    if isinstance(value, str):
+        items = [v.strip() for v in value.split(",") if v.strip()]
+        return items or None
+    return [str(v) for v in value]
+
+
 def _related_links(meta: dict[str, Any]) -> str:
     """Build the "Related guides" section from the front-matter.
 
@@ -73,7 +88,9 @@ def _related_links(meta: dict[str, Any]) -> str:
 
 
 def render_guide(md_path: Path, title_override: str | None = None,
-                guides_menu: list[tuple[str, str]] | None = None) -> str:
+                guides_menu: list[tuple[str, str]] | None = None,
+                subs: list[dict] | None = None,
+                schema: dict | None = None) -> str:
     """Render a single guide markdown file to a full HTML document.
 
     Args:
@@ -81,6 +98,9 @@ def render_guide(md_path: Path, title_override: str | None = None,
         title_override: Optional ``<title>``; defaults to the front-matter
             ``title``, then the file stem.
         guides_menu: Optional ``(label, url)`` list for the nav dropdown.
+        subs: Real submissions; used to bake the ``#commands-config`` island
+            when the guide opts into a client tool via ``extra_scripts``.
+        schema: The parsed ``schema.json`` (backends, tiers) for the island.
 
     Returns:
         The full ``guides/<slug>/index.html`` document (depth-2 shell).
@@ -99,12 +119,23 @@ def render_guide(md_path: Path, title_override: str | None = None,
     # ``.guide`` (see the GUIDE PAGE LAYER section). Diagram and callout
     # styles are top-level, so they render inside it unchanged.
     wrapped = f'\n<div class="guide">\n{body_html}\n{related_html}\n</div>'
+
+    extra_scripts = _parse_extra_scripts(meta.get("extra_scripts"))
+    if extra_scripts and subs is not None and schema is not None:
+        # A guide that opts into a client tool (e.g. the launch-command
+        # generator) also gets the #commands-config island so the tool runs
+        # with no network request.
+        wrapped += "\n" + utils.commands_config_island(subs, schema)
+
     return page_shell(title, description, wrapped, depth=GUIDE_DEPTH,
-                      guides_menu=guides_menu)
+                      guides_menu=guides_menu,
+                      extra_scripts=extra_scripts)
 
 
 def generate_guides(content_dir: Path, out_dir: Path,
-                   guides_menu: list[tuple[str, str]] | None = None) -> list[str]:
+                   guides_menu: list[tuple[str, str]] | None = None,
+                   subs: list[dict] | None = None,
+                   schema: dict | None = None) -> list[str]:
     """Render every authored guide in ``content_dir`` into ``out_dir``.
 
     Each ``content_dir/<slug>.md`` becomes ``out_dir/guides/<slug>/index.html``.
@@ -116,6 +147,9 @@ def generate_guides(content_dir: Path, out_dir: Path,
         content_dir: The authored-content directory (``content/guides``).
         out_dir: Where generated pages are written (the repo root).
         guides_menu: Optional ``(label, url)`` list for the nav dropdown.
+        subs: Real submissions (baked into the island for guides that opt
+            into a client tool).
+        schema: The parsed ``schema.json`` for the island.
 
     Returns:
         The list of guide slugs written (empty if there is no content).
@@ -128,7 +162,8 @@ def generate_guides(content_dir: Path, out_dir: Path,
             continue
         if md_path.stem == "index":
             continue  # rendered by guides_index.render_index()
-        html = render_guide(md_path, guides_menu=guides_menu)
+        html = render_guide(md_path, guides_menu=guides_menu,
+                           subs=subs, schema=schema)
         dest = out_dir / "guides" / md_path.stem / "index.html"
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(html, encoding="utf-8")
