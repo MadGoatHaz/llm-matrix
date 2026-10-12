@@ -1,0 +1,257 @@
+# ============================================================================
+# The Local AI Stack — CI/CD pipeline (PLAN.md P3-1)
+#
+# Enforces quality on every push to `main` and every pull request targeting
+# `main`, and keeps the live GitHub Pages site in sync with the source data.
+#
+# Jobs:
+#   test   — run the full stdlib `unittest` suite (the quality gate).
+#   lint   — byte-compile every `.py` file + validate every JSON file.
+#   build  — run the site generator and verify every output file exists.
+#   deploy — (main only, after a green test+lint+build) regenerate the site
+#            and commit + push the outputs, so the live Pages site — which is
+#            served from `main` at the repo root (source `/`) — stays current.
+#
+# Design notes:
+#   * No secrets are required (public repo, public forum API).
+#   * `pip install -e .` pulls the single content dependency (`markdown`);
+#     the data pipeline stays stdlib-only.
+#   * `setup-python`'s built-in `cache: pip` caches dependencies against
+#     `pyproject.toml`, keeping runs fast and under the 3-minute budget.
+#   * The deploy is idempotent: it only pushes when the regenerated site
+#     actually differs from what is committed, so a bot commit never spawns a
+#     re-trigger loop.
+# ============================================================================
+
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Least-privilege default for the whole workflow. Individual jobs tighten or
+# widen this where they need to (the deploy job needs contents:write).
+permissions:
+  contents: read
+
+# If a newer commit lands on the same branch/PR, cancel the in-flight run for
+# that ref so stale builds don't pile up or race the deploy.
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # --------------------------------------------------------------------------
+  # 1. TEST — the quality gate.
+  # A PR that breaks a test, a schema invariant, a data invariant, or a
+  # golden-file regression FAILS here and cannot merge.
+  # --------------------------------------------------------------------------
+  test:
+    name: "Test: Python 3.14 unittest suite"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14 (with pip cache)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install the project (editable) + dependencies
+        run: pip install -e .
+
+      - name: Run the full test suite
+        # `discover -s tests` runs every `test_*.py` under tests/. Any
+        # failure (an assertion, an error, a non-zero exit) fails this job.
+        run: python -m unittest discover -s tests -v
+
+  # --------------------------------------------------------------------------
+  # 2. LINT — fast static gates (no test framework needed).
+  #   - every `.py` file byte-compiles (catches syntax errors on 3.14)
+  #   - every `data/*.json` and `tools/*.json` file is valid JSON
+  # --------------------------------------------------------------------------
+  lint:
+    name: "Lint: py_compile + JSON validation"
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14 (with pip cache)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Byte-compile every Python file
+        run: |
+          python - <<'PY'
+          import pathlib, py_compile, sys
+          root = pathlib.Path(".")
+          skip = {".venv", "work", ".git", "__pycache__", ".kilo", "Backup"}
+          files = [
+              p for p in sorted(root.rglob("*.py"))
+              if not any(part in skip for part in p.parts)
+          ]
+          errors = []
+          for f in files:
+              try:
+                  py_compile.compile(str(f), doraise=True)
+              except Exception as exc:
+                  errors.append(f"{f}: {exc}")
+          if errors:
+              print("::error::Python syntax errors found:")
+              print("\n".join(errors))
+              sys.exit(1)
+          print(f"OK: {len(files)} Python files byte-compiled clean")
+          PY
+
+      - name: Validate every JSON file (data/*.json, tools/*.json)
+        run: |
+          python - <<'PY'
+          import json, pathlib, sys
+          root = pathlib.Path(".")
+          files = sorted(
+              list(root.glob("data/*.json")) + list(root.glob("tools/*.json"))
+          )
+          errors = []
+          for f in files:
+              try:
+                  json.loads(f.read_text(encoding="utf-8"))
+              except Exception as exc:
+                  errors.append(f"{f}: {exc}")
+          if errors:
+              print("::error::Invalid JSON files found:")
+              print("\n".join(errors))
+              sys.exit(1)
+          print(f"OK: {len(files)} JSON files valid: "
+                f"{', '.join(str(f) for f in files)}")
+          PY
+
+  # --------------------------------------------------------------------------
+  # 3. BUILD — run the generator and verify the output contract.
+  # Catches a generator that silently skips a page (PLAN.md §5.2: a page that
+  # fails to render is reported, not skipped) — here any missing or empty
+  # output file fails the build.
+  # --------------------------------------------------------------------------
+  build:
+    name: "Build: site generator + output check"
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.14 (with pip cache)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install the project (editable) + dependencies
+        run: pip install -e .
+
+      - name: Generate the site
+        run: python -m tools.site
+
+      - name: Verify every output file exists and is non-empty
+        run: |
+          python - <<'PY'
+          import pathlib, sys
+          root = pathlib.Path(".")
+          # Authored shared assets the generator requires (must already exist).
+          authored = ["css/style.css", "js/main.js"]
+          # Generated outputs the site depends on.
+          generated = [
+              "index.html", "matrix.html", "community.html",
+              "guides.html", "about.html", "data.json",
+              "recommend/index.html", "compare/index.html",
+              "guides/index.html",
+          ]
+          # Every individual guide page (guides/<slug>/index.html).
+          guides = sorted((root / "guides").glob("*/index.html"))
+          all_paths = authored + generated
+          missing = [p for p in all_paths if not (root / p).exists()]
+          empty = [
+              p for p in all_paths
+              if (root / p).exists() and (root / p).stat().st_size == 0
+          ]
+          if missing:
+              print("::error::Missing output files:")
+              print("\n".join(missing))
+              sys.exit(1)
+          if empty:
+              print("::error::Empty output files:")
+              print("\n".join(empty))
+              sys.exit(1)
+          if not guides:
+              print("::error::No guide pages found under guides/")
+              sys.exit(1)
+          print(f"OK: {len(authored)} authored assets, {len(generated)} core "
+                f"outputs, {len(guides)} guide pages — all present, non-empty")
+          PY
+
+  # --------------------------------------------------------------------------
+  # 4. DEPLOY — main branch only, after a green test + lint + build.
+  # GitHub Pages serves from `main` at the repo root (source `/`), so the
+  # deployment is: regenerate the site from the current data, and commit +
+  # push the generated files if (and only if) they changed. Idempotent — when
+  # nothing changed there is no push, so no re-trigger loop; when new data
+  # lands, the live site updates automatically.
+  # --------------------------------------------------------------------------
+  deploy:
+    name: "Deploy: GitHub Pages (main)"
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Main pushes only — never run for pull requests.
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [test, lint, build]
+    permissions:
+      contents: write   # required to commit + push the regenerated files
+      pages: write      # future-proofs an official Pages Actions deploy
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          # Full history so the staged-diff check and the push work correctly.
+          fetch-depth: 0
+
+      - name: Set up Python 3.14 (with pip cache)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install the project (editable) + dependencies
+        run: pip install -e .
+
+      - name: Configure the committing identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Regenerate the site from the current data
+        run: python -m tools.site
+
+      - name: Commit + push generated outputs (only if changed)
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "Generated site is already in sync with the data — nothing to deploy."
+          else
+            git commit -m "chore(pages): regenerate site from current data [skip ci]"
+            git push origin main
+            echo "Deployed: regenerated site committed to main (GitHub Pages source /)."
+          fi

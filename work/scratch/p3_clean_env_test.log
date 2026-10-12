@@ -1,0 +1,140 @@
+...............WARNING: guides index skipped: Guides index not found: /tmp/las_commands_v_9mxf80/content/guides/index.md
+......WARNING: guides index skipped: Guides index not found: /tmp/las_compare_hyw4lssw/content/guides/index.md
+.................WARNING: guides index skipped: Guides index not found: /tmp/las_detail_kbj_8joh/content/guides/index.md
+......WARNING: guides index skipped: Guides index not found: /tmp/las_filters_py60cdu7/content/guides/index.md
+..........WARNING: recommend page skipped: [Errno 2] No such file or directory: '/tmp/las_test_fhrolior/content/recommend.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_test_fhrolior/content/guides/index.md
+......WARNING: recommend page skipped: [Errno 2] No such file or directory: '/tmp/las_golden_mg_0x2fq/content/recommend.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_golden_mg_0x2fq/content/guides/index.md
+.............................................WARNING: guides index skipped: Guides index not found: /tmp/las_recommend_ge1cwwhg/content/guides/index.md
+......................
+----------------------------------------------------------------------
+Ran 127 tests in 0.389s
+
+OK
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote recommend/index.html (22244 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+  wrote guides/index.html (7992 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote recommend/index.html (22244 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+  wrote guides/index.html (7992 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote recommend/index.html (22244 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+  wrote guides/backends/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote recommend/index.html (22244 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote recommend/index.html (22244 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote recommend/index.html (22244 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote recommend/index.html (22244 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+  wrote guides/index.html (7992 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (9505 bytes)
+  wrote matrix.html (44712 bytes)
+  wrote community.html (11779 bytes)
+  wrote guides.html (2596 bytes)
+  wrote about.html (4871 bytes)
+  wrote recommend/index.html (22244 bytes)
+  wrote compare/index.html (17175 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
