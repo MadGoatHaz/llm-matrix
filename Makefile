@@ -22,17 +22,18 @@ else
 PYTHON ?= .venv/bin/python
 endif
 
-.PHONY: help test build lint clean golden check
+.PHONY: help test build lint validate clean golden check
 
 help:
 	@echo "Local AI Stack — common commands"
 	@echo ""
-	@echo "  make test     Run the full unittest suite (the CI quality gate)"
-	@echo "  make build    Regenerate the site (all pages + data.json)"
-	@echo "  make lint     Byte-compile all .py files + validate all JSON"
-	@echo "  make clean    Remove __pycache__ dirs and build artifacts"
-	@echo "  make golden   Regenerate tests/golden/ baselines (deliberate!)"
-	@echo "  make check    Lint + test (the gates CI enforces)"
+	@echo "  make test      Run the full unittest suite (the CI quality gate)"
+	@echo "  make build     Regenerate the site (all pages + data.json)"
+	@echo "  make lint      Byte-compile all .py files + validate all JSON"
+	@echo "  make validate  Run the data-quality validator (tools/validate.py)"
+	@echo "  make clean     Remove __pycache__ dirs and build artifacts"
+	@echo "  make golden    Regenerate tests/golden/ baselines (deliberate!)"
+	@echo "  make check     Lint + validate + test (the gates CI enforces)"
 
 # --- Quality gates (mirror .github/workflows/ci.yml) ------------------------
 
@@ -46,7 +47,13 @@ lint:
 	@for f in data/*.json tools/*.json; do $(PYTHON) -m json.tool "$$f" >/dev/null || { echo "INVALID JSON: $$f"; exit 1; }; done
 	@echo "OK: all JSON files valid"
 
-check: lint test
+# Data-quality gate (mirrors the CI lint job): the committed data must conform
+# to schema.json. A hard failure exits non-zero; informational gaps don't.
+validate:
+	@echo "==> Validating data quality (tools/validate.py)"
+	$(PYTHON) tools/validate.py
+
+check: lint validate test
 
 # --- Site generation --------------------------------------------------------
 

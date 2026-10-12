@@ -135,9 +135,9 @@
     return String(b).replace(/\(.*$/, '').trim();
   }
 
-  // The working submission path is the forum thread's Post #2 template.
-  // (Will point to /submit/ once the P3-4 static form lands.)
-  var SUBMIT_URL = 'https://forum.level1techs.com/t/256443';
+  // The submission path: the static /submit/ form (P3-4). The recommend page
+  // lives at depth 1, so the form is reached at ../submit/.
+  var SUBMIT_URL = '../submit/';
 
   // ------------------------------------------------------------------
   // Boot
