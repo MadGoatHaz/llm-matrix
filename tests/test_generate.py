@@ -16,6 +16,7 @@ Assertions (per PLAN.md §5.4 structural checks):
 
 import json
 import shutil
+import sys
 import tempfile
 import unittest
 from html.parser import HTMLParser
@@ -142,6 +143,62 @@ class TestGeneratorOutput(unittest.TestCase):
                 text = (self.tmp / name).read_text(encoding="utf-8")
                 self.assertEqual(text.count("<h1>"), 1, "expected exactly one <h1>")
                 self.assertIn("<main", text)
+
+
+class TestGoldenRegression(unittest.TestCase):
+    """The P1-0 refactor must be byte-identical to the legacy monolith.
+
+    Regenerates every page + ``data.json`` via the new ``tools.site`` package
+    into a temp workspace and compares each output byte-for-byte against the
+    committed baselines in ``tests/golden/`` (captured from the pre-refactor
+    ``tools/generate_site.py``). Any drift — an accidental rewrite, a template
+    change, a missing escape — fails here.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        if str(ROOT) not in sys.path:
+            sys.path.insert(0, str(ROOT))
+        cls.tmp = Path(tempfile.mkdtemp(prefix="las_golden_"))
+        for rel in REQUIRED_INPUTS:
+            src = ROOT / rel
+            dst = cls.tmp / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(src, dst)
+
+    @classmethod
+    def tearDownClass(cls):
+        shutil.rmtree(cls.tmp, ignore_errors=True)
+
+    def test_golden_baselines_exist(self):
+        golden = ROOT / "tests" / "golden"
+        for name in (*PAGES, "data.json"):
+            with self.subTest(page=name):
+                self.assertTrue(
+                    (golden / name).exists(),
+                    f"missing golden baseline tests/golden/{name}",
+                )
+
+    def test_all_outputs_match_golden_baselines(self):
+        from tools.site import main as site_main
+
+        site_main(
+            workspace=self.tmp,
+            data_dir=self.tmp / "data",
+            submissions=self.tmp / "data" / "submissions.json",
+            schema=self.tmp / "tools" / "schema.json",
+        )
+        golden = ROOT / "tests" / "golden"
+        for name in (*PAGES, "data.json"):
+            with self.subTest(page=name):
+                new_bytes = (self.tmp / name).read_bytes()
+                gold_bytes = (golden / name).read_bytes()
+                self.assertEqual(
+                    new_bytes,
+                    gold_bytes,
+                    f"{name} is not byte-identical to the golden baseline "
+                    "(refactor regression)",
+                )
 
 
 if __name__ == "__main__":

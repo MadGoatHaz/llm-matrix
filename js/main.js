@@ -6,10 +6,37 @@ document.addEventListener('DOMContentLoaded', () => {
         toggle.addEventListener('click', () => links.classList.toggle('open'));
     }
 
-    // Set active nav link
-    const path = window.location.pathname.split('/').pop() || 'index.html';
+    // Set active nav link. Handles both flat root pages (index.html,
+    // matrix.html, …) and directory-based guide URLs (guides/<slug>/).
+    const currentLeaf = window.location.pathname.split('/').pop() || 'index.html';
+    const currentPath = window.location.pathname.replace(/\/+$/, '');
     document.querySelectorAll('.nav-links a').forEach(a => {
-        if (a.getAttribute('href') === path) a.classList.add('active');
+        const href = a.getAttribute('href');
+        if (!href) return;
+        let active = (href === currentLeaf);
+        if (!active) {
+            try {
+                const resolved = new URL(href, window.location.href).pathname.replace(/\/+$/, '');
+                active = (resolved === currentPath);
+            } catch (e) { /* ignore malformed hrefs */ }
+        }
+        if (active) a.classList.add('active');
+    });
+
+    // Guides dropdown toggle (P1-9 populates the menu; no-op while absent).
+    // A click toggles an .open state for mobile/keyboard users; the CSS
+    // :hover / :focus-within rules also open it on desktop.
+    document.querySelectorAll('.nav-dropdown').forEach(dd => {
+        const toggle = dd.querySelector('.nav-dropdown-toggle');
+        if (!toggle) return;
+        toggle.addEventListener('click', (e) => {
+            if (window.innerWidth <= 768) return; // let the link navigate on mobile
+            e.preventDefault();
+            dd.classList.toggle('open');
+        });
+        document.addEventListener('click', (e) => {
+            if (!dd.contains(e.target)) dd.classList.remove('open');
+        });
     });
 
     // Table sorting (for matrix page)

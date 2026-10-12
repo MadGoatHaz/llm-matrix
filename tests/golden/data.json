@@ -1,0 +1,647 @@
+{
+  "generated_at": "2026-10-12T11:39:46.952962",
+  "schema_version": "2.1",
+  "source_thread": "https://forum.level1techs.com/t/256443",
+  "total_submissions": 12,
+  "skipped_templates": 2,
+  "submissions": [
+    {
+      "id": "post_2_madgoat_1",
+      "source": {
+        "post_number": 2,
+        "post_id": 4119054,
+        "username": "MadGoat",
+        "submitted_at": "2026-09-18T03:03:01.652Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "\u226416GB",
+        "hardware": "1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM",
+        "backend": "llama-swap (llama.cpp subprocess, ROCm)",
+        "os_driver": "Linux/ROCm",
+        "model_name": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B",
+        "quant_package": "GGUF I-Nano",
+        "weight_precision": "I-Nano (~2.5bpw)",
+        "download_url": "https://huggingface.co/samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B",
+        "primary_use_case": "LLM-assisted coding / technical documentation",
+        "stable_context_tested": "65536 tokens (NIAH hit YES at 65k)",
+        "kv_cache_setting": "Q8_0 (quantized)",
+        "throughput_tps": "54.4 decode",
+        "prefill_tps": "215",
+        "ttft_cold": "19.3s",
+        "power_draw": "150W peak",
+        "setup_notes": "MoE A3B \u2014 fits 12.7GB incl. KV. 9B active params \u2248 9B compute. Fast cold load."
+      },
+      "tier": "t1",
+      "hardware": {
+        "description": "1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM",
+        "vendor": "AMD"
+      },
+      "backend": "llama-swap (llama.cpp subprocess, ROCm)",
+      "model": {
+        "name": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B",
+        "url": "https://huggingface.co/samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B"
+      },
+      "quant": "GGUF I-Nano",
+      "weight_precision": "I-Nano (~2.5bpw)",
+      "use_cases": "LLM-assisted coding / technical documentation",
+      "context": {
+        "stable": "65536 tokens (NIAH hit YES at 65k)",
+        "kv_cache": "Q8_0 (quantized)"
+      },
+      "performance": {
+        "decode_tps": "54.4 decode",
+        "prefill_tps": "215",
+        "ttft_cold": "19.3s",
+        "power_w": "150W peak"
+      },
+      "engine_mode": "",
+      "notes": "MoE A3B \u2014 fits 12.7GB incl. KV. 9B active params \u2248 9B compute. Fast cold load.",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_2_madgoat_2",
+      "source": {
+        "post_number": 2,
+        "post_id": 4119054,
+        "username": "MadGoat",
+        "submitted_at": "2026-09-18T03:03:01.652Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "48-64GB",
+        "hardware": "2x AMD R9700 (48GB total)",
+        "backend": "vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)",
+        "os_driver": "Linux/ROCm",
+        "model_name": "d0xin/Swift-Qwen3.8-27B-Uncensored-FP8",
+        "quant_package": "FP8",
+        "weight_precision": "FP8 (native)",
+        "download_url": "https://huggingface.co/d0xin/Swift-Qwen3.8-27B-Uncensored-FP8",
+        "primary_use_case": "Coding, Security Research (DoS attack tracking)",
+        "stable_context_tested": "~240k tokens",
+        "kv_cache_setting": "FP16 (unquantized)",
+        "throughput_tps": "120 (code) / 70 (chat)",
+        "prefill_tps": "N/A",
+        "ttft_cold": "N/A",
+        "power_draw": "N/A",
+        "setup_notes": "Uncensored variant for security work. Adaptive MTP=8 for speculative speed. Standard Qwen-based models get \"nervy\" on DoS content."
+      },
+      "tier": "t4",
+      "hardware": {
+        "description": "2x AMD R9700 (48GB total)",
+        "vendor": "AMD"
+      },
+      "backend": "vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)",
+      "model": {
+        "name": "d0xin/Swift-Qwen3.8-27B-Uncensored-FP8",
+        "url": "https://huggingface.co/d0xin/Swift-Qwen3.8-27B-Uncensored-FP8"
+      },
+      "quant": "FP8",
+      "weight_precision": "FP8 (native)",
+      "use_cases": "Coding, Security Research (DoS attack tracking)",
+      "context": {
+        "stable": "~240k tokens",
+        "kv_cache": "FP16 (unquantized)"
+      },
+      "performance": {
+        "decode_tps": "120 (code) / 70 (chat)",
+        "prefill_tps": "N/A",
+        "ttft_cold": "N/A",
+        "power_w": "N/A"
+      },
+      "engine_mode": "",
+      "notes": "Uncensored variant for security work. Adaptive MTP=8 for speculative speed. Standard Qwen-based models get \"nervy\" on DoS content.",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_2_madgoat_3",
+      "source": {
+        "post_number": 2,
+        "post_id": 4119054,
+        "username": "MadGoat",
+        "submitted_at": "2026-09-18T03:03:01.652Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "24-32GB (hybrid: VRAM+RAM+SSD)",
+        "hardware": "1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe",
+        "backend": "Strata 0.1.42",
+        "os_driver": "Windows 11 + WSL2/Ubuntu 24.04 (96GB via .wslconfig)",
+        "model_name": "Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)",
+        "quant_package": "GGUF IQ3_S (ISTA-DASLab GSQ-RCO)",
+        "weight_precision": "IQ3_S",
+        "download_url": "https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF",
+        "primary_use_case": "Agentic coding via OpenAI-compatible API",
+        "stable_context_tested": "131072 configured; >=106,493 observed in live sessions",
+        "kv_cache_setting": "int8 (engine-native)",
+        "engine_mode": "Hybrid (VRAM+RAM+SSD)",
+        "throughput_tps": "99-128 decode (median 108)",
+        "prefill_tps": "825-3600 (median ~2800 with 90% prompt cache)",
+        "power_draw": "450W stock cap",
+        "setup_notes": "125B MoE on single 24GB card. 6892 experts: 13.4GB VRAM, rest RAM, lookup NVMe. MTP=4+lookup=3. Prompt cache 90% hits \u2192 0.3-0.8s resume on 50k contexts. WSL2 needs explicit .wslconfig RAM."
+      },
+      "tier": "t3",
+      "hardware": {
+        "description": "1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe",
+        "vendor": "NVIDIA"
+      },
+      "backend": "Strata 0.1.42",
+      "model": {
+        "name": "Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)",
+        "url": "https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF"
+      },
+      "quant": "GGUF IQ3_S (ISTA-DASLab GSQ-RCO)",
+      "weight_precision": "IQ3_S",
+      "use_cases": "Agentic coding via OpenAI-compatible API",
+      "context": {
+        "stable": "131072 configured; >=106,493 observed in live sessions",
+        "kv_cache": "int8 (engine-native)"
+      },
+      "performance": {
+        "decode_tps": "99-128 decode (median 108)",
+        "prefill_tps": "825-3600 (median ~2800 with 90% prompt cache)",
+        "ttft_cold": "",
+        "power_w": "450W stock cap"
+      },
+      "engine_mode": "Hybrid (VRAM+RAM+SSD)",
+      "notes": "125B MoE on single 24GB card. 6892 experts: 13.4GB VRAM, rest RAM, lookup NVMe. MTP=4+lookup=3. Prompt cache 90% hits \u2192 0.3-0.8s resume on 50k contexts. WSL2 needs explicit .wslconfig RAM.",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_5_digitalscream_0",
+      "source": {
+        "post_number": 5,
+        "post_id": 4119255,
+        "username": "digitalscream",
+        "submitted_at": "2026-09-18T14:00:04.030Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "48-64GB",
+        "hardware": "2 x R9700",
+        "backend": "vLLM",
+        "model_name": "d0xin/Swift-Qwen3.8-27B-Uncensored-FP8",
+        "quant_package": "FP8",
+        "download_url": "https://huggingface.co/d0xin/Swift-Qwen3.8-27B-Uncensored-FP8",
+        "primary_use_case": "Coding, Research (OpenCode)",
+        "stable_context_tested": "~240k",
+        "kv_cache_setting": "FP16",
+        "throughput_tps": "120t/s code, 70t/s chat",
+        "setup_notes": "magiccodingman/vllm-radiance, with adaptive MTP = 8"
+      },
+      "tier": "t4",
+      "hardware": {
+        "description": "2 x R9700",
+        "vendor": "AMD"
+      },
+      "backend": "vLLM",
+      "model": {
+        "name": "d0xin/Swift-Qwen3.8-27B-Uncensored-FP8",
+        "url": "https://huggingface.co/d0xin/Swift-Qwen3.8-27B-Uncensored-FP8"
+      },
+      "quant": "FP8",
+      "weight_precision": "",
+      "use_cases": "Coding, Research (OpenCode)",
+      "context": {
+        "stable": "~240k",
+        "kv_cache": "FP16"
+      },
+      "performance": {
+        "decode_tps": "120t/s code, 70t/s chat",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": ""
+      },
+      "engine_mode": "",
+      "notes": "magiccodingman/vllm-radiance, with adaptive MTP = 8",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_6_burhan_0",
+      "source": {
+        "post_number": 6,
+        "post_id": 4119262,
+        "username": "Burhan",
+        "submitted_at": "2026-09-18T14:30:23.937Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "16-24GB",
+        "hardware": "1x RTX-4000 Ada SFF (20 GB)",
+        "backend": "Ollama",
+        "model_name": "Qwen3.6-27b-q4_KM, lfm2.5-thinking:1.2b-q8_0, gemma4:26b-a4b-it-mtp-q4_K_M, qwen3.5:9b-q8_0, quant_package: [e.g., AutoRound W4A16, GGUF Q4_K_M, EXL2 4.0bpw, FP8], download_url: sourced via Ollama, primary_use_case: Document Q&A, Deep Research, Creative Writing, Brainstorming, Planning, stable_context_tested:, 52k Qwen3.6-27b, 64k lfm2.5-thinking:1.2b (probably could do more), 64k gemma4:26b, 128k qwen3.5:9b, kv_cache_setting: q8_0, throughput_tps: ~20-30 t/s, setup_notes: [Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]"
+      },
+      "tier": "t2",
+      "hardware": {
+        "description": "1x RTX-4000 Ada SFF (20 GB)",
+        "vendor": "NVIDIA"
+      },
+      "backend": "Ollama",
+      "model": {
+        "name": "Qwen3.6-27b-q4_KM, lfm2.5-thinking:1.2b-q8_0, gemma4:26b-a4b-it-mtp-q4_K_M, qwen3.5:9b-q8_0, quant_package: [e.g., AutoRound W4A16, GGUF Q4_K_M, EXL2 4.0bpw, FP8], download_url: sourced via Ollama, primary_use_case: Document Q&A, Deep Research, Creative Writing, Brainstorming, Planning, stable_context_tested:, 52k Qwen3.6-27b, 64k lfm2.5-thinking:1.2b (probably could do more), 64k gemma4:26b, 128k qwen3.5:9b, kv_cache_setting: q8_0, throughput_tps: ~20-30 t/s, setup_notes: [Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]",
+        "url": ""
+      },
+      "quant": "",
+      "weight_precision": "",
+      "use_cases": "",
+      "context": {
+        "stable": "",
+        "kv_cache": ""
+      },
+      "performance": {
+        "decode_tps": "",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": ""
+      },
+      "engine_mode": "",
+      "notes": "",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_8_s1ugh34d_0",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "\u226416GB",
+        "hardware": "Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM",
+        "backend": "llama-swap (llama.cpp subprocess, ROCm/ROCm backends)",
+        "model_name": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B (I-Nano)",
+        "quant_package": "GGUF I-Nano",
+        "download_url": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B \u00b7 Hugging Face",
+        "primary_use_case": "LLM assited coding / technical documentation",
+        "stable_context_tested": "65536 tokens native (NIAH hit YES at 65k)",
+        "kv_cache_setting": "quantized KV (observed near-flat VRAM growth w/ context)",
+        "throughput_tps": "54.4 tps decode / 215 tok/s prefill (short ctx)",
+        "setup_notes": "MoE A3B \u2014 fits 12.7GB incl. KV headroom. 9B active params \u2248 like a 9B at 9B-compute. Fast cold load (19s). I-Nano = very low quant; verify quality for your task, but pipeline ran coherent through 65k.",
+        "power_draw": "~150 W peak, 99% GPU util",
+        "ttft_cold": "19.3 s"
+      },
+      "tier": "t1",
+      "hardware": {
+        "description": "Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM",
+        "vendor": "AMD"
+      },
+      "backend": "llama-swap (llama.cpp subprocess, ROCm/ROCm backends)",
+      "model": {
+        "name": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B (I-Nano)",
+        "url": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B \u00b7 Hugging Face"
+      },
+      "quant": "GGUF I-Nano",
+      "weight_precision": "",
+      "use_cases": "LLM assited coding / technical documentation",
+      "context": {
+        "stable": "65536 tokens native (NIAH hit YES at 65k)",
+        "kv_cache": "quantized KV (observed near-flat VRAM growth w/ context)"
+      },
+      "performance": {
+        "decode_tps": "54.4 tps decode / 215 tok/s prefill (short ctx)",
+        "prefill_tps": "",
+        "ttft_cold": "19.3 s",
+        "power_w": "~150 W peak, 99% GPU util"
+      },
+      "engine_mode": "",
+      "notes": "MoE A3B \u2014 fits 12.7GB incl. KV headroom. 9B active params \u2248 like a 9B at 9B-compute. Fast cold load (19s). I-Nano = very low quant; verify quality for your task, but pipeline ran coherent through 65k.",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_8_s1ugh34d_1",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "\u226416GB",
+        "hardware": "Radeon VII 16GB HBM2 (gfx906)",
+        "backend": "llama-swap (llama.cpp subprocess)",
+        "model_name": "deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF",
+        "quant_package": "GGUF Q4_K_M",
+        "download_url": "deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF \u00b7 Hugging Face",
+        "primary_use_case": "LLM assited coding / technical documentation / large repo generation",
+        "stable_context_tested": "49152 tokens (NIAH hit YES at 49k; 65k not probed)",
+        "kv_cache_setting": "quantized KV (VRAM ~flat: 4618MB @49k vs 4619MB @4k)",
+        "throughput_tps": "86.7 tps decode / 408 tok/s prefill",
+        "setup_notes": "Thinking model \u2014 emits reasoning_content; budget 512+ tokens or it burns max_tokens in reasoning and returns finish_reason=length with empty content. Answered verbal-math correctly (final answer 4). ~5GB VRAM footprint.",
+        "coherence": "holds through 49k NIAH.",
+        "power_draw": "~214 W peak, 99% GPU util"
+      },
+      "tier": "t1",
+      "hardware": {
+        "description": "Radeon VII 16GB HBM2 (gfx906)",
+        "vendor": "AMD"
+      },
+      "backend": "llama-swap (llama.cpp subprocess)",
+      "model": {
+        "name": "deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF",
+        "url": "deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF \u00b7 Hugging Face"
+      },
+      "quant": "GGUF Q4_K_M",
+      "weight_precision": "",
+      "use_cases": "LLM assited coding / technical documentation / large repo generation",
+      "context": {
+        "stable": "49152 tokens (NIAH hit YES at 49k; 65k not probed)",
+        "kv_cache": "quantized KV (VRAM ~flat: 4618MB @49k vs 4619MB @4k)"
+      },
+      "performance": {
+        "decode_tps": "86.7 tps decode / 408 tok/s prefill",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": "~214 W peak, 99% GPU util"
+      },
+      "engine_mode": "",
+      "notes": "Thinking model \u2014 emits reasoning_content; budget 512+ tokens or it burns max_tokens in reasoning and returns finish_reason=length with empty content. Answered verbal-math correctly (final answer 4). ~5GB VRAM footprint.",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_8_s1ugh34d_2",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "\u226416GB",
+        "hardware": "Radeon VII 16GB HBM2 (gfx906)",
+        "backend": "llama-swap (llama.cpp subprocess)",
+        "model_name": "unsloth/Qwen3.8-27B-GGUF (UD-Q2_K_XL)",
+        "quant_package": "GGUF UD-Q2_K_XL",
+        "download_url": "unsloth/Qwen3.8-27B-GGUF \u00b7 Hugging Face",
+        "primary_use_case": "LLM assited coding / technical documentation",
+        "stable_context_tested": "49152 tokens (NIAH hit YES at 49k)",
+        "kv_cache_setting": "quantized KV (VRAM 13770\u219213798MB across 8k\u219232k, +28MB)",
+        "throughput_tps": "13.9 tps decode / 79 tok/s prefill",
+        "setup_notes": "13.8GB VRAM = nearly full weight residency on 16GB; decode speed collapses to 14 tps (big dense model). Slow prefill: 41s TTFT @8k, 245s @49k.",
+        "coherence": "holds through full 49k NIAH. Good value if you need 30k+ ctx on a dense 27B and can live with 14 tps.",
+        "power_draw": "~233 W peak, 100% GPU util"
+      },
+      "tier": "t1",
+      "hardware": {
+        "description": "Radeon VII 16GB HBM2 (gfx906)",
+        "vendor": "AMD"
+      },
+      "backend": "llama-swap (llama.cpp subprocess)",
+      "model": {
+        "name": "unsloth/Qwen3.8-27B-GGUF (UD-Q2_K_XL)",
+        "url": "unsloth/Qwen3.8-27B-GGUF \u00b7 Hugging Face"
+      },
+      "quant": "GGUF UD-Q2_K_XL",
+      "weight_precision": "",
+      "use_cases": "LLM assited coding / technical documentation",
+      "context": {
+        "stable": "49152 tokens (NIAH hit YES at 49k)",
+        "kv_cache": "quantized KV (VRAM 13770\u219213798MB across 8k\u219232k, +28MB)"
+      },
+      "performance": {
+        "decode_tps": "13.9 tps decode / 79 tok/s prefill",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": "~233 W peak, 100% GPU util"
+      },
+      "engine_mode": "",
+      "notes": "13.8GB VRAM = nearly full weight residency on 16GB; decode speed collapses to 14 tps (big dense model). Slow prefill: 41s TTFT @8k, 245s @49k.",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_8_s1ugh34d_3",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "\u226416GB",
+        "hardware": "Radeon VII 16GB HBM2 (gfx906)",
+        "backend": "llama-swap (llama.cpp subprocess)",
+        "model_name": "MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF",
+        "quant_package": "GGUF Q4_K_M",
+        "download_url": "MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF \u00b7 Hugging Face",
+        "primary_use_case": "LLM assited coding / technical documentation",
+        "stable_context_tested": "16384 tokens (native server cap)",
+        "kv_cache_setting": "quantized KV (7327\u21927299 MB, flat)",
+        "throughput_tps": "84.4 tps decode / 490 tok/s prefill",
+        "setup_notes": "Reasoning model (reasoning_content stream). NIAH hit at native 16k limit. Cheap 7.4GB. Run with generous max_tokens; single-request math budget 512 burned in reasoning without emitting final answer (content overflow quirk). Strong ttft + throughput for an 8B R1 distill.",
+        "power_draw": "~268 W peak, 93% GPU util"
+      },
+      "tier": "t1",
+      "hardware": {
+        "description": "Radeon VII 16GB HBM2 (gfx906)",
+        "vendor": "AMD"
+      },
+      "backend": "llama-swap (llama.cpp subprocess)",
+      "model": {
+        "name": "MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF",
+        "url": "MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF \u00b7 Hugging Face"
+      },
+      "quant": "GGUF Q4_K_M",
+      "weight_precision": "",
+      "use_cases": "LLM assited coding / technical documentation",
+      "context": {
+        "stable": "16384 tokens (native server cap)",
+        "kv_cache": "quantized KV (7327\u21927299 MB, flat)"
+      },
+      "performance": {
+        "decode_tps": "84.4 tps decode / 490 tok/s prefill",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": "~268 W peak, 93% GPU util"
+      },
+      "engine_mode": "",
+      "notes": "Reasoning model (reasoning_content stream). NIAH hit at native 16k limit. Cheap 7.4GB. Run with generous max_tokens; single-request math budget 512 burned in reasoning without emitting final answer (content overflow quirk). Strong ttft + throughput for an 8B R1 distill.",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_8_s1ugh34d_4",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "\u226416GB",
+        "hardware": "Radeon VII 16GB HBM2 (gfx906)",
+        "backend": "llama-swap (llama.cpp subprocess)",
+        "model_name": "bartowski/Qwen_Qwen3.5-4B-GGUF",
+        "quant_package": "GGUF Q4_K_M",
+        "download_url": "bartowski/Qwen_Qwen3.5-4B-GGUF \u00b7 Hugging Face",
+        "primary_use_case": "LLM assited coding / technical documentation",
+        "stable_context_tested": "65536 tokens (native cap; NIAH hit YES; 96k rejected, n_ctx=65536 enforced)",
+        "kv_cache_setting": "quantized KV (VRAM 5312MB @4k \u2192 5312MB @65k, +0)",
+        "throughput_tps": "96.4 tps decode / 468 tok/s prefill",
+        "setup_notes": "Fastest model tested; everything fits with massive KV headroom. Full native 65k context usable. Verified arithmetic (final answer 4). Budget max_tokens \u2014 it reasons too. Best \u201cleave always loaded\u201d generalist.",
+        "power_draw": "~225 W peak, 99% GPU util"
+      },
+      "tier": "t1",
+      "hardware": {
+        "description": "Radeon VII 16GB HBM2 (gfx906)",
+        "vendor": "AMD"
+      },
+      "backend": "llama-swap (llama.cpp subprocess)",
+      "model": {
+        "name": "bartowski/Qwen_Qwen3.5-4B-GGUF",
+        "url": "bartowski/Qwen_Qwen3.5-4B-GGUF \u00b7 Hugging Face"
+      },
+      "quant": "GGUF Q4_K_M",
+      "weight_precision": "",
+      "use_cases": "LLM assited coding / technical documentation",
+      "context": {
+        "stable": "65536 tokens (native cap; NIAH hit YES; 96k rejected, n_ctx=65536 enforced)",
+        "kv_cache": "quantized KV (VRAM 5312MB @4k \u2192 5312MB @65k, +0)"
+      },
+      "performance": {
+        "decode_tps": "96.4 tps decode / 468 tok/s prefill",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": "~225 W peak, 99% GPU util"
+      },
+      "engine_mode": "",
+      "notes": "Fastest model tested; everything fits with massive KV headroom. Full native 65k context usable. Verified arithmetic (final answer 4). Budget max_tokens \u2014 it reasons too. Best \u201cleave always loaded\u201d generalist.",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_21_pawingunplug_0",
+      "source": {
+        "post_number": 21,
+        "post_id": 4122536,
+        "username": "PawingUnplug",
+        "submitted_at": "2026-09-28T07:14:44.464Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "48-64GB",
+        "hardware": "2 x R9700",
+        "backend": "llamacpp",
+        "model_name": "bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf, Qwen3-Embedding-8B-Q8_0.gguf, Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-MTP-Q8_0.gguf",
+        "download_url": "https://huggingface.co/bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-GGUF, https://huggingface.co/Qwen/Qwen3-Embedding-8B-GGUF, https://huggingface.co/DavidAU/Qwen3.5-9B-The-Defiant-Fable-Uncensored-Heretic-NEO-IMATRIX-MAX-MTP-GGUF",
+        "primary_use_case": "Coding Judge, Research (OpenCode and own harness), Embeddings",
+        "stable_context_tested": "~262k",
+        "kv_cache_setting": "FP16",
+        "power_draw": "~600w",
+        "throughput_tps": "~50t/s chat"
+      },
+      "tier": "t4",
+      "hardware": {
+        "description": "2 x R9700",
+        "vendor": "AMD"
+      },
+      "backend": "llamacpp",
+      "model": {
+        "name": "bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf, Qwen3-Embedding-8B-Q8_0.gguf, Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-MTP-Q8_0.gguf",
+        "url": "https://huggingface.co/bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-GGUF, https://huggingface.co/Qwen/Qwen3-Embedding-8B-GGUF, https://huggingface.co/DavidAU/Qwen3.5-9B-The-Defiant-Fable-Uncensored-Heretic-NEO-IMATRIX-MAX-MTP-GGUF"
+      },
+      "quant": "",
+      "weight_precision": "",
+      "use_cases": "Coding Judge, Research (OpenCode and own harness), Embeddings",
+      "context": {
+        "stable": "~262k",
+        "kv_cache": "FP16"
+      },
+      "performance": {
+        "decode_tps": "~50t/s chat",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": "~600w"
+      },
+      "engine_mode": "",
+      "notes": "",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_21_pawingunplug_1",
+      "source": {
+        "post_number": 21,
+        "post_id": 4122536,
+        "username": "PawingUnplug",
+        "submitted_at": "2026-09-28T07:14:44.464Z"
+      },
+      "type": "full",
+      "raw": {
+        "tier": "48-96GB",
+        "hardware": "2 x w7900",
+        "backend": "llamacpp",
+        "model_name": "Qwen3.8-Flash-Next-Q4_K_M",
+        "download_url": "https://huggingface.co/bartowski/Qwen3.8-Flash-Next-GGUF",
+        "primary_use_case": "Coding",
+        "stable_context_tested": "~262k",
+        "kv_cache_setting": "FP16",
+        "throughput_tps": "~35t/s chat",
+        "power_draw": "~750w"
+      },
+      "tier": "t4",
+      "hardware": {
+        "description": "2 x w7900",
+        "vendor": "AMD"
+      },
+      "backend": "llamacpp",
+      "model": {
+        "name": "Qwen3.8-Flash-Next-Q4_K_M",
+        "url": "https://huggingface.co/bartowski/Qwen3.8-Flash-Next-GGUF"
+      },
+      "quant": "",
+      "weight_precision": "",
+      "use_cases": "Coding",
+      "context": {
+        "stable": "~262k",
+        "kv_cache": "FP16"
+      },
+      "performance": {
+        "decode_tps": "~35t/s chat",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": "~750w"
+      },
+      "engine_mode": "",
+      "notes": "",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    }
+  ]
+}

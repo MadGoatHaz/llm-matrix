@@ -89,6 +89,48 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
 .nav-links a:hover { color: var(--text); background: var(--surface); }
 .nav-links a.active { color: var(--accent); background: var(--accent-glow); }
 
+/* Guides dropdown (P1-9 populates the menu; P1-0 leaves the plain link) */
+.nav-dropdown { position: relative; }
+.nav-dropdown-toggle {
+    color: var(--text-secondary);
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius);
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+}
+.nav-dropdown-toggle:hover { color: var(--text); background: var(--surface); }
+.nav-dropdown-menu {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    min-width: 230px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-lg);
+    list-style: none;
+    padding: 0.5rem;
+    margin: 0.25rem 0 0;
+    z-index: 200;
+}
+.nav-dropdown:hover .nav-dropdown-menu,
+.nav-dropdown:focus-within .nav-dropdown-menu,
+.nav-dropdown.open .nav-dropdown-menu { display: block; }
+.nav-dropdown-menu li a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-radius: var(--radius);
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+}
+.nav-dropdown-menu li a:hover { color: var(--text); background: var(--surface-2); }
+.nav-dropdown-menu li a.active { color: var(--accent); background: var(--accent-glow); }
+
 /* Mobile nav */
 .nav-toggle {
     display: none;
@@ -417,6 +459,186 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     color: var(--text-muted);
 }
 
+/* === GUIDE PAGE LAYER (long-form: guides/<slug>/index.html) === */
+.guide {
+    max-width: 760px;
+    margin: 0 auto;
+}
+.guide h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
+}
+.guide h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 2rem 0 0.75rem;
+    padding-bottom: 0.4rem;
+    border-bottom: 1px solid var(--border);
+}
+.guide h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 1.5rem 0 0.5rem;
+}
+.guide p {
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+}
+.guide ul, .guide ol {
+    color: var(--text-secondary);
+    margin: 0 0 1rem 1.5rem;
+}
+.guide li { margin-bottom: 0.35rem; }
+.guide a { color: var(--accent); }
+.guide strong { color: var(--text); }
+
+/* Tables rendered from markdown */
+.guide table { margin: 1rem 0; }
+.guide th {
+    background: var(--surface-2);
+    text-align: left;
+    padding: 0.6rem 0.9rem;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border);
+}
+.guide td {
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+/* Fenced code blocks + inline code */
+.guide pre {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+.guide pre code {
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+}
+.guide :not(pre) > code {
+    background: var(--surface-2);
+    padding: 0.15rem 0.4rem;
+    border-radius: 4px;
+    font-size: 0.85em;
+}
+
+/* Table of contents (markdown `toc` extension) */
+.guide .toc {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.5rem;
+    margin: 1.5rem 0;
+}
+.guide .toc ul { list-style: none; margin-left: 1rem; }
+.guide .toc a { color: var(--text-secondary); font-size: 0.9rem; }
+.guide .toc a:hover { color: var(--accent); }
+
+/* CSS-only diagrams (no images/SVG) — composed from building blocks */
+.diagram {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.25rem;
+    margin: 1.25rem 0;
+}
+.diagram-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+.diagram-row:last-child { margin-bottom: 0; }
+.diagram-label {
+    flex: 0 0 90px;
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+}
+.diagram-bar {
+    height: 18px;
+    background: linear-gradient(90deg, var(--accent), var(--cyan));
+    border-radius: 4px;
+    min-width: 4px;
+}
+/* KV-cache growth: bars widen with context (width set inline in the markdown) */
+.diagram--kv .diagram-bar { background: linear-gradient(90deg, var(--accent), var(--purple)); }
+.diagram-cell {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    text-align: center;
+}
+.diagram-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    text-align: center;
+    margin: 0.25rem 0;
+}
+.diagram--stack { display: flex; flex-direction: column; gap: 0.4rem; }
+.diagram--stack .diagram-cell { width: 100%; }
+.diagram--flow { display: flex; align-items: center; gap: 0.5rem; flex-wrap: wrap; }
+
+/* Callouts (e.g. the 30-second summary) */
+.callout {
+    border-left: 3px solid var(--accent);
+    background: var(--accent-glow);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 1rem 1.25rem;
+    margin: 1.25rem 0;
+}
+.callout p { margin-bottom: 0; }
+.callout--tip { border-left-color: var(--success); background: rgba(16, 185, 129, 0.1); }
+.callout--warning { border-left-color: var(--warning); background: rgba(245, 158, 11, 0.1); }
+.callout--info { border-left-color: var(--cyan); background: rgba(6, 182, 212, 0.1); }
+
+/* Progressive disclosure (<details>/<summary>) */
+.progressive details {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin: 0.75rem 0;
+}
+.progressive summary {
+    cursor: pointer;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    color: var(--text);
+    list-style: none;
+}
+.progressive summary::-webkit-details-marker { display: none; }
+.progressive summary::before { content: '▸ '; color: var(--accent); }
+.progressive details[open] summary::before { content: '▾ '; }
+.progressive .progressive-body {
+    padding: 0 1rem 1rem;
+    color: var(--text-secondary);
+}
+
+/* Related-guides footer on each guide page */
+.guide-related {
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border);
+}
+.guide-related h2 { font-size: 1.1rem; margin-bottom: 0.75rem; }
+.guide-related ul { list-style: none; display: flex; gap: 1rem; flex-wrap: wrap; }
+.guide-related a { color: var(--accent); }
+
 /* === COMMUNITY / CONTRIBUTOR CARDS === */
 .contributor-card {
     background: var(--surface);
@@ -476,4 +698,9 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     .card-grid { grid-template-columns: 1fr; }
     table { font-size: 0.8rem; }
     td, th { padding: 0.5rem; }
+    .guide { max-width: 100%; }
+    .guide h1 { font-size: 1.6rem; }
+    .guide h2 { font-size: 1.2rem; }
+    .diagram-label { flex-basis: 70px; }
+    .nav-dropdown-menu { min-width: 200px; }
 }

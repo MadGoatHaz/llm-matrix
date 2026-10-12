@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guides — The Local AI Stack</title>
+    <meta name="description" content="Understand the technology behind your setup: quantization, file formats, KV cache, model architectures, context extension, backends, and multi-GPU.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="matrix.html">Matrix</a></li>
+        <li><a href="community.html">Community</a></li>
+        <li><a href="guides.html">Guides</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
+
+  <div class="page-header">
+    <h1>Guides</h1>
+    <p class="subtitle">Understand the technology behind your setup</p>
+  </div>
+
+  <div class="card-grid">
+
+    <div class="guide-card">
+      <div class="guide-icon">🔢</div>
+      <h3>Quantization Basics</h3>
+      <p>What are W4A16, FP8, Q4_K_M? How precision affects quality and speed.</p>
+      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-icon">📦</div>
+      <h3>File Formats</h3>
+      <p>GGUF vs safetensors vs MLX. What&#x27;s inside a model file and when to use which.</p>
+      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-icon">⚙️</div>
+      <h3>Quantization Methods</h3>
+      <p>AutoRound, AWQ, GPTQ, RTN, SmoothQuant. How quants are made and their tradeoffs.</p>
+      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-icon">🧠</div>
+      <h3>Model Architectures</h3>
+      <p>Dense vs MoE. What A3B means. How 125B models run on 24GB.</p>
+      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-icon">💾</div>
+      <h3>KV Cache</h3>
+      <p>The memory eater. Why context length costs VRAM and when to quantize it.</p>
+      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-icon">📏</div>
+      <h3>Context Extension</h3>
+      <p>RoPE, YaRN, NTK. Pushing models beyond their native context window.</p>
+      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-icon">⚡</div>
+      <h3>Backends Deep Dive</h3>
+      <p>vLLM, llama.cpp, Strata, Radiance, Ollama. When to use which.</p>
+      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
+    </div>
+
+    <div class="guide-card">
+      <div class="guide-icon">🖥️</div>
+      <h3>Multi-GPU &amp; Hybrid</h3>
+      <p>Tensor parallel, layer offload, VRAM+RAM+SSD. Making big models fit.</p>
+      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h3>🚧 Guides are being written</h3>
+    <p>Check back soon. In the meantime, the <a href="https://forum.level1techs.com/t/256443">forum thread</a> has the discussion.</p>
+  </div>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="js/main.js"></script>
+</body>
+</html>
