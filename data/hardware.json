@@ -1,0 +1,40 @@
+{
+  "source": "Show Off Your AI Rig",
+  "thread_id": "rigs",
+  "url": "https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709",
+  "count": 4,
+  "items": [
+    {
+      "post_number": 2,
+      "username": "MadGoat",
+      "date": "2026-09-10",
+      "title": "",
+      "preview": "I\u2019ll start it off: aigoat@aigoat OS: EndeavourOS x86_64 Host: Relion 2908GT (0100) Kernel: Linux 7.2.4-arch1-2 CPU: Intel(R) Xeon(R) E5-2697A v4 (32) @ 3.60 GHz GPU 1: ASPEED Technology, Inc. ASPEED Graphics Family GPU 2: NVIDIA RTX A4000 GPU 3: NVIDIA RTX A4000 GPU 4: NVIDIA RTX A4000 GPU 5: NVIDIA",
+      "has_hardware": true
+    },
+    {
+      "post_number": 14,
+      "username": "mattlach",
+      "date": "2026-09-11",
+      "title": "",
+      "preview": "SgtAwesomesauce: The tech priests require art. MadGoat: You\u2019re gonna leave us hanging without proof of this described handy work? I can\u2019t be the left to be the only one showing off my superior cardboard skills\u2026 I\u2019ll be sure to take a pic the next time I have to open it up. But it ain\u2019t pretty. I pro",
+      "has_hardware": true
+    },
+    {
+      "post_number": 19,
+      "username": "SgtAwesomesauce",
+      "date": "2026-09-11",
+      "title": "",
+      "preview": "mattlach: It turns out AMD\u2019s ecosystem is nowhere near as optimized as Nvidia\u2019s, so when it comes to efficiency, I rarely get more than 60% of the theoretical max throughput, which is a bit of a bummer. But it is still quite nice. Have you built an optimized stack for it? You might want to take a lo",
+      "has_hardware": true
+    },
+    {
+      "post_number": 20,
+      "username": "mattlach",
+      "date": "2026-09-11",
+      "title": "",
+      "preview": "SgtAwesomesauce: Have you built an optimized stack for it? You might want to take a look at this repo, if you\u2019re just throwing llama.cpp at it and crossing your fingers, AMD stacks really need a bunch of custom patches and optimizations, especially for the older stuff. That\u2019s how I went from 20t/s o",
+      "has_hardware": true
+    }
+  ]
+}

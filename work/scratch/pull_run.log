@@ -1,0 +1,22 @@
+
+[main] The Local AI Stack (Main Thread)
+Fetching: https://forum.level1techs.com/t/256443.json
+
+[crucible] Crucible: LLM Bench
+Fetching: https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531.json
+
+[rigs] Show Off Your AI Rig
+Fetching: https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709.json
+
+[category] ML, LLMs & AI Category
+Fetching: https://forum.level1techs.com/c/high-performance-computing/deep-machine-learning-ai/155.json
+✓ Backfilled latest.json ← main_latest.json
+
+================================================================
+PULL SUMMARY
+================================================================
+  ✓ main         20 posts     177.4 KB  main_latest.json
+  ✓ crucible     20 posts      57.9 KB  crucible_latest.json
+  ✓ rigs         20 posts      65.7 KB  rigs_latest.json
+  ✓ category     30 topics     54.8 KB  category_latest.json
+================================================================

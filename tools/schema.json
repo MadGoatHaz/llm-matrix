@@ -40,5 +40,35 @@
   "confidence_levels": [
     "op-verified", "community-verified", "community-reported", "unverified"
   ],
-  "lifecycle_statuses": ["current", "watch", "superseded", "discontinued"]
+  "lifecycle_statuses": ["current", "watch", "superseded", "discontinued"],
+  "monitored_threads": [
+    {
+      "id": "main",
+      "url": "https://forum.level1techs.com/t/256443.json",
+      "name": "The Local AI Stack (Main Thread)",
+      "type": "submissions",
+      "description": "Primary data source. Community submissions with [COMMUNITY-SUBMISSION] blocks."
+    },
+    {
+      "id": "crucible",
+      "url": "https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531.json",
+      "name": "Crucible: LLM Bench",
+      "type": "benchmarks",
+      "description": "Performance benchmarking. TTFT, throughput, latency data."
+    },
+    {
+      "id": "rigs",
+      "url": "https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709.json",
+      "name": "Show Off Your AI Rig",
+      "type": "hardware",
+      "description": "Hardware showcases. GPU configs, builds, setups."
+    },
+    {
+      "id": "category",
+      "url": "https://forum.level1techs.com/c/high-performance-computing/deep-machine-learning-ai/155.json",
+      "name": "ML, LLMs & AI Category",
+      "type": "general",
+      "description": "Full category feed. New threads, discussions, emerging topics."
+    }
+  ]
 }

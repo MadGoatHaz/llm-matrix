@@ -1,0 +1,8 @@
+OK  benchmarks.json: source='Crucible: LLM Bench' count=5 items=5
+    first item keys: ['date', 'has_benchmark_data', 'post_number', 'preview', 'title', 'username']
+OK  hardware.json: source='Show Off Your AI Rig' count=4 items=4
+    first item keys: ['date', 'has_hardware', 'post_number', 'preview', 'title', 'username']
+OK  category_threads.json: source='ML, LLMs & AI Category' count=30 items=30
+    first item keys: ['created_at', 'id', 'last_posted_at', 'like_count', 'posts_count', 'slug', 'title', 'url', 'views']
+OK  submissions.json: source='https://forum.level1techs.com/t/256443' count=12 items=12
+    first item keys: ['backend', 'confidence', 'context', 'engine_mode', 'hardware', 'highlight', 'id', 'lifecycle', 'model', 'notes', 'performance', 'quant', 'raw', 'source', 'tags', 'tier', 'type', 'use_cases', 'weight_precision']

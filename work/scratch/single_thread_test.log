@@ -1,0 +1,14 @@
+
+Parsing 'ML, LLMs & AI Category' (category)...
+  ✓ 30 items → /home/madgoat/Documents/Local LLM Matrix/data/category_threads.json
+
+[crucible] Crucible: LLM Bench
+Fetching: https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531.json
+✓ Backfilled latest.json ← main_latest.json
+
+================================================================
+PULL SUMMARY
+================================================================
+  ✓ crucible     20 posts      57.9 KB  crucible_latest.json
+================================================================
+Unknown thread 'nonexistent'. Known threads: main, crucible, rigs, category

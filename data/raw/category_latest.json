@@ -1,0 +1,2572 @@
+{
+  "users": [
+    {
+      "id": 138594,
+      "username": "Level1_Amber",
+      "avatar_template": "/user_avatar/forum.level1techs.com/level1_amber/{size}/529589_2.png",
+      "flair_name": "Level1Crew",
+      "flair_url": "https://level1techs.us-east-1.linodeobjects.com/original/4X/7/d/9/7d954f35cf0a877e5167ca01e476b91385e55abe.png",
+      "flair_bg_color": "19475e",
+      "flair_group_id": 61,
+      "admin": true,
+      "moderator": true,
+      "trust_level": 4
+    },
+    {
+      "id": 152179,
+      "username": "eastcoastpete",
+      "avatar_template": "/user_avatar/forum.level1techs.com/eastcoastpete/{size}/486104_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 142495,
+      "username": "Drake_93",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/d/4af34b/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 2606,
+      "username": "wendell",
+      "avatar_template": "/user_avatar/forum.level1techs.com/wendell/{size}/88205_2.png",
+      "admin": true,
+      "trust_level": 4
+    },
+    {
+      "id": 126422,
+      "username": "eduncan911",
+      "avatar_template": "/user_avatar/forum.level1techs.com/eduncan911/{size}/261568_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 164915,
+      "username": "MadGoat",
+      "avatar_template": "/user_avatar/forum.level1techs.com/madgoat/{size}/707158_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 158054,
+      "username": "Burhan",
+      "avatar_template": "/user_avatar/forum.level1techs.com/burhan/{size}/519786_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 160556,
+      "username": "manoreken2",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/m/45deac/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 143381,
+      "username": "s1ugh34d",
+      "avatar_template": "/user_avatar/forum.level1techs.com/s1ugh34d/{size}/433290_2.png",
+      "trust_level": 3
+    },
+    {
+      "id": 159356,
+      "username": "digitalscream",
+      "avatar_template": "/user_avatar/forum.level1techs.com/digitalscream/{size}/525230_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 138881,
+      "username": "DS_DV",
+      "avatar_template": "/user_avatar/forum.level1techs.com/ds_dv/{size}/370215_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 128232,
+      "username": "drbsg",
+      "avatar_template": "/user_avatar/forum.level1techs.com/drbsg/{size}/276545_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 163993,
+      "username": "TCat1Cat",
+      "avatar_template": "/user_avatar/forum.level1techs.com/tcat1cat/{size}/714798_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 104016,
+      "username": "Mora",
+      "avatar_template": "/user_avatar/forum.level1techs.com/mora/{size}/82583_2.png",
+      "trust_level": 3
+    },
+    {
+      "id": 165685,
+      "username": "Buildingstuff",
+      "avatar_template": "/user_avatar/forum.level1techs.com/buildingstuff/{size}/718402_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 165767,
+      "username": "robertcarter",
+      "avatar_template": "/user_avatar/forum.level1techs.com/robertcarter/{size}/716683_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 146748,
+      "username": "mini-pouce",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/m/d07c76/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 147852,
+      "username": "Gabor_Bikki",
+      "avatar_template": "/user_avatar/forum.level1techs.com/gabor_bikki/{size}/440752_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 76912,
+      "username": "mohan226",
+      "avatar_template": "/user_avatar/forum.level1techs.com/mohan226/{size}/722748_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 155596,
+      "username": "JWNoctis",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/j/ebca7d/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 166338,
+      "username": "Mycircuitisshort",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/m/46a35a/{size}.png",
+      "trust_level": 0
+    },
+    {
+      "id": 159240,
+      "username": "Agent9",
+      "avatar_template": "/user_avatar/forum.level1techs.com/agent9/{size}/524459_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 163598,
+      "username": "patw",
+      "avatar_template": "/user_avatar/forum.level1techs.com/patw/{size}/657519_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 156884,
+      "username": "4-8-15-16-23-42",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/4/bbe5ce/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 166201,
+      "username": "jalmillategui",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/j/ecae2f/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 166301,
+      "username": "godbrain",
+      "avatar_template": "/user_avatar/forum.level1techs.com/godbrain/{size}/721793_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 160994,
+      "username": "mashie",
+      "avatar_template": "/user_avatar/forum.level1techs.com/mashie/{size}/575991_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 165031,
+      "username": "kamterdal10",
+      "avatar_template": "/user_avatar/forum.level1techs.com/kamterdal10/{size}/710326_2.png",
+      "trust_level": 0
+    },
+    {
+      "id": 165607,
+      "username": "drjonz",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/d/71c47a/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 139319,
+      "username": "nicman23",
+      "avatar_template": "/user_avatar/forum.level1techs.com/nicman23/{size}/695445_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 166203,
+      "username": "f41n",
+      "avatar_template": "/user_avatar/forum.level1techs.com/f41n/{size}/720905_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 166314,
+      "username": "febonetto",
+      "avatar_template": "/user_avatar/forum.level1techs.com/febonetto/{size}/721955_2.png",
+      "trust_level": 0
+    },
+    {
+      "id": 164642,
+      "username": "wenis",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/w/9d8465/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 153549,
+      "username": "Keristero",
+      "avatar_template": "/user_avatar/forum.level1techs.com/keristero/{size}/496272_2.png",
+      "trust_level": 0
+    },
+    {
+      "id": 119483,
+      "username": "Jimster480",
+      "avatar_template": "/user_avatar/forum.level1techs.com/jimster480/{size}/160202_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 164972,
+      "username": "gypsypink",
+      "avatar_template": "/user_avatar/forum.level1techs.com/gypsypink/{size}/708790_2.png",
+      "trust_level": 0
+    },
+    {
+      "id": 156818,
+      "username": "peteru",
+      "avatar_template": "/user_avatar/forum.level1techs.com/peteru/{size}/518722_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 166271,
+      "username": "BeastXmen",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/b/8491ac/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 93051,
+      "username": "Neon0Blue",
+      "avatar_template": "/user_avatar/forum.level1techs.com/neon0blue/{size}/233767_2.png",
+      "primary_group_name": "Patrons",
+      "flair_name": "Patrons",
+      "flair_url": "square-check",
+      "flair_color": "0cc",
+      "flair_group_id": 43,
+      "trust_level": 1
+    },
+    {
+      "id": 159863,
+      "username": "agis",
+      "avatar_template": "/user_avatar/forum.level1techs.com/agis/{size}/526870_2.png",
+      "trust_level": 3
+    },
+    {
+      "id": 129514,
+      "username": "s0me1",
+      "avatar_template": "/user_avatar/forum.level1techs.com/s0me1/{size}/290306_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 154224,
+      "username": "thr3e",
+      "avatar_template": "/user_avatar/forum.level1techs.com/thr3e/{size}/528339_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 161636,
+      "username": "xvtt",
+      "avatar_template": "/user_avatar/forum.level1techs.com/xvtt/{size}/563371_2.png",
+      "trust_level": 0
+    },
+    {
+      "id": 141349,
+      "username": "H-i-v-e",
+      "avatar_template": "/user_avatar/forum.level1techs.com/h-i-v-e/{size}/526327_2.png",
+      "trust_level": 3
+    },
+    {
+      "id": 111327,
+      "username": "Ewout",
+      "avatar_template": "/user_avatar/forum.level1techs.com/ewout/{size}/341071_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 155973,
+      "username": "grimm",
+      "avatar_template": "/user_avatar/forum.level1techs.com/grimm/{size}/509692_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 165479,
+      "username": "thekorsen",
+      "avatar_template": "/user_avatar/forum.level1techs.com/thekorsen/{size}/706902_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 154849,
+      "username": "Yonatan-Avhar",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/y/d78d45/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 157310,
+      "username": "Strawberry",
+      "avatar_template": "/user_avatar/forum.level1techs.com/strawberry/{size}/547333_2.png",
+      "trust_level": 3
+    },
+    {
+      "id": 158371,
+      "username": "daemond",
+      "avatar_template": "/user_avatar/forum.level1techs.com/daemond/{size}/702712_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 151387,
+      "username": "Blazkowicz_88",
+      "avatar_template": "/user_avatar/forum.level1techs.com/blazkowicz_88/{size}/483723_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 118612,
+      "username": "thro",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/t/22d042/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 164692,
+      "username": "dd_honeybadger",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/d/ee59a6/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 125599,
+      "username": "ZandoBob",
+      "avatar_template": "/user_avatar/forum.level1techs.com/zandobob/{size}/521784_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 162684,
+      "username": "ItTakes2ToMango",
+      "avatar_template": "/user_avatar/forum.level1techs.com/ittakes2tomango/{size}/614866_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 151019,
+      "username": "Waylon_R",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/w/bb73d2/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 163690,
+      "username": "arigas1982",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/a/dfb087/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 117548,
+      "username": "Dryparn",
+      "avatar_template": "/user_avatar/forum.level1techs.com/dryparn/{size}/137291_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 166248,
+      "username": "NathanAnvil",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/n/8491ac/{size}.png",
+      "trust_level": 0
+    },
+    {
+      "id": 158304,
+      "username": "Sudo_Apt",
+      "avatar_template": "/user_avatar/forum.level1techs.com/sudo_apt/{size}/520751_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 164817,
+      "username": "spatel333",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/s/f6c823/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 164942,
+      "username": "Jordan.wells",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/j/cab0a1/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 160454,
+      "username": "NullPointerRomance",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/n/e9c0ed/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 120170,
+      "username": "wertigon",
+      "avatar_template": "/user_avatar/forum.level1techs.com/wertigon/{size}/169939_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 128093,
+      "username": "starshipeleven",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/s/c4cdca/{size}.png",
+      "trust_level": 3
+    },
+    {
+      "id": 142769,
+      "username": "Jojo314",
+      "avatar_template": "/user_avatar/forum.level1techs.com/jojo314/{size}/413065_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 136663,
+      "username": "FinOxy",
+      "avatar_template": "/user_avatar/forum.level1techs.com/finoxy/{size}/359667_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 161318,
+      "username": "tom_b",
+      "avatar_template": "/user_avatar/forum.level1techs.com/tom_b/{size}/554313_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 145460,
+      "username": "lambda",
+      "avatar_template": "/user_avatar/forum.level1techs.com/lambda/{size}/689991_2.png",
+      "trust_level": 3
+    },
+    {
+      "id": 141520,
+      "username": "felix920506",
+      "avatar_template": "/user_avatar/forum.level1techs.com/felix920506/{size}/401407_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 118041,
+      "username": "HappyPie",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/h/c5a1d2/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 144143,
+      "username": "mattlach",
+      "avatar_template": "/user_avatar/forum.level1techs.com/mattlach/{size}/469208_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 112575,
+      "username": "bedHedd",
+      "avatar_template": "/user_avatar/forum.level1techs.com/bedhedd/{size}/514461_2.png",
+      "trust_level": 3
+    },
+    {
+      "id": 162120,
+      "username": "TrailFeatures",
+      "avatar_template": "/user_avatar/forum.level1techs.com/trailfeatures/{size}/588104_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 163830,
+      "username": "TsuKitsune",
+      "avatar_template": "/user_avatar/forum.level1techs.com/tsukitsune/{size}/667834_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 164057,
+      "username": "bitbashers",
+      "avatar_template": "/user_avatar/forum.level1techs.com/bitbashers/{size}/678753_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 164059,
+      "username": "GPUlover",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/g/6bbea6/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 166118,
+      "username": "Shiny81",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/s/4491bb/{size}.png",
+      "trust_level": 0
+    },
+    {
+      "id": 145174,
+      "username": "Marandil",
+      "avatar_template": "/user_avatar/forum.level1techs.com/marandil/{size}/428656_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 125611,
+      "username": "BWMerlin",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/b/9de053/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 140988,
+      "username": "Garrett_Kajmowicz",
+      "avatar_template": "/user_avatar/forum.level1techs.com/garrett_kajmowicz/{size}/390479_2.png",
+      "trust_level": 1
+    },
+    {
+      "id": 144463,
+      "username": "Patrick_M",
+      "avatar_template": "/user_avatar/forum.level1techs.com/patrick_m/{size}/521995_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 124219,
+      "username": "Calvin",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/c/f475e1/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 161403,
+      "username": "SmartLikeTruck",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/s/aeb1de/{size}.png",
+      "trust_level": 1
+    }
+  ],
+  "primary_groups": [
+    {
+      "id": 43,
+      "name": "Patrons"
+    }
+  ],
+  "flair_groups": [
+    {
+      "id": 61,
+      "name": "Level1Crew",
+      "flair_url": "https://level1techs.us-east-1.linodeobjects.com/original/4X/7/d/9/7d954f35cf0a877e5167ca01e476b91385e55abe.png",
+      "flair_bg_color": "19475e",
+      "flair_color": ""
+    },
+    {
+      "id": 43,
+      "name": "Patrons",
+      "flair_url": "square-check",
+      "flair_bg_color": null,
+      "flair_color": "0cc"
+    }
+  ],
+  "topic_list": {
+    "can_create_topic": false,
+    "more_topics_url": "/c/high-performance-computing/deep-machine-learning-ai/155?page=1",
+    "per_page": 30,
+    "top_tags": [
+      "ai",
+      "linux",
+      "amdgpu",
+      "recommendations",
+      "helpdesk",
+      "homeserver",
+      "llm",
+      "machine-learning",
+      "gpu",
+      "nvidia",
+      "virtualization",
+      "networking",
+      "homelab",
+      "ryzen",
+      "intelgpu",
+      "local-ai",
+      "proxmox",
+      "benchmarking",
+      "nvidiagpu",
+      "rx460",
+      "rx480",
+      "rx580",
+      "self-hosting",
+      "blog",
+      "docker",
+      "home_lab",
+      "multi-gpu",
+      "other-media",
+      "server",
+      "truenas",
+      "video-games"
+    ],
+    "topics": [
+      {
+        "fancy_title": "About the Machine Learning, LLMs, &amp; AI category",
+        "id": 210527,
+        "title": "About the Machine Learning, LLMs, & AI category",
+        "slug": "about-the-machine-learning-llms-ai-category",
+        "posts_count": 2,
+        "reply_count": 0,
+        "highest_post_number": 2,
+        "image_url": null,
+        "created_at": "2024-05-01T19:15:34.836Z",
+        "last_posted_at": "2025-07-12T00:15:30.005Z",
+        "bumped": true,
+        "bumped_at": "2025-07-12T00:15:30.005Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": true,
+        "unpinned": null,
+        "excerpt": "A place to post results / benchmarks, best setups, guides, result analysis, and performance questions. E.g. OpenAI, Gemini",
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 1552,
+        "like_count": 0,
+        "has_summary": false,
+        "last_poster_username": "eastcoastpete",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 138594,
+            "primary_group_id": null,
+            "flair_group_id": 61
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 152179,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Turnstone Judging with Strix Halo NPU?",
+        "id": 258407,
+        "title": "Turnstone Judging with Strix Halo NPU?",
+        "slug": "turnstone-judging-with-strix-halo-npu",
+        "posts_count": 5,
+        "reply_count": 0,
+        "highest_post_number": 5,
+        "image_url": null,
+        "created_at": "2026-10-12T02:13:31.703Z",
+        "last_posted_at": "2026-10-12T15:05:54.501Z",
+        "bumped": true,
+        "bumped_at": "2026-10-12T15:05:54.501Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 95,
+        "like_count": 3,
+        "has_summary": false,
+        "last_poster_username": "eduncan911",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 142495,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 2606,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 126422,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "The Local LLM Matrix: Best Models &amp; Quants by VRAM Tier (&lt;=16GB \u2013 256GB+)",
+        "id": 256443,
+        "title": "The Local LLM Matrix: Best Models & Quants by VRAM Tier (<=16GB \u2013 256GB+)",
+        "slug": "the-local-llm-matrix-best-models-quants-by-vram-tier-16gb-256gb",
+        "posts_count": 28,
+        "reply_count": 10,
+        "highest_post_number": 29,
+        "image_url": null,
+        "created_at": "2026-09-18T03:01:58.484Z",
+        "last_posted_at": "2026-10-12T14:19:57.750Z",
+        "bumped": true,
+        "bumped_at": "2026-10-12T14:19:57.750Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 1738,
+        "like_count": 33,
+        "has_summary": false,
+        "last_poster_username": "MadGoat",
+        "category_id": 155,
+        "op_like_count": 3,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 164915,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 158054,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 160556,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 143381,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 159356,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Nvidia v100 vs AMD 395",
+        "id": 258040,
+        "title": "Nvidia v100 vs AMD 395",
+        "slug": "nvidia-v100-vs-amd-395",
+        "posts_count": 14,
+        "reply_count": 7,
+        "highest_post_number": 14,
+        "image_url": null,
+        "created_at": "2026-10-08T12:23:02.812Z",
+        "last_posted_at": "2026-10-12T11:30:38.026Z",
+        "bumped": true,
+        "bumped_at": "2026-10-12T11:30:38.026Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 277,
+        "like_count": 6,
+        "has_summary": false,
+        "last_poster_username": "eduncan911",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 138881,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 143381,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 128232,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 163993,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 126422,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "175+t/s on RDNA4 with 180B Models: Testing Radiance on many R9700s (and R9600Ds): Some Qualitative Breakout Fun",
+        "id": 258397,
+        "title": "175+t/s on RDNA4 with 180B Models: Testing Radiance on many R9700s (and R9600Ds): Some Qualitative Breakout Fun",
+        "slug": "175-t-s-on-rdna4-with-180b-models-testing-radiance-on-many-r9700s-and-r9600ds-some-qualitative-breakout-fun",
+        "posts_count": 3,
+        "reply_count": 0,
+        "highest_post_number": 3,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/original/4X/e/0/4/e041dd83c6b8df318ace205cd56a509a3b76693e.png",
+        "created_at": "2026-10-11T21:13:38.321Z",
+        "last_posted_at": "2026-10-12T08:26:29.164Z",
+        "bumped": true,
+        "bumped_at": "2026-10-12T08:26:29.164Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 113,
+        "like_count": 7,
+        "has_summary": false,
+        "last_poster_username": "Buildingstuff",
+        "category_id": 155,
+        "op_like_count": 7,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 2606,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 104016,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 165685,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Crucible LLM :: Bench your LLM and server. Is it fast enough\u2026 for everyone?",
+        "id": 257531,
+        "title": "Crucible LLM :: Bench your LLM and server. Is it fast enough\u2026 for everyone?",
+        "slug": "crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone",
+        "posts_count": 24,
+        "reply_count": 12,
+        "highest_post_number": 24,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/original/4X/b/4/5/b45544f506667da3daf52c7c552b999cc660b524.png",
+        "created_at": "2026-10-01T19:19:04.657Z",
+        "last_posted_at": "2026-10-12T07:19:59.150Z",
+        "bumped": true,
+        "bumped_at": "2026-10-12T07:19:59.150Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "linux",
+          "ai",
+          "benchmarking",
+          "llm"
+        ],
+        "tags_descriptions": {},
+        "views": 469,
+        "like_count": 13,
+        "has_summary": false,
+        "last_poster_username": "mohan226",
+        "category_id": 155,
+        "op_like_count": 2,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 164915,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 165767,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 146748,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 147852,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 76912,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Gotcha of the day: preserve_reasoning on local backends vs. framework overrides",
+        "id": 258410,
+        "title": "Gotcha of the day: preserve_reasoning on local backends vs. framework overrides",
+        "slug": "gotcha-of-the-day-preserve-reasoning-on-local-backends-vs-framework-overrides",
+        "posts_count": 1,
+        "reply_count": 0,
+        "highest_post_number": 1,
+        "image_url": null,
+        "created_at": "2026-10-12T03:46:30.484Z",
+        "last_posted_at": "2026-10-12T03:46:30.528Z",
+        "bumped": true,
+        "bumped_at": "2026-10-12T03:46:30.528Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "llm",
+          "local-ai"
+        ],
+        "tags_descriptions": {},
+        "views": 35,
+        "like_count": 1,
+        "has_summary": false,
+        "last_poster_username": "JWNoctis",
+        "category_id": 155,
+        "op_like_count": 1,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest single",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 155596,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Language Model on a $19 Graphics Card",
+        "id": 258400,
+        "title": "Language Model on a $19 Graphics Card",
+        "slug": "language-model-on-a-19-graphics-card",
+        "posts_count": 2,
+        "reply_count": 0,
+        "highest_post_number": 2,
+        "image_url": null,
+        "created_at": "2026-10-11T23:15:20.129Z",
+        "last_posted_at": "2026-10-12T02:50:34.694Z",
+        "bumped": true,
+        "bumped_at": "2026-10-12T02:50:34.694Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "gpu",
+          "youtube",
+          "llm",
+          "old_hardware"
+        ],
+        "tags_descriptions": {},
+        "views": 88,
+        "like_count": 1,
+        "has_summary": false,
+        "last_poster_username": "Agent9",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 166338,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 159240,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Creating an Agent Harness And Self Hosting Part 2: My Hardware Setup",
+        "id": 252909,
+        "title": "Creating an Agent Harness And Self Hosting Part 2: My Hardware Setup",
+        "slug": "creating-an-agent-harness-and-self-hosting-part-2-my-hardware-setup",
+        "posts_count": 14,
+        "reply_count": 9,
+        "highest_post_number": 14,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/e/3/2/e32ac609d0aafdcda9ca16de610b17a9feb7e6d5_2_1023x529.png",
+        "created_at": "2026-07-20T19:30:00.090Z",
+        "last_posted_at": "2026-10-11T21:50:09.051Z",
+        "bumped": true,
+        "bumped_at": "2026-10-11T21:50:09.051Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 600,
+        "like_count": 9,
+        "has_summary": false,
+        "last_poster_username": "patw",
+        "category_id": 155,
+        "op_like_count": 2,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 163598,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 156884,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 166201,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 166301,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 160994,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "I didn&rsquo;t know it was IMPOSSIBLE!&hellip; I just needed it.&rdquo; - 400k+ Context on Qwen 3.6 MoE 35B on a Single 16GB GPU (RTX 5060 Ti) at 25 t/s",
+        "id": 255275,
+        "title": "I didn't know it was IMPOSSIBLE!... I just needed it.\" - 400k+ Context on Qwen 3.6 MoE 35B on a Single 16GB GPU (RTX 5060 Ti) at 25 t/s",
+        "slug": "i-didnt-know-it-was-impossible-i-just-needed-it-400k-context-on-qwen-3-6-moe-35b-on-a-single-16gb-gpu-rtx-5060-ti-at-25-t-s",
+        "posts_count": 7,
+        "reply_count": 1,
+        "highest_post_number": 7,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/7/a/1/7a127a3f47f159978e08b84b8d63250758a8b41d_2_1024x999.png",
+        "created_at": "2026-09-07T22:37:01.106Z",
+        "last_posted_at": "2026-10-11T18:15:18.941Z",
+        "bumped": true,
+        "bumped_at": "2026-10-11T18:15:18.941Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 457,
+        "like_count": 5,
+        "has_summary": false,
+        "last_poster_username": "f41n",
+        "category_id": 155,
+        "op_like_count": 2,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 165031,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 165607,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 139319,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 143381,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 166203,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Running LLMs on a repurposed Kintex-7 PCIe card: openTPU",
+        "id": 258369,
+        "title": "Running LLMs on a repurposed Kintex-7 PCIe card: openTPU",
+        "slug": "running-llms-on-a-repurposed-kintex-7-pcie-card-opentpu",
+        "posts_count": 2,
+        "reply_count": 0,
+        "highest_post_number": 2,
+        "image_url": null,
+        "created_at": "2026-10-11T03:39:33.462Z",
+        "last_posted_at": "2026-10-11T03:39:49.734Z",
+        "bumped": true,
+        "bumped_at": "2026-10-11T03:39:49.734Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 92,
+        "like_count": 0,
+        "has_summary": false,
+        "last_poster_username": "wendell",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 166314,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 2606,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Making Qwen 3.8 27B fast on Strix Halo gfx1151",
+        "id": 254422,
+        "title": "Making Qwen 3.8 27B fast on Strix Halo gfx1151",
+        "slug": "making-qwen-3-8-27b-fast-on-strix-halo-gfx1151",
+        "posts_count": 25,
+        "reply_count": 17,
+        "highest_post_number": 26,
+        "image_url": null,
+        "created_at": "2026-08-26T04:49:13.199Z",
+        "last_posted_at": "2026-10-11T02:43:41.702Z",
+        "bumped": true,
+        "bumped_at": "2026-10-11T02:43:41.702Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "amdgpu",
+          "ai",
+          "llm"
+        ],
+        "tags_descriptions": {},
+        "views": 3049,
+        "like_count": 23,
+        "has_summary": false,
+        "last_poster_username": "peteru",
+        "category_id": 155,
+        "op_like_count": 4,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 164642,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 153549,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 119483,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164972,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 156818,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "How can I learn to have my own Local LLM agent?",
+        "id": 258290,
+        "title": "How can I learn to have my own Local LLM agent?",
+        "slug": "how-can-i-learn-to-have-my-own-local-llm-agent",
+        "posts_count": 8,
+        "reply_count": 3,
+        "highest_post_number": 8,
+        "image_url": null,
+        "created_at": "2026-10-10T09:22:59.632Z",
+        "last_posted_at": "2026-10-10T19:26:22.182Z",
+        "bumped": true,
+        "bumped_at": "2026-10-10T19:26:22.182Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "linux",
+          "recommendations",
+          "homeserver"
+        ],
+        "tags_descriptions": {},
+        "views": 200,
+        "like_count": 7,
+        "has_summary": false,
+        "last_poster_username": "f41n",
+        "category_id": 155,
+        "op_like_count": 2,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 166271,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 93051,
+            "primary_group_id": 43,
+            "flair_group_id": 43
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 159863,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 129514,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 166203,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "The Rig 3.0",
+        "id": 247047,
+        "title": "The Rig 3.0",
+        "slug": "the-rig-3-0",
+        "posts_count": 20,
+        "reply_count": 11,
+        "highest_post_number": 20,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/1/2/3/1232d93c3170979c3ccc9ab58d445f73e34414b1_2_1024x681.jpeg",
+        "created_at": "2026-03-06T02:58:55.591Z",
+        "last_posted_at": "2026-10-10T19:25:12.311Z",
+        "bumped": true,
+        "bumped_at": "2026-10-10T19:25:12.311Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "linux",
+          "ai",
+          "nvidia"
+        ],
+        "tags_descriptions": {},
+        "views": 1308,
+        "like_count": 36,
+        "has_summary": false,
+        "last_poster_username": "thr3e",
+        "category_id": 155,
+        "op_like_count": 19,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 154224,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 161636,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 141349,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 111327,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 155973,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Displayport as GPU P2P fabric",
+        "id": 258266,
+        "title": "Displayport as GPU P2P fabric",
+        "slug": "displayport-as-gpu-p2p-fabric",
+        "posts_count": 5,
+        "reply_count": 0,
+        "highest_post_number": 5,
+        "image_url": null,
+        "created_at": "2026-10-10T01:50:32.697Z",
+        "last_posted_at": "2026-10-10T18:08:22.058Z",
+        "bumped": true,
+        "bumped_at": "2026-10-10T18:08:22.058Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 116,
+        "like_count": 8,
+        "has_summary": false,
+        "last_poster_username": "daemond",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 165479,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 163993,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 154849,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 157310,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 158371,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Will 6 cores be enough to run a homelab and local AI agents at the same time?",
+        "id": 253146,
+        "title": "Will 6 cores be enough to run a homelab and local AI agents at the same time?",
+        "slug": "will-6-cores-be-enough-to-run-a-homelab-and-local-ai-agents-at-the-same-time",
+        "posts_count": 8,
+        "reply_count": 3,
+        "highest_post_number": 8,
+        "image_url": null,
+        "created_at": "2026-07-26T03:15:57.789Z",
+        "last_posted_at": "2026-10-10T07:41:28.408Z",
+        "bumped": true,
+        "bumped_at": "2026-10-10T07:41:28.408Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "helpdesk",
+          "linux",
+          "amdgpu",
+          "proxmox"
+        ],
+        "tags_descriptions": {},
+        "views": 455,
+        "like_count": 3,
+        "has_summary": false,
+        "last_poster_username": "Jimster480",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 151387,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 118612,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164692,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 125599,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 119483,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Bang for buck AI performance",
+        "id": 252951,
+        "title": "Bang for buck AI performance",
+        "slug": "bang-for-buck-ai-performance",
+        "posts_count": 35,
+        "reply_count": 24,
+        "highest_post_number": 35,
+        "image_url": null,
+        "created_at": "2026-07-21T18:32:58.104Z",
+        "last_posted_at": "2026-10-10T03:58:29.062Z",
+        "bumped": true,
+        "bumped_at": "2026-10-10T03:58:29.062Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "ai",
+          "gpu",
+          "ram"
+        ],
+        "tags_descriptions": {},
+        "views": 2176,
+        "like_count": 17,
+        "has_summary": false,
+        "last_poster_username": "JWNoctis",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 162684,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164692,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 119483,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 159356,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 155596,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "I need an AI sanity check (9700 Pro x2)",
+        "id": 252453,
+        "title": "I need an AI sanity check (9700 Pro x2)",
+        "slug": "i-need-an-ai-sanity-check-9700-pro-x2",
+        "posts_count": 59,
+        "reply_count": 35,
+        "highest_post_number": 60,
+        "image_url": null,
+        "created_at": "2026-07-10T06:34:32.893Z",
+        "last_posted_at": "2026-10-09T23:41:38.286Z",
+        "bumped": true,
+        "bumped_at": "2026-10-09T23:41:38.286Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "helpdesk",
+          "amdgpu"
+        ],
+        "tags_descriptions": {},
+        "views": 2072,
+        "like_count": 25,
+        "has_summary": true,
+        "last_poster_username": "JWNoctis",
+        "category_id": 155,
+        "op_like_count": 1,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 157310,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 151019,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 163690,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 117548,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 155596,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Running a chat model and an SDXL model together on an iPhone: what I learned building Anvil",
+        "id": 258250,
+        "title": "Running a chat model and an SDXL model together on an iPhone: what I learned building Anvil",
+        "slug": "running-a-chat-model-and-an-sdxl-model-together-on-an-iphone-what-i-learned-building-anvil",
+        "posts_count": 1,
+        "reply_count": 0,
+        "highest_post_number": 1,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/4/0/5/4057ba8fe83e12a3487f31f353e2dee877cbb410_2_1024x1024.jpeg",
+        "created_at": "2026-10-09T22:02:33.252Z",
+        "last_posted_at": "2026-10-09T22:02:33.297Z",
+        "bumped": true,
+        "bumped_at": "2026-10-09T22:02:33.297Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 29,
+        "like_count": 0,
+        "has_summary": false,
+        "last_poster_username": "NathanAnvil",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest single",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 166248,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Intel has brought Local LLM tools to the normie masses",
+        "id": 255027,
+        "title": "Intel has brought Local LLM tools to the normie masses",
+        "slug": "intel-has-brought-local-llm-tools-to-the-normie-masses",
+        "posts_count": 5,
+        "reply_count": 2,
+        "highest_post_number": 5,
+        "image_url": null,
+        "created_at": "2026-09-03T23:11:42.864Z",
+        "last_posted_at": "2026-10-09T16:51:48.829Z",
+        "bumped": true,
+        "bumped_at": "2026-10-09T16:51:48.829Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "ai",
+          "intel"
+        ],
+        "tags_descriptions": {},
+        "views": 443,
+        "like_count": 4,
+        "has_summary": false,
+        "last_poster_username": "Sudo_Apt",
+        "category_id": 155,
+        "op_like_count": 3,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 158304,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164817,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164942,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Getting the feeling of getting behind because of not wanting to rely on AI",
+        "id": 257974,
+        "title": "Getting the feeling of getting behind because of not wanting to rely on AI",
+        "slug": "getting-the-feeling-of-getting-behind-because-of-not-wanting-to-rely-on-ai",
+        "posts_count": 15,
+        "reply_count": 4,
+        "highest_post_number": 15,
+        "image_url": null,
+        "created_at": "2026-10-07T22:26:08.130Z",
+        "last_posted_at": "2026-10-09T15:12:17.502Z",
+        "bumped": true,
+        "bumped_at": "2026-10-09T15:12:17.502Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "ai",
+          "sysadmin"
+        ],
+        "tags_descriptions": {},
+        "views": 427,
+        "like_count": 18,
+        "has_summary": false,
+        "last_poster_username": "drjonz",
+        "category_id": 155,
+        "op_like_count": 1,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 160454,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 120170,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 128093,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 142769,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 165607,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Creating a custom homelab machine for LLM usage on a budget",
+        "id": 256645,
+        "title": "Creating a custom homelab machine for LLM usage on a budget",
+        "slug": "creating-a-custom-homelab-machine-for-llm-usage-on-a-budget",
+        "posts_count": 16,
+        "reply_count": 10,
+        "highest_post_number": 17,
+        "image_url": null,
+        "created_at": "2026-09-20T10:53:14.481Z",
+        "last_posted_at": "2026-10-09T12:16:42.368Z",
+        "bumped": true,
+        "bumped_at": "2026-10-09T12:16:42.368Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "helpdesk",
+          "homelab"
+        ],
+        "tags_descriptions": {},
+        "views": 685,
+        "like_count": 13,
+        "has_summary": false,
+        "last_poster_username": "FinOxy",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 136663,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 161318,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 141349,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 145460,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164942,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Open source models for coding?",
+        "id": 251758,
+        "title": "Open source models for coding?",
+        "slug": "open-source-models-for-coding",
+        "posts_count": 24,
+        "reply_count": 16,
+        "highest_post_number": 24,
+        "image_url": null,
+        "created_at": "2026-06-24T06:58:50.532Z",
+        "last_posted_at": "2026-10-09T06:40:53.073Z",
+        "bumped": true,
+        "bumped_at": "2026-10-09T06:40:53.073Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 1199,
+        "like_count": 18,
+        "has_summary": false,
+        "last_poster_username": "Jimster480",
+        "category_id": 155,
+        "op_like_count": 1,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 141520,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 118041,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 159356,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 144143,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 119483,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "GitHub - storytold/photocraft: An open-source, clean-room reimplementation of",
+        "id": 258151,
+        "title": "GitHub - storytold/photocraft: An open-source, clean-room reimplementation of",
+        "slug": "github-storytold-photocraft-an-open-source-clean-room-reimplementation-of",
+        "posts_count": 1,
+        "reply_count": 0,
+        "highest_post_number": 1,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/a/e/e/aee28c9d5fe8006966a1015bee9a0d4bc21e2e70_2_1024x512.png",
+        "created_at": "2026-10-09T02:32:07.016Z",
+        "last_posted_at": "2026-10-09T02:32:07.067Z",
+        "bumped": true,
+        "bumped_at": "2026-10-09T02:32:07.067Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "ai",
+          "adobe"
+        ],
+        "tags_descriptions": {},
+        "views": 113,
+        "like_count": 5,
+        "has_summary": false,
+        "last_poster_username": "bedHedd",
+        "category_id": 155,
+        "op_like_count": 5,
+        "pinned_globally": false,
+        "featured_link": "https://github.com/storytold/photocraft",
+        "featured_link_root_domain": "github.com",
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest single",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 112575,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "LLM Homelab patchwork - need advice",
+        "id": 258130,
+        "title": "LLM Homelab patchwork - need advice",
+        "slug": "llm-homelab-patchwork-need-advice",
+        "posts_count": 1,
+        "reply_count": 0,
+        "highest_post_number": 1,
+        "image_url": null,
+        "created_at": "2026-10-08T18:38:05.655Z",
+        "last_posted_at": "2026-10-08T18:38:05.741Z",
+        "bumped": true,
+        "bumped_at": "2026-10-08T18:38:05.741Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "recommendations",
+          "homeserver"
+        ],
+        "tags_descriptions": {},
+        "views": 83,
+        "like_count": 0,
+        "has_summary": false,
+        "last_poster_username": "drjonz",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest single",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 165607,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Someone needs to figure out how to adapt MI250 GPUs to PCIe",
+        "id": 250596,
+        "title": "Someone needs to figure out how to adapt MI250 GPUs to PCIe",
+        "slug": "someone-needs-to-figure-out-how-to-adapt-mi250-gpus-to-pcie",
+        "posts_count": 377,
+        "reply_count": 279,
+        "highest_post_number": 379,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/0/1/3/013d922266f19e273e76a381d6b4a4e8972b5e86_2_1023x393.jpeg",
+        "created_at": "2026-05-24T05:35:00.605Z",
+        "last_posted_at": "2026-10-07T18:27:20.685Z",
+        "bumped": true,
+        "bumped_at": "2026-10-07T18:27:20.685Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "amdgpu"
+        ],
+        "tags_descriptions": {},
+        "views": 11033,
+        "like_count": 594,
+        "has_summary": true,
+        "last_poster_username": "Shiny81",
+        "category_id": 155,
+        "op_like_count": 8,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 162120,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 163830,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164057,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164059,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 166118,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Harnesses, orchestration and multi-agent tools",
+        "id": 257778,
+        "title": "Harnesses, orchestration and multi-agent tools",
+        "slug": "harnesses-orchestration-and-multi-agent-tools",
+        "posts_count": 3,
+        "reply_count": 0,
+        "highest_post_number": 3,
+        "image_url": null,
+        "created_at": "2026-10-05T23:33:10.007Z",
+        "last_posted_at": "2026-10-07T15:24:50.106Z",
+        "bumped": true,
+        "bumped_at": "2026-10-07T15:24:50.106Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 135,
+        "like_count": 0,
+        "has_summary": false,
+        "last_poster_username": "s1ugh34d",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 156884,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164942,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 143381,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Anthropic literally wrote an ad for GLM 5.3",
+        "id": 257348,
+        "title": "Anthropic literally wrote an ad for GLM 5.3",
+        "slug": "anthropic-literally-wrote-an-ad-for-glm-5-3",
+        "posts_count": 4,
+        "reply_count": 0,
+        "highest_post_number": 4,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/6/d/4/6d4a0d28992ade92d6fa63646fd9c9d318245c6c_2_1024x537.jpeg",
+        "created_at": "2026-09-29T20:24:17.188Z",
+        "last_posted_at": "2026-10-06T10:03:05.208Z",
+        "bumped": true,
+        "bumped_at": "2026-10-06T10:03:05.208Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 297,
+        "like_count": 2,
+        "has_summary": false,
+        "last_poster_username": "nicman23",
+        "category_id": 155,
+        "op_like_count": 1,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 145174,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 128093,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164942,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 139319,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Home AI GPU upgrade",
+        "id": 257571,
+        "title": "Home AI GPU upgrade",
+        "slug": "home-ai-gpu-upgrade",
+        "posts_count": 11,
+        "reply_count": 4,
+        "highest_post_number": 11,
+        "image_url": null,
+        "created_at": "2026-10-03T04:54:39.643Z",
+        "last_posted_at": "2026-10-05T22:25:50.683Z",
+        "bumped": true,
+        "bumped_at": "2026-10-05T22:25:50.683Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "homeserver",
+          "ai",
+          "home_lab",
+          "homelab",
+          "llm"
+        ],
+        "tags_descriptions": {},
+        "views": 375,
+        "like_count": 2,
+        "has_summary": false,
+        "last_poster_username": "Garrett_Kajmowicz",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 125611,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 104016,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 159240,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 160556,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 140988,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Local LLM Based Coding on HPC Equipment",
+        "id": 255535,
+        "title": "Local LLM Based Coding on HPC Equipment",
+        "slug": "local-llm-based-coding-on-hpc-equipment",
+        "posts_count": 27,
+        "reply_count": 20,
+        "highest_post_number": 27,
+        "image_url": null,
+        "created_at": "2026-09-09T05:56:26.058Z",
+        "last_posted_at": "2026-10-05T15:55:53.825Z",
+        "bumped": true,
+        "bumped_at": "2026-10-05T15:55:53.825Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "amdgpu",
+          "multi-gpu",
+          "self-hosting",
+          "llm",
+          "local-ai"
+        ],
+        "tags_descriptions": {},
+        "views": 847,
+        "like_count": 24,
+        "has_summary": false,
+        "last_poster_username": "ItTakes2ToMango",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 144463,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 124219,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 161403,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 159356,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 162684,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      }
+    ]
+  }
+}

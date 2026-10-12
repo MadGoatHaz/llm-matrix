@@ -1,0 +1,13 @@
+✓ Parsed 12 real submissions from 20 posts
+✓ Skipped 2 template/placeholder submission(s)
+✓ Output: /home/madgoat/Documents/Local LLM Matrix/data/submissions.json
+
+Tier distribution:
+  t1: 6
+  t2: 1
+  t3: 1
+  t4: 4
+
+Hardware vendors:
+  AMD: 10
+  NVIDIA: 2
