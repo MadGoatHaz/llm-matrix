@@ -107,6 +107,9 @@ def main(workspace: str | Path | None = None,
         print(f"  wrote {name} ({len(html)} bytes)")
 
     # --- Recommend page (recommend/index.html, depth 1; P2-1) ---
+    # ImportError = the optional `markdown` dep is not installed; the five
+    # core pages are stdlib-only by design, so the content layer degrades
+    # with a reported warning (never silently).
     content_dir = ws / "content"
     try:
         rec_html = recommend.render(subs, schema, content_dir, guides_menu)
@@ -114,8 +117,8 @@ def main(workspace: str | Path | None = None,
         rec_path.parent.mkdir(parents=True, exist_ok=True)
         rec_path.write_text(rec_html, encoding="utf-8")
         print(f"  wrote recommend/index.html ({len(rec_html)} bytes)")
-    except FileNotFoundError as e:
-        print(f"WARNING: {e}", file=sys.stderr)
+    except (FileNotFoundError, ImportError) as e:
+        print(f"WARNING: recommend page skipped: {e}", file=sys.stderr)
 
     # --- Compare page (compare/index.html, depth 1; P2-2) ---
     try:
@@ -141,12 +144,16 @@ def main(workspace: str | Path | None = None,
         index_path.parent.mkdir(parents=True, exist_ok=True)
         index_path.write_text(index_html, encoding="utf-8")
         print(f"  wrote guides/index.html ({len(index_html)} bytes)")
-    except FileNotFoundError as e:
-        print(f"WARNING: {e}", file=sys.stderr)
+    except (FileNotFoundError, ImportError) as e:
+        print(f"WARNING: guides index skipped: {e}", file=sys.stderr)
 
     # --- Individual guides (guides/<slug>/index.html, depth 2) ---
-    for slug in guides.generate_guides(content_guides, ws, guides_menu, subs, schema):
-        print(f"  wrote guides/{slug}/index.html")
+    try:
+        for slug in guides.generate_guides(content_guides, ws, guides_menu, subs, schema):
+            print(f"  wrote guides/{slug}/index.html")
+    except ImportError as e:
+        print(f"WARNING: guides skipped (the `markdown` content dep is not "
+              f"installed): {e}", file=sys.stderr)
 
     print(f"\nSite generated: {stats['submissions']} submissions, "
           f"{stats['contributors']} contributors, {stats['vendors']} vendors, "

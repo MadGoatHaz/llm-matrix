@@ -1123,6 +1123,143 @@ body.cmd-open { overflow: hidden; }
 .compare-actions .compare-launch { font-size: 0.85rem; }
 .compare-edit-row { margin-top: 1rem; }
 
+/* === FILTER EMPTY STATE (P2-4) === */
+.filter-empty {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--warning);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+    margin: 1rem 0;
+}
+.filter-empty p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.75rem; }
+
+/* === ROW DETAIL PANEL (P2-5) === */
+
+/* Clickable data rows (keyboard: Enter/Space on the focused row). */
+tr.data-row { cursor: pointer; }
+tr.data-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
+
+/* The ⓘ affordance in the Actions cell (matches the 🚀 button's sizing). */
+.detail-btn {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: var(--radius);
+    padding: 0.4rem 0.55rem;
+    cursor: pointer;
+    font-size: 0.95rem;
+    line-height: 1;
+    min-width: 40px;
+    min-height: 40px;
+    transition: all 0.2s;
+}
+.detail-btn:hover { border-color: var(--cyan); background: rgba(6, 182, 212, 0.1); }
+.detail-btn:focus-visible { outline: none; border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.2); }
+
+/* The scrim behind the open panel. */
+.detail-scrim {
+    position: fixed;
+    inset: 0;
+    z-index: 900;
+    background: rgba(0, 0, 0, 0.55);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+}
+.detail-scrim.open { opacity: 1; pointer-events: auto; }
+
+/* The slide-in panel (right side on desktop, full screen on mobile). */
+.detail-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 950;
+    width: min(520px, 100%);
+    background: var(--surface);
+    border-left: 1px solid var(--border-light);
+    box-shadow: -8px 0 24px rgba(0, 0, 0, 0.45);
+    display: flex;
+    flex-direction: column;
+    transform: translateX(100%);
+    visibility: hidden;
+    transition: transform 0.28s ease, visibility 0.28s ease;
+}
+.detail-panel.open { transform: translateX(0); visibility: visible; }
+body.detail-open { overflow: hidden; }
+
+.detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+}
+.detail-header h2 { font-size: 1.2rem; word-break: break-word; }
+.detail-close {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    border-radius: var(--radius);
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    font-size: 1rem;
+    flex: 0 0 auto;
+}
+.detail-close:hover { color: var(--text); border-color: var(--accent); }
+.detail-close:focus-visible { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+
+.detail-body {
+    padding: 1.25rem 1.5rem 2rem;
+    overflow-y: auto;
+    flex: 1;
+}
+.detail-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.25rem;
+}
+.detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem 1.25rem;
+    margin-bottom: 1.25rem;
+}
+.detail-item dt {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+    font-weight: 600;
+    margin-bottom: 0.15rem;
+}
+.detail-item dd {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    word-break: break-word;
+    margin: 0;
+}
+.detail-notes h3 { font-size: 1rem; margin-bottom: 0.4rem; color: var(--text); }
+.detail-notes p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+.detail-credit { color: var(--text-muted); font-size: 0.85rem; margin: 0.75rem 0 1.25rem; }
+.detail-actions { display: flex; flex-direction: column; gap: 0.6rem; }
+.detail-actions .btn { text-align: left; }
+
+/* Respect reduced-motion: the panel appears/disappears without sliding. */
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .detail-panel, .detail-scrim { transition: none; }
+}
+
 /* === MOBILE === */
 @media (max-width: 768px) {
     .container { padding: 1rem; }
@@ -1148,4 +1285,7 @@ body.cmd-open { overflow: hidden; }
     .compare-pick-grid { grid-template-columns: 1fr; }
     .cell-actions { gap: 0.4rem; }
     .compare-attr { min-width: 90px; }
+    /* The detail panel becomes a full-screen modal on small screens. */
+    .detail-panel { width: 100%; border-left: none; }
+    .detail-header, .detail-body { padding-left: 1rem; padding-right: 1rem; }
 }

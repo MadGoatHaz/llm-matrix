@@ -48,7 +48,38 @@
     <p class="meta">5 contributors · 12 submissions</p>
   </div>
 
-  <div class="card-grid">
+  <div class="filter-bar" role="group" aria-label="Filter submissions">
+    <input type="text" id="filter-search" placeholder="Search models, hardware, backends..." aria-label="Search submissions">
+    <select class="filter-select" data-filter="tier" aria-label="Filter by VRAM tier">
+      <option value="">All Tiers</option>
+      <option value="t1">≤16GB</option><option value="t2">16-24GB</option><option value="t3">24-32GB</option><option value="t4">48-64GB</option><option value="t5">96-128GB</option><option value="t6">196-256GB+</option>
+    </select>
+    <select class="filter-select" data-filter="vendor" aria-label="Filter by GPU vendor">
+      <option value="">All Vendors</option>
+      <option value="AMD">AMD</option><option value="NVIDIA">NVIDIA</option>
+    </select>
+    <select class="filter-select" data-filter="backend" aria-label="Filter by backend">
+      <option value="">All Backends</option>
+      <option value="Ollama">Ollama</option><option value="Strata">Strata</option><option value="llama-swap">llama-swap</option><option value="llama.cpp">llama.cpp</option><option value="vLLM">vLLM</option>
+    </select>
+    <select class="filter-select" data-filter="use-case" aria-label="Filter by use case">
+      <option value="">All Use Cases</option>
+      <option value="Agentic Coding">Agentic Coding</option><option value="Repo Editing">Repo Editing</option><option value="Deep Reasoning">Deep Reasoning</option><option value="Math/Logic">Math/Logic</option><option value="RAG">RAG</option><option value="Document Ingestion">Document Ingestion</option><option value="Creative Writing">Creative Writing</option><option value="Roleplay">Roleplay</option><option value="General Chat">General Chat</option><option value="Translation">Translation</option><option value="Security Research">Security Research</option><option value="Multimodal">Multimodal</option><option value="Production Serving">Production Serving</option><option value="Embeddings">Embeddings</option>
+    </select>
+    <select class="filter-select" data-filter="mode" aria-label="Filter by engine mode">
+      <option value="">All Engine Modes</option>
+      <option value="VRAM-only">VRAM-only</option><option value="Hybrid (VRAM+RAM)">Hybrid (VRAM+RAM)</option><option value="Hybrid (VRAM+RAM+SSD)">Hybrid (VRAM+RAM+SSD)</option><option value="CPU+GPU">CPU+GPU</option><option value="CPU-only">CPU-only</option>
+    </select>
+    <button id="filter-reset" class="btn" type="button">Reset</button>
+    <button id="filter-share" class="btn" type="button" aria-label="Copy a shareable link to the current filters">🔗 Share</button>
+  </div>
+
+  <div class="filter-empty" id="filter-empty" role="status" hidden>
+    <p>🔍 No setups match the current filters.</p>
+    <button class="btn" id="filter-empty-clear" type="button">Clear all filters</button>
+  </div>
+
+  <div class="card-grid" id="contributor-grid">
 
     <div class="contributor-card">
       <div class="contributor-header">
@@ -59,11 +90,11 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li><strong>Carnice-Qwen3.6-MoE-35B-A3B</strong> — Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM · 54.4 tps decode / 215 tok/s prefill (short ctx)</li>
-          <li><strong>gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 86.7 tps decode / 408 tok/s prefill</li>
-          <li><strong>Qwen3.8-27B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 13.9 tps decode / 79 tok/s prefill</li>
-          <li><strong>DeepSeek-R1-0528-Qwen3-8B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 84.4 tps decode / 490 tok/s prefill</li>
-          <li><strong>Qwen_Qwen3.5-4B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 96.4 tps decode / 468 tok/s prefill</li>
+          <li data-sub-id="post_8_s1ugh34d_0" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Carnice-Qwen3.6-MoE-35B-A3B</strong> — Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM · 54.4 tps decode / 215 tok/s prefill (short ctx)</li>
+          <li data-sub-id="post_8_s1ugh34d_1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 86.7 tps decode / 408 tok/s prefill</li>
+          <li data-sub-id="post_8_s1ugh34d_2" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Qwen3.8-27B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 13.9 tps decode / 79 tok/s prefill</li>
+          <li data-sub-id="post_8_s1ugh34d_3" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>DeepSeek-R1-0528-Qwen3-8B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 84.4 tps decode / 490 tok/s prefill</li>
+          <li data-sub-id="post_8_s1ugh34d_4" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Qwen_Qwen3.5-4B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 96.4 tps decode / 468 tok/s prefill</li>
           </ul>
     </div>
 
@@ -76,9 +107,9 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li><strong>Carnice-Qwen3.6-MoE-35B-A3B</strong> — 1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM · 54.4 decode</li>
-          <li><strong>Swift-Qwen3.8-27B-Uncensored-FP8</strong> — 2x AMD R9700 (48GB total) · 120 (code) / 70 (chat)</li>
-          <li><strong>Qwen3.8-Flash-Next</strong> — 1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe · 99-128 decode (median 108)</li>
+          <li data-sub-id="post_2_madgoat_1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Carnice-Qwen3.6-MoE-35B-A3B</strong> — 1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM · 54.4 decode</li>
+          <li data-sub-id="post_2_madgoat_2" data-tier="t4" data-vendor="AMD" data-backend="vLLM" data-use-case="Agentic Coding" data-mode=""><strong>Swift-Qwen3.8-27B-Uncensored-FP8</strong> — 2x AMD R9700 (48GB total) · 120 (code) / 70 (chat)</li>
+          <li data-sub-id="post_2_madgoat_3" data-tier="t3" data-vendor="NVIDIA" data-backend="Strata" data-use-case="Agentic Coding" data-mode="Hybrid (VRAM+RAM+SSD)"><strong>Qwen3.8-Flash-Next</strong> — 1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe · 99-128 decode (median 108)</li>
           </ul>
     </div>
 
@@ -91,8 +122,8 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li><strong>Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf</strong> — 2 x R9700 · ~50t/s chat</li>
-          <li><strong>Qwen3.8-Flash-Next-Q4_K_M</strong> — 2 x w7900 · ~35t/s chat</li>
+          <li data-sub-id="post_21_pawingunplug_0" data-tier="t4" data-vendor="AMD" data-backend="llama.cpp" data-use-case="Agentic Coding" data-mode=""><strong>Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf</strong> — 2 x R9700 · ~50t/s chat</li>
+          <li data-sub-id="post_21_pawingunplug_1" data-tier="t4" data-vendor="AMD" data-backend="llama.cpp" data-use-case="Agentic Coding" data-mode=""><strong>Qwen3.8-Flash-Next-Q4_K_M</strong> — 2 x w7900 · ~35t/s chat</li>
           </ul>
     </div>
 
@@ -105,7 +136,7 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li><strong>Qwen3.6-27b-q4_KM</strong> — 1x RTX-4000 Ada SFF (20 GB)</li>
+          <li data-sub-id="post_6_burhan_0" data-tier="t2" data-vendor="NVIDIA" data-backend="Ollama" data-use-case="" data-mode=""><strong>Qwen3.6-27b-q4_KM</strong> — 1x RTX-4000 Ada SFF (20 GB)</li>
           </ul>
     </div>
 
@@ -118,7 +149,7 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li><strong>Swift-Qwen3.8-27B-Uncensored-FP8</strong> — 2 x R9700 · 120t/s code, 70t/s chat</li>
+          <li data-sub-id="post_5_digitalscream_0" data-tier="t4" data-vendor="AMD" data-backend="vLLM" data-use-case="Agentic Coding" data-mode=""><strong>Swift-Qwen3.8-27B-Uncensored-FP8</strong> — 2 x R9700 · 120t/s code, 70t/s chat</li>
           </ul>
     </div>
   </div>

@@ -113,15 +113,89 @@ def trim_for_client(s: dict) -> dict:
 
     ``hardware`` / ``model`` / ``context`` / ``performance`` are kept whole
     (they are small structured objects); the flat scalar fields are copied
-    verbatim. The submitter's ``username`` is lifted out of ``source`` for
-    display. Missing keys default to empty so the JSON shape is stable.
+    verbatim. ``source`` is kept (post id + username + date) so the row
+    detail panel can build the original forum deep link (``#post-N``).
+    Missing keys default to empty so the JSON shape is stable.
     """
     out: dict[str, Any] = {}
     for key in CLIENT_SUBMISSION_FIELDS:
         val = s.get(key)
         out[key] = val if val is not None else (
             {} if key in ("hardware", "model", "context", "performance") else "")
-    out["username"] = (s.get("source") or {}).get("username", "")
+    src = s.get("source") or {}
+    out["source"] = {
+        "post_number": src.get("post_number"),
+        "post_id": src.get("post_id"),
+        "username": src.get("username", ""),
+        "submitted_at": src.get("submitted_at", ""),
+    }
+    out["username"] = out["source"]["username"]
+    return out
+
+
+# ---------------------------------------------------------------------------
+# Use-case normalization (free text -> schema categories)
+# ---------------------------------------------------------------------------
+
+#: Keyword map for reducing a submission's free-text ``use_cases`` string to
+#: the schema's canonical categories. Mirrors ``js/recommend.js`` (the
+#: client-side recommendation engine) so the generation-time filter
+#: attributes (``data-use-case``) and the recommend tooling agree.
+USE_CASE_KEYWORDS: dict[str, tuple[str, ...]] = {
+    "Agentic Coding": ("coding", "code", "agentic", "programming", "developer",
+                      "software", "judge", "opencode"),
+    "Repo Editing": ("repo", "repository", "codebase"),
+    "Deep Reasoning": ("reasoning", "deep reason", "think", "analysis"),
+    "Math/Logic": ("math", "logic", "arithmetic", "calculat"),
+    "RAG": ("rag", "retrieval"),
+    "Document Ingestion": ("document", "ingest", "q&a", "qa"),
+    "Creative Writing": ("creative", "writing", "story", "fiction"),
+    "Roleplay": ("roleplay", "character"),
+    "General Chat": ("chat", "conversation", "general", "brainstorm", "planning"),
+    "Translation": ("translation", "translate", "language"),
+    "Security Research": ("security", "dos", "vulnerab", "exploit"),
+    "Multimodal": ("multimodal", "vision", "image", "audio", "video"),
+    "Production Serving": ("production", "serving", "api", "openai-compatible"),
+    "Embeddings": ("embedding",),
+}
+
+
+def _keyword_in(text: str, kw: str) -> bool:
+    """True if ``kw`` occurs in ``text`` (both lowercased).
+
+    Single alphanumeric tokens require word boundaries (so ``rag`` never
+    matches ``storage``); multi-word / punctuated tokens use a substring
+    match — the same rule ``js/recommend.js`` applies.
+    """
+    if " " not in kw and re.fullmatch(r"[a-z0-9]+", kw):
+        return re.search(r"\b" + re.escape(kw) + r"\b", text) is not None
+    return kw in text
+
+
+def match_use_cases(raw: Any, schema: dict | None = None) -> list[str]:
+    """The canonical schema use-case categories a free-text string covers.
+
+    Args:
+        raw: The submission's free-text ``use_cases`` value.
+        schema: ``schema.json`` — categories are returned in
+            ``schema.use_cases`` order (minus ``Other``). Falls back to the
+            keyword-map order when no schema is given.
+
+    Returns:
+        A (possibly empty) list of category names, e.g.
+        ``"Coding, Security Research (DoS)" -> ["Agentic Coding",
+        "Security Research"]``.
+    """
+    if is_placeholder(raw):
+        return []
+    text = str(raw).lower()
+    categories = [c for c in (schema or {}).get("use_cases", []) if c != "Other"]
+    if not categories:
+        categories = list(USE_CASE_KEYWORDS)
+    out = []
+    for cat in categories:
+        if any(_keyword_in(text, kw) for kw in USE_CASE_KEYWORDS.get(cat, ())):
+            out.append(cat)
     return out
 
 

@@ -310,6 +310,12 @@
       },
       "engine_mode": "",
       "notes": "MoE A3B \u2014 fits 12.7GB incl. KV. 9B active params \u2248 9B compute. Fast cold load.",
+      "source": {
+        "post_number": 2,
+        "post_id": 4119054,
+        "username": "MadGoat",
+        "submitted_at": "2026-09-18T03:03:01.652Z"
+      },
       "username": "MadGoat"
     },
     {
@@ -339,6 +345,12 @@
       },
       "engine_mode": "",
       "notes": "Uncensored variant for security work. Adaptive MTP=8 for speculative speed. Standard Qwen-based models get \"nervy\" on DoS content.",
+      "source": {
+        "post_number": 2,
+        "post_id": 4119054,
+        "username": "MadGoat",
+        "submitted_at": "2026-09-18T03:03:01.652Z"
+      },
       "username": "MadGoat"
     },
     {
@@ -368,6 +380,12 @@
       },
       "engine_mode": "Hybrid (VRAM+RAM+SSD)",
       "notes": "125B MoE on single 24GB card. 6892 experts: 13.4GB VRAM, rest RAM, lookup NVMe. MTP=4+lookup=3. Prompt cache 90% hits \u2192 0.3-0.8s resume on 50k contexts. WSL2 needs explicit .wslconfig RAM.",
+      "source": {
+        "post_number": 2,
+        "post_id": 4119054,
+        "username": "MadGoat",
+        "submitted_at": "2026-09-18T03:03:01.652Z"
+      },
       "username": "MadGoat"
     },
     {
@@ -397,6 +415,12 @@
       },
       "engine_mode": "",
       "notes": "magiccodingman/vllm-radiance, with adaptive MTP = 8",
+      "source": {
+        "post_number": 5,
+        "post_id": 4119255,
+        "username": "digitalscream",
+        "submitted_at": "2026-09-18T14:00:04.030Z"
+      },
       "username": "digitalscream"
     },
     {
@@ -426,6 +450,12 @@
       },
       "engine_mode": "",
       "notes": "",
+      "source": {
+        "post_number": 6,
+        "post_id": 4119262,
+        "username": "Burhan",
+        "submitted_at": "2026-09-18T14:30:23.937Z"
+      },
       "username": "Burhan"
     },
     {
@@ -455,6 +485,12 @@
       },
       "engine_mode": "",
       "notes": "MoE A3B \u2014 fits 12.7GB incl. KV headroom. 9B active params \u2248 like a 9B at 9B-compute. Fast cold load (19s). I-Nano = very low quant; verify quality for your task, but pipeline ran coherent through 65k.",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
       "username": "s1ugh34d"
     },
     {
@@ -484,6 +520,12 @@
       },
       "engine_mode": "",
       "notes": "Thinking model \u2014 emits reasoning_content; budget 512+ tokens or it burns max_tokens in reasoning and returns finish_reason=length with empty content. Answered verbal-math correctly (final answer 4). ~5GB VRAM footprint.",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
       "username": "s1ugh34d"
     },
     {
@@ -513,6 +555,12 @@
       },
       "engine_mode": "",
       "notes": "13.8GB VRAM = nearly full weight residency on 16GB; decode speed collapses to 14 tps (big dense model). Slow prefill: 41s TTFT @8k, 245s @49k.",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
       "username": "s1ugh34d"
     },
     {
@@ -542,6 +590,12 @@
       },
       "engine_mode": "",
       "notes": "Reasoning model (reasoning_content stream). NIAH hit at native 16k limit. Cheap 7.4GB. Run with generous max_tokens; single-request math budget 512 burned in reasoning without emitting final answer (content overflow quirk). Strong ttft + throughput for an 8B R1 distill.",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
       "username": "s1ugh34d"
     },
     {
@@ -571,6 +625,12 @@
       },
       "engine_mode": "",
       "notes": "Fastest model tested; everything fits with massive KV headroom. Full native 65k context usable. Verified arithmetic (final answer 4). Budget max_tokens \u2014 it reasons too. Best \u201cleave always loaded\u201d generalist.",
+      "source": {
+        "post_number": 8,
+        "post_id": 4119449,
+        "username": "s1ugh34d",
+        "submitted_at": "2026-09-18T20:53:48.887Z"
+      },
       "username": "s1ugh34d"
     },
     {
@@ -600,6 +660,12 @@
       },
       "engine_mode": "",
       "notes": "",
+      "source": {
+        "post_number": 21,
+        "post_id": 4122536,
+        "username": "PawingUnplug",
+        "submitted_at": "2026-09-28T07:14:44.464Z"
+      },
       "username": "PawingUnplug"
     },
     {
@@ -629,6 +695,12 @@
       },
       "engine_mode": "",
       "notes": "",
+      "source": {
+        "post_number": 21,
+        "post_id": 4122536,
+        "username": "PawingUnplug",
+        "submitted_at": "2026-09-28T07:14:44.464Z"
+      },
       "username": "PawingUnplug"
     }
   ]

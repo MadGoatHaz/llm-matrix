@@ -64,6 +64,12 @@ def render(subs: list[dict], schema: dict, stats: dict,
     backend_opts = "".join(
         f'<option value="{utils.html_escape(b)}">{utils.html_escape(b)}</option>'
         for b in sorted(backend_set))
+    use_case_opts = "".join(
+        f'<option value="{utils.html_escape(c)}">{utils.html_escape(c)}</option>'
+        for c in schema.get("use_cases", []) if c != "Other")
+    mode_opts = "".join(
+        f'<option value="{utils.html_escape(m)}">{utils.html_escape(m)}</option>'
+        for m in schema.get("engine_modes", []))
 
     # --- Table body: tier groups ---
     body_rows = []
@@ -76,8 +82,11 @@ def render(subs: list[dict], schema: dict, stats: dict,
             highlight = ' highlighted' if s.get("highlight") else ''
             vendor = utils.clean_value(utils.hw(s).get("vendor"))
             backend = utils.normalize_backend(s.get("backend", ""), schema)
+            use_case = utils.match_use_cases(s.get("use_cases"), schema)
+            use_case_attr = use_case[0] if use_case else ''
+            mode = utils.clean_value(s.get("engine_mode"))
             label = utils.html_escape(utils.short_model(utils.model_name(s)))
-            body_rows.append(f'''        <tr id="{utils.html_escape(s["id"])}" class="{utils.html_escape(tier_id)}{highlight}" data-tier="{utils.html_escape(tier_id)}" data-vendor="{utils.html_escape(vendor)}" data-backend="{utils.html_escape(backend)}">
+            body_rows.append(f'''        <tr id="{utils.html_escape(s["id"])}" class="data-row {utils.html_escape(tier_id)}{highlight}" tabindex="0" aria-haspopup="dialog" aria-label="View full details for {label}" data-tier="{utils.html_escape(tier_id)}" data-vendor="{utils.html_escape(vendor)}" data-backend="{utils.html_escape(backend)}" data-use-case="{utils.html_escape(use_case_attr)}" data-mode="{utils.html_escape(mode)}">
           {td(s["source"]["username"])}
           {td(utils.hw(s).get("description"))}
           {td(utils.hw(s).get("vendor"))}
@@ -91,6 +100,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
           {td(utils.perf(s).get("power_w"))}
           {td(s.get("engine_mode"))}
           <td class="cell-actions">
+            <button class="detail-btn" data-detail-sub="{utils.html_escape(s["id"])}" aria-label="View full details for {label}" title="View full details">ⓘ</button>
             <label class="compare-check-wrap"><input type="checkbox" class="compare-check" data-sub-id="{utils.html_escape(s["id"])}" aria-label="Compare {label}"></label>
             <button class="launch-btn" data-launch-sub="{utils.html_escape(s["id"])}" aria-label="Copy launch command for {label}" title="Copy launch command">🚀</button>
           </td>
@@ -107,21 +117,35 @@ def render(subs: list[dict], schema: dict, stats: dict,
     <p class="meta">{stats["submissions"]} submissions · {stats["contributors"]} contributors · {stats["vendors"]} vendors · {stats["backends"]} backends · updated {utils.html_escape(updated)}</p>
   </div>
 
-  <div class="filter-bar">
-    <input type="text" id="filter-search" placeholder="Search models, hardware, backends...">
-    <select class="filter-select" data-filter="tier">
+  <div class="filter-bar" role="group" aria-label="Filter submissions">
+    <input type="text" id="filter-search" placeholder="Search models, hardware, backends..." aria-label="Search submissions">
+    <select class="filter-select" data-filter="tier" aria-label="Filter by VRAM tier">
       <option value="">All Tiers</option>
       {tier_opts}
     </select>
-    <select class="filter-select" data-filter="vendor">
+    <select class="filter-select" data-filter="vendor" aria-label="Filter by GPU vendor">
       <option value="">All Vendors</option>
       {vendor_opts}
     </select>
-    <select class="filter-select" data-filter="backend">
+    <select class="filter-select" data-filter="backend" aria-label="Filter by backend">
       <option value="">All Backends</option>
       {backend_opts}
     </select>
-    <button id="filter-reset" class="btn">Reset</button>
+    <select class="filter-select" data-filter="use-case" aria-label="Filter by use case">
+      <option value="">All Use Cases</option>
+      {use_case_opts}
+    </select>
+    <select class="filter-select" data-filter="mode" aria-label="Filter by engine mode">
+      <option value="">All Engine Modes</option>
+      {mode_opts}
+    </select>
+    <button id="filter-reset" class="btn" type="button">Reset</button>
+    <button id="filter-share" class="btn" type="button" aria-label="Copy a shareable link to the current filters">🔗 Share</button>
+  </div>
+
+  <div class="filter-empty" id="filter-empty" role="status" hidden>
+    <p>🔍 No setups match the current filters.</p>
+    <button class="btn" id="filter-empty-clear" type="button">Clear all filters</button>
   </div>
 
   <div class="compare-bar" id="compare-bar" role="region" aria-label="Compare selected setups">
@@ -141,6 +165,16 @@ def render(subs: list[dict], schema: dict, stats: dict,
     </table>
   </div>
 
+  <div class="detail-scrim" id="detail-scrim" aria-hidden="true"></div>
+  <aside class="detail-panel" id="detail-panel" role="dialog" aria-modal="true"
+         aria-labelledby="detail-title" aria-hidden="true" inert>
+    <div class="detail-header">
+      <h2 id="detail-title">Setup details</h2>
+      <button class="detail-close" id="detail-close" type="button" aria-label="Close details panel">✕</button>
+    </div>
+    <div class="detail-body" id="detail-body"></div>
+  </aside>
+
   <div class="card">
     <h3>ℹ️ Reading the matrix</h3>
     <p>Click any column header to sort (within each tier). Cells show the full value on hover.
@@ -148,13 +182,20 @@ def render(subs: list[dict], schema: dict, stats: dict,
        stable context tested; <strong>KV</strong> is the KV-cache precision; <strong>Mode</strong> is how the
        engine splits weights across VRAM/RAM/SSD. All data is community-reported — treat numbers as
        user-experienced, not lab-tested. <a href="{utils.FORUM_THREAD}">Discussion lives in the forum thread →</a></p>
-    <p class="matrix-actions-help">The <strong>Actions</strong> column: tick the checkbox to add a row to a <a href="compare/">comparison</a>, or hit <strong>🚀</strong> to copy a launch command for that setup.</p>
+    <p>Click any row (or its <strong>ⓘ</strong> button) to open the <strong>full submission</strong> —
+       complete hardware, the submitter's notes, a launch command, and a deep link straight to the
+       forum post. The <strong>🔗 Share</strong> button copies a link to <em>this exact view</em> —
+       every filter included — so you can paste it in the forum and others land on the same table.</p>
+    <p class="matrix-actions-help">The <strong>Actions</strong> column: <strong>ⓘ</strong> opens the detail panel,
+       tick the checkbox to add a row to a <a href="compare/">comparison</a>, or hit <strong>🚀</strong> to copy a
+       launch command for that setup.</p>
   </div>
-{utils.commands_config_island(subs, schema)}'''
+  {utils.commands_config_island(subs, schema)}'''
 
     title = "The Matrix — The Local AI Stack"
     desc = ("All community submissions, filterable and sortable: VRAM tier, hardware, vendor, "
             "backend, model, quant, use case, speed, context, KV cache, power, engine mode. "
-            "Compare 2–4 setups side by side and copy a launch command for any of them.")
+            "Filter views are shareable via the URL, every row opens a full detail panel, "
+            "compare 2–4 setups side by side, and copy a launch command for any of them.")
     return page_shell(title, desc, body, guides_menu=guides_menu,
                       extra_scripts=["js/compare.js", "js/commands.js"])
