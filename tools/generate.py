@@ -15,11 +15,22 @@ Writes:
     forum/post3_viewport.md  (in-forum data viewport post)
 
 This is the "one command to produce all outputs" script.
+
+Notes:
+    - All values interpolated into HTML are escaped via html_escape().
+    - Unfilled template submissions (empty or all-placeholder fields) are
+      excluded from stats, table rows, and the Post #3 viewport so counts
+      match the data rows actually displayed.
+    - The dashboard table shows 12 columns; Use Case / KV / Power / Mode are
+      hidden on narrow viewports via CSS (.hide-mobile).
+    - Cells render the FULL value and rely on CSS ellipsis + a title tooltip
+      for overflow (no Python-side string slicing in the dashboard).
 """
 
+import html as html_module
 import json
+import re
 import sys
-from datetime import datetime
 from pathlib import Path
 
 WORKSPACE = Path(__file__).parent.parent
@@ -29,9 +40,61 @@ SCHEMA = WORKSPACE / "tools" / "schema.json"
 DASHBOARD_DIR = WORKSPACE
 FORUM_DIR = WORKSPACE / "forum"
 
+# Canonical live dashboard URL (GitHub Pages)
+DASHBOARD_URL = "https://madgoathaz.github.io/llm-matrix"
+
 def load_json(path):
     with open(path) as f:
         return json.load(f)
+
+def html_escape(s):
+    if not s:
+        return ""
+    return html_module.escape(str(s))
+
+# ---------------------------------------------------------------------------
+# Template / placeholder detection
+# ---------------------------------------------------------------------------
+
+# Unfilled template values look like "[e.g., ...]" or "[Full model repository
+# or exact filename]" — i.e. the whole value is wrapped in brackets.
+PLACEHOLDER_RE = re.compile(r"^\[.*\]$", re.DOTALL)
+
+def is_placeholder(value):
+    """True if value is empty/None or an unfilled template placeholder."""
+    if value is None:
+        return True
+    s = str(value).strip()
+    if not s:
+        return True
+    return bool(PLACEHOLDER_RE.match(s))
+
+def clean_value(value):
+    """Display string for a field: '' if placeholder, else the stripped value."""
+    if is_placeholder(value):
+        return ""
+    return str(value).strip()
+
+def is_template_submission(s):
+    """True if a submission carries no real data (unfilled/empty template)."""
+    key_fields = [
+        s.get("hardware", {}).get("description"),
+        s.get("model", {}).get("name"),
+        s.get("backend"),
+        s.get("quant"),
+        s.get("performance", {}).get("decode_tps"),
+        s.get("context", {}).get("stable"),
+        s.get("use_cases"),
+    ]
+    return all(is_placeholder(v) for v in key_fields)
+
+def real_submissions(data):
+    """Submissions with real data (templates filtered out)."""
+    return [s for s in data["submissions"] if not is_template_submission(s)]
+
+# ---------------------------------------------------------------------------
+# Dashboard (index.html + data.json)
+# ---------------------------------------------------------------------------
 
 def generate_dashboard(data, schema):
     """Generate the static dashboard HTML."""
@@ -41,32 +104,71 @@ def generate_dashboard(data, schema):
     with open(DASHBOARD_DIR / "data.json", 'w') as f:
         json.dump(data, f)
 
-    # Generate index.html
     tiers = schema.get("tiers", [])
     tier_labels = {t["id"]: t["label"] for t in tiers}
 
-    # Build table rows grouped by tier
+    # Only real submissions (templates excluded) feed stats + rows.
+    subs = real_submissions(data)
+    # Rows actually displayed in the table: grouped by tier, so tiered only.
+    displayed = [s for s in subs if s.get("tier")]
+
+    # --- Stats (must match displayed rows) ---
+    vendor_set = set()
+    for s in displayed:
+        v = s["hardware"].get("vendor", "")
+        if not v:
+            continue
+        # Exclude "Mixed" when it comes only from empty/template entries
+        if v == "Mixed" and is_placeholder(s["hardware"].get("description")):
+            continue
+        vendor_set.add(v)
+
+    backend_set = set()
+    for s in displayed:
+        b = s.get("backend", "")
+        if b and not is_placeholder(b):
+            backend_set.add(b)
+
+    tier_set = set(s["tier"] for s in displayed if s.get("tier"))
+
+    # --- Table rows grouped by tier (12 columns) ---
+    # Columns: Contributor | Hardware | Vendor | Backend | Model | Quant |
+    #          Use Case | Speed | Context | KV | Power | Mode
+    def td(value, hide=False):
+        v = html_escape(clean_value(value))
+        cls = ' class="hide-mobile"' if hide else ''
+        return f'<td{cls} title="{v}">{v}</td>'
+
     html_rows = ""
     for tier_id in [t["id"] for t in tiers]:
-        tier_subs = [s for s in data["submissions"] if s.get("tier") == tier_id]
+        tier_subs = [s for s in displayed if s.get("tier") == tier_id]
         if not tier_subs:
             continue
-        html_rows += f'\n      <tr class="tier-header"><td colspan="8">{tier_labels.get(tier_id, tier_id)}</td></tr>\n'
+        html_rows += (
+            f'\n      <tr class="tier-header" data-tier="{html_escape(tier_id)}">'
+            f'<td colspan="12">{html_escape(tier_labels.get(tier_id, tier_id))}</td></tr>\n'
+        )
         for s in tier_subs:
             highlight = ' class="highlighted"' if s.get("highlight") else ''
             html_rows += f'''
-      <tr{highlight}>
-        <td>{s["source"]["username"]}</td>
-        <td>{s["hardware"]["description"][:60]}</td>
-        <td>{s["hardware"]["vendor"]}</td>
-        <td>{s["backend"]}</td>
-        <td>{s["model"]["name"][:40]}</td>
-        <td>{s["quant"][:30]}</td>
-        <td>{s["performance"]["decode_tps"]}</td>
-        <td>{s["context"]["stable"][:20]}</td>
+      <tr{highlight} data-tier="{html_escape(tier_id)}">
+        {td(s["source"]["username"])}
+        {td(s["hardware"]["description"])}
+        {td(s["hardware"]["vendor"])}
+        {td(s["backend"])}
+        {td(s["model"]["name"])}
+        {td(s["quant"])}
+        {td(s.get("use_cases"), hide=True)}
+        {td(s["performance"]["decode_tps"])}
+        {td(s["context"]["stable"])}
+        {td(s["context"]["kv_cache"], hide=True)}
+        {td(s["performance"]["power_w"], hide=True)}
+        {td(s.get("engine_mode"), hide=True)}
       </tr>'''
 
-    html = f'''<!DOCTYPE html>
+    # Raw f-string: the embedded JS contains a `\d` regex escape that must
+    # reach the browser verbatim (avoids Python SyntaxWarning).
+    html = rf'''<!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
@@ -148,6 +250,16 @@ def generate_dashboard(data, schema):
             font-size: 0.85rem;
         }}
         .filters input {{ flex: 1; min-width: 200px; }}
+        .btn-reset {{
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text-muted);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.85rem;
+        }}
+        .btn-reset:hover {{ color: var(--text); border-color: var(--accent); }}
         table {{
             width: 100%;
             border-collapse: collapse;
@@ -164,9 +276,23 @@ def generate_dashboard(data, schema):
             cursor: pointer;
         }}
         th:hover {{ color: var(--accent); }}
+        th.sort-asc::after {{ content: ' ↑'; color: var(--accent); }}
+        th.sort-desc::after {{ content: ' ↓'; color: var(--accent); }}
         td {{
             padding: 0.6rem 0.75rem;
             border-bottom: 1px solid var(--border);
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }}
+        td[title]:hover {{
+            white-space: normal;
+            overflow: visible;
+            position: relative;
+            z-index: 10;
+            background: var(--surface);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
         }}
         td:first-child {{ font-weight: 600; color: var(--text); }}
         tr.tier-header td {{
@@ -175,6 +301,9 @@ def generate_dashboard(data, schema):
             color: var(--accent);
             padding: 0.5rem 0.75rem;
             font-size: 0.8rem;
+            max-width: none;
+            overflow: visible;
+            white-space: normal;
         }}
         tr.highlighted {{ border-left: 3px solid var(--highlight); }}
         tr:hover {{ background: rgba(59, 130, 246, 0.05); }}
@@ -232,6 +361,7 @@ def generate_dashboard(data, schema):
             .filters {{ flex-direction: column; }}
             table {{ font-size: 0.75rem; }}
             td, th {{ padding: 0.4rem; }}
+            .hide-mobile {{ display: none; }}
         }}
     </style>
 </head>
@@ -247,10 +377,10 @@ def generate_dashboard(data, schema):
                 </p>
             </div>
             <div class="stats">
-                <div class="stat"><div class="num">{data["total_submissions"]}</div><div class="label">Submissions</div></div>
-                <div class="stat"><div class="num">{len(set(s["hardware"]["vendor"] for s in data["submissions"]))}</div><div class="label">Vendors</div></div>
-                <div class="stat"><div class="num">{len(set(s["backend"] for s in data["submissions"] if s["backend"]))}</div><div class="label">Backends</div></div>
-                <div class="stat"><div class="num">{len(set(s["tier"] for s in data["submissions"] if s["tier"]))}</div><div class="label">Tiers</div></div>
+                <div class="stat"><div class="num">{len(displayed)}</div><div class="label">Submissions</div></div>
+                <div class="stat"><div class="num">{len(vendor_set)}</div><div class="label">Vendors</div></div>
+                <div class="stat"><div class="num">{len(backend_set)}</div><div class="label">Backends</div></div>
+                <div class="stat"><div class="num">{len(tier_set)}</div><div class="label">Tiers</div></div>
             </div>
         </header>
 
@@ -273,16 +403,17 @@ def generate_dashboard(data, schema):
             <input type="text" id="search" placeholder="Search models, hardware, notes...">
             <select id="filter-tier">
                 <option value="">All Tiers</option>
-                {''.join(f'<option value="{t["id"]}">{t["label"]}</option>' for t in tiers)}
+                {''.join(f'<option value="{html_escape(t["id"])}">{html_escape(t["label"])}</option>' for t in tiers)}
             </select>
             <select id="filter-vendor">
                 <option value="">All Vendors</option>
-                {''.join(f'<option>{v}</option>' for v in sorted(set(s["hardware"]["vendor"] for s in data["submissions"])))}
+                {''.join(f'<option value="{html_escape(v)}">{html_escape(v)}</option>' for v in sorted(vendor_set))}
             </select>
             <select id="filter-backend">
                 <option value="">All Backends</option>
-                {''.join(f'<option>{b}</option>' for b in sorted(set(s["backend"] for s in data["submissions"] if s["backend"])))}
+                {''.join(f'<option value="{html_escape(b)}">{html_escape(b)}</option>' for b in sorted(backend_set))}
             </select>
+            <button onclick="resetFilters()" class="btn-reset">Reset</button>
         </div>
 
         <table id="main-table">
@@ -294,8 +425,12 @@ def generate_dashboard(data, schema):
                     <th onclick="sortTable(3)">Backend</th>
                     <th onclick="sortTable(4)">Model</th>
                     <th onclick="sortTable(5)">Quant</th>
-                    <th onclick="sortTable(6)">Speed</th>
-                    <th onclick="sortTable(7)">Context</th>
+                    <th class="hide-mobile" onclick="sortTable(6)">Use Case</th>
+                    <th onclick="sortTable(7)">Speed</th>
+                    <th onclick="sortTable(8)">Context</th>
+                    <th class="hide-mobile" onclick="sortTable(9)">KV</th>
+                    <th class="hide-mobile" onclick="sortTable(10)">Power</th>
+                    <th class="hide-mobile" onclick="sortTable(11)">Mode</th>
                 </tr>
             </thead>
             <tbody>
@@ -323,7 +458,7 @@ def generate_dashboard(data, schema):
     </div>
 
     <script>
-        // Simple client-side filtering
+        // Client-side filtering
         const search = document.getElementById('search');
         const tierFilter = document.getElementById('filter-tier');
         const vendorFilter = document.getElementById('filter-vendor');
@@ -338,6 +473,7 @@ def generate_dashboard(data, schema):
 
             rows.forEach(row => {{
                 if (row.classList.contains('tier-header')) {{
+                    // Show tier header only if it has visible children
                     row.style.display = '';
                     return;
                 }}
@@ -345,9 +481,21 @@ def generate_dashboard(data, schema):
                 const cells = row.cells;
                 let show = true;
                 if (q && !text.includes(q)) show = false;
+                if (tier && row.dataset.tier !== tier) show = false;
                 if (vendor && cells[2] && cells[2].textContent !== vendor) show = false;
                 if (backend && cells[3] && cells[3].textContent !== backend) show = false;
                 row.style.display = show ? '' : 'none';
+            }});
+
+            // Hide tier headers that have no visible rows
+            document.querySelectorAll('.tier-header').forEach(header => {{
+                let next = header.nextElementSibling;
+                let hasVisible = false;
+                while (next && !next.classList.contains('tier-header')) {{
+                    if (next.style.display !== 'none') hasVisible = true;
+                    next = next.nextElementSibling;
+                }}
+                header.style.display = hasVisible ? '' : 'none';
             }});
         }}
 
@@ -356,18 +504,67 @@ def generate_dashboard(data, schema):
         vendorFilter.addEventListener('change', applyFilters);
         backendFilter.addEventListener('change', applyFilters);
 
-        // Simple sort
-        let sortDir = 1;
+        // Sorting WITHIN tier groups (grouping is preserved)
+        let sortState = {{}}; // col -> direction
+
         function sortTable(col) {{
+            sortState[col] = -(sortState[col] || -1); // toggle direction, default asc
+
+            // Get all tier groups
             const tbody = document.querySelector('#main-table tbody');
-            const dataRows = Array.from(tbody.querySelectorAll('tr:not(.tier-header)'));
-            dataRows.sort((a, b) => {{
-                const av = a.cells[col]?.textContent || '';
-                const bv = b.cells[col]?.textContent || '';
-                return av.localeCompare(bv, undefined, {{numeric: true}}) * sortDir;
+            const groups = [];
+            let currentGroup = {{ header: null, rows: [] }};
+
+            tbody.querySelectorAll('tr').forEach(row => {{
+                if (row.classList.contains('tier-header')) {{
+                    if (currentGroup.header || currentGroup.rows.length) {{
+                        groups.push(currentGroup);
+                    }}
+                    currentGroup = {{ header: row, rows: [] }};
+                }} else {{
+                    currentGroup.rows.push(row);
+                }}
             }});
-            dataRows.forEach(r => tbody.appendChild(r));
-            sortDir *= -1;
+            if (currentGroup.header || currentGroup.rows.length) groups.push(currentGroup);
+
+            // Sort rows within each group
+            groups.forEach(group => {{
+                group.rows.sort((a, b) => {{
+                    const av = a.cells[col]?.textContent || '';
+                    const bv = b.cells[col]?.textContent || '';
+                    // Try numeric sort
+                    const an = parseFloat(av.replace(/[^\d.-]/g, ''));
+                    const bn = parseFloat(bv.replace(/[^\d.-]/g, ''));
+                    if (!isNaN(an) && !isNaN(bn)) return (an - bn) * sortState[col];
+                    return av.localeCompare(bv, undefined, {{numeric: true}}) * sortState[col];
+                }});
+            }});
+
+            // Rebuild tbody
+            tbody.innerHTML = '';
+            groups.forEach(group => {{
+                if (group.header) tbody.appendChild(group.header);
+                group.rows.forEach(r => tbody.appendChild(r));
+            }});
+
+            // Update sort indicators
+            document.querySelectorAll('#main-table th').forEach((th, i) => {{
+                th.classList.remove('sort-asc', 'sort-desc');
+                if (sortState[i]) {{
+                    th.classList.add(sortState[i] === 1 ? 'sort-asc' : 'sort-desc');
+                }}
+            }});
+        }}
+
+        function resetFilters() {{
+            search.value = '';
+            tierFilter.value = '';
+            vendorFilter.value = '';
+            backendFilter.value = '';
+            applyFilters();
+            // Reset sort
+            sortState = {{}};
+            location.reload(); // simplest reset
         }}
     </script>
 </body>
@@ -378,6 +575,11 @@ def generate_dashboard(data, schema):
 
     print(f"✓ Dashboard: {DASHBOARD_DIR / 'index.html'}")
     print(f"✓ Data: {DASHBOARD_DIR / 'data.json'}")
+    print(f"  ({len(displayed)} real rows rendered; {len(data['submissions']) - len(subs)} template(s) excluded)")
+
+# ---------------------------------------------------------------------------
+# Forum Post #3 viewport
+# ---------------------------------------------------------------------------
 
 def generate_post3(data, schema):
     """Generate the in-forum Data Viewport post (Post #3)."""
@@ -386,37 +588,44 @@ def generate_post3(data, schema):
     tiers = schema.get("tiers", [])
     tier_labels = {t["id"]: t["label"] for t in tiers}
 
+    # Only real submissions (templates excluded)
+    subs = real_submissions(data)
+
     # Group by tier
     by_tier = {}
-    for s in data["submissions"]:
+    for s in subs:
         t = s.get("tier") or "unclassified"
         by_tier.setdefault(t, []).append(s)
 
     # Group by vendor
     by_vendor = {}
-    for s in data["submissions"]:
+    for s in subs:
         v = s["hardware"]["vendor"]
         by_vendor.setdefault(v, []).append(s)
 
     # Group by backend
     by_backend = {}
-    for s in data["submissions"]:
+    for s in subs:
         b = s.get("backend", "Unknown")
         by_backend.setdefault(b, []).append(s)
+
+    def cell(value, limit):
+        """Escape a cleaned value for forum raw HTML, bounded for narrow md-tables."""
+        return html_escape(clean_value(value)[:limit])
 
     def make_table(subs, show_vendor=False):
         rows = ""
         for s in subs:
             h = ' style="border-left:3px solid #f59e0b"' if s.get("highlight") else ""
             rows += f"""<tr{h}>
-<td>{s['source']['username']}</td>
-<td>{s['hardware']['description'][:50]}</td>
-{'<td>' + s['hardware']['vendor'] + '</td>' if show_vendor else ''}
-<td>{s['backend']}</td>
-<td>{s['model']['name'][:35]}</td>
-<td>{s['quant'][:25]}</td>
-<td>{s['performance']['decode_tps'][:15]}</td>
-<td>{s['context']['stable'][:15]}</td>
+<td>{html_escape(s['source']['username'])}</td>
+<td>{cell(s['hardware']['description'], 50)}</td>
+{'<td>' + html_escape(s['hardware']['vendor']) + '</td>' if show_vendor else ''}
+<td>{cell(s['backend'], 30)}</td>
+<td>{cell(s['model']['name'], 35)}</td>
+<td>{cell(s['quant'], 25)}</td>
+<td>{cell(s['performance']['decode_tps'], 15)}</td>
+<td>{cell(s['context']['stable'], 15)}</td>
 </tr>\n"""
         vendor_col = "<th>Vendor</th>" if show_vendor else ""
         return f"""<div class="md-table">
@@ -429,9 +638,9 @@ def generate_post3(data, schema):
 
     content = f"""# 📊 Community Data Viewport
 
-*A community index of all submissions from the **Local LLM Matrix** thread. Last updated: {data['generated_at'][:10]} | {data['total_submissions']} submissions*
+*A community index of all submissions from the **Local LLM Matrix** thread. Last updated: {data['generated_at'][:10]} | {len(subs)} submissions*
 
-> 🌐 **Interactive Dashboard:** [Browse, filter, and compare all setups](https://YOUR-USERNAME.github.io/llm-matrix-dashboard/)
+> 🌐 **Interactive Dashboard:** [Browse, filter, and compare all setups]({DASHBOARD_URL})
 > 
 > 💬 **The full discussion lives here on the forum.** Submit your own setup using the template in Post #2.
 
@@ -443,11 +652,11 @@ def generate_post3(data, schema):
 """
     for tier in tiers:
         tid = tier["id"]
-        subs = by_tier.get(tid, [])
-        if subs:
+        tier_subs = by_tier.get(tid, [])
+        if tier_subs:
             content += f"""<details>
-<summary>{tier['label']} ({len(subs)} entries)</summary>
-{make_table(subs)}
+<summary>{html_escape(tier['label'])} ({len(tier_subs)} entries)</summary>
+{make_table(tier_subs)}
 </details>
 """
     content += "</details>\n"
@@ -458,10 +667,10 @@ def generate_post3(data, schema):
 
 """
     for vendor in sorted(by_vendor.keys()):
-        subs = by_vendor[vendor]
+        v_subs = by_vendor[vendor]
         content += f"""<details>
-<summary>{vendor} ({len(subs)} entries)</summary>
-{make_table(subs)}
+<summary>{html_escape(vendor)} ({len(v_subs)} entries)</summary>
+{make_table(v_subs)}
 </details>
 """
     content += "</details>\n"
@@ -472,10 +681,10 @@ def generate_post3(data, schema):
 
 """
     for backend in sorted(by_backend.keys()):
-        subs = by_backend[backend]
+        b_subs = by_backend[backend]
         content += f"""<details>
-<summary>{backend} ({len(subs)} entries)</summary>
-{make_table(subs)}
+<summary>{html_escape(backend)} ({len(b_subs)} entries)</summary>
+{make_table(b_subs)}
 </details>
 """
     content += "</details>\n"
@@ -484,7 +693,7 @@ def generate_post3(data, schema):
 <details>
 <summary>📋 All Submissions (Chronological)</summary>
 
-{make_table(data['submissions'], show_vendor=True)}
+{make_table(subs, show_vendor=True)}
 </details>
 
 ---
@@ -508,7 +717,7 @@ def main():
     generate_post3(data, schema)
 
     print(f"\n✅ All outputs generated. Ready to deploy.")
-    print(f"   Dashboard → push to GitHub Pages")
+    print(f"   Dashboard → push to GitHub Pages ({DASHBOARD_URL})")
     print(f"   Post #3   → paste into forum")
 
 if __name__ == "__main__":
