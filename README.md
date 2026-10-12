@@ -43,7 +43,7 @@ Every page is **generated** by `tools/generate_site.py` (the `tools/site/` packa
 | `content/` | Authored page copy (markdown): the 8 guides, recommend, submit, api |
 | `.github/` | CI/CD workflows (`ci.yml`, `weekly-pull.yml`) + structured issue templates (submission, bug, feature) |
 | `forum/` | Forum post sources (Post #1 matrix, Post #2 submissions, bump, changelog) |
-| `work/` | Development plans, handover docs, research notes, docs, scratch space |
+| `work/` | Development logs (`DEV_LOG.md` active board, `MASTER_LOG.md` permanent history), plans, research prompts, docs, scratch space |
 | `templates/` | Reserved for future use |
 
 ## The Weekly Cycle
@@ -54,7 +54,7 @@ python tools/diff.py          # 2. See what's new/changed since last time
 #        review; edit tools/schema.json or tools/tags.json if the field moved
 python tools/parse.py         # 3. Normalize the main thread → data/submissions.json
 python tools/parse_thread.py  # 4. Parse secondary threads → benchmarks / hardware / category
-python tools/generate_site.py # 5. Regenerate all 5 pages + data.json
+python tools/generate_site.py # 5. Regenerate all pages + data.json + versioned data API
 git add . && git commit -m "Weekly rollup $(date +%Y-%m-%d)" && git push
                               # 6. GitHub Pages auto-deploys from the repo root
 ```
@@ -94,6 +94,7 @@ All three are reviewed on the weekly cycle and appear on the site — with your 
 - [`VISION.md`](VISION.md) — what we're building and why
 - [`HANDOVER.md`](HANDOVER.md) — current state, directory map, known issues, onboarding checklist
 - [`work/plans/PLAN.md`](work/plans/PLAN.md) — the development plan: phased chunks covering the 8 guides, decision tools (recommend/compare/launch commands), and automation (CI, tests, weekly pull)
+- [`work/MASTER_LOG.md`](work/MASTER_LOG.md) — the permanent record of all completed work (compacted development history)
 
 ## Tests
 

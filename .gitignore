@@ -11,6 +11,12 @@ data/raw/thread_*.json
 .DS_Store
 Thumbs.db
 
-# Keep these tracked:
-!data/raw/latest.json
-!data/submissions.json
+# Kilo agent session state (untracked by design)
+.kilo/
+
+# Scratch space is a working area — ignored by default. The few
+# reference files worth keeping are explicitly re-included (tracked).
+work/scratch/
+!work/scratch/.gitkeep
+!work/scratch/qa_report.txt
+!work/scratch/qa_structural_check.py

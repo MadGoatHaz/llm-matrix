@@ -1,12 +1,16 @@
 # The Local AI Stack — Project Handover
 
-> **Currency note:** this document is a point-in-time snapshot. The project
-> has since completed Phases 1–4 of
-> [`work/plans/PLAN.md`](work/plans/PLAN.md) (all 8 guides live, the
-> recommend/compare/submit/API pages, CI + the weekly automated pull, and
-> the versioned data API). For the current state, read
-> [`README.md`](README.md), [`work/plans/PLAN.md`](work/plans/PLAN.md), and
-> the history in [`work/DEV_LOG.md`](work/DEV_LOG.md) — not this file.
+> **Currency note:** this document is a point-in-time snapshot from before
+> the plan was executed. Phases 0–5 of
+> [`work/plans/PLAN.md`](work/plans/PLAN.md) are now complete (all 8
+> guides live; the recommend/compare/submit/API pages; CI + the weekly
+> automated pull; the versioned data API; WCAG 2.1 AA + performance
+> budgets; final cleanup and log compaction). Everything below marked
+> "Coming Soon" or listed as a known issue has since been resolved. For
+> the current state, read [`README.md`](README.md) and
+> [`work/plans/PLAN.md`](work/plans/PLAN.md); for the full history of
+> completed work, read [`work/MASTER_LOG.md`](work/MASTER_LOG.md) — not
+> this file.
 
 ## What This Is
 
@@ -83,25 +87,20 @@ The project's goal is to be the definitive "go-to" reference for the local AI co
 │   └── tags.json               # Manual curation layer: per-submission overrides + forum feedback tracking
 │
 ├── work/
-│   ├── DEV_LOG.md              # Active lease board, task states, worker history
-│   ├── PLAN_dashboard.md       # Original dashboard plan (superseded by website_plan.md)
-│   ├── research_prompt.md      # Single comprehensive deep-research prompt (9 topics, 231 lines) — predecessor to research_prompts.md
+│   ├── DEV_LOG.md              # Active lease board (fresh after Phase 5 compaction)
+│   ├── MASTER_LOG.md           # Permanent record of all completed work (compacted from DEV_LOG)
 │   ├── research_prompts.md     # 8 individual self-contained research prompts for guide content (one per guide)
 │   │
-│   ├── plans/                  # (empty — for future planning docs)
+│   ├── plans/
+│   │   └── PLAN.md             # The development plan (Phases 0–5, 32 chunks)
 │   │
-│   └── scratch/
-│       ├── insight_sentiment.md    # Community sentiment analysis: themes, frustrations, enthusiasm, demographics, retention mechanics
-│       ├── insight_submissions.md  # Submission data analysis: hardware/backend/model/quant distribution, performance ranges, data quality
-│       ├── insight_ux.md           # Dashboard UX opportunities: use cases, information density, trust signals, mobile vs desktop
-│       ├── website_plan.md         # Full website architecture plan (15 pages, technical approach, design direction) — 809 lines
-│       ├── *.log                   # Execution logs from pipeline runs (pull, parse, generate, diff, verify)
-│       ├── *.py                    # Verification scripts (verify_site.py, verify_dashboard_fixes.py, apply_edits.py)
-│       └── updated_forum_post.md.bak-v4  # Backup of an older forum post version
-│
-├── Backup/
-│   ├── updated_forum_post.md      # Pre-restructure Post #1 (old name)
-│   └── updated_post2_submissions.md  # Pre-restructure Post #2 (old name)
+│   ├── docs/
+│   │   └── custom-domain.md    # Operator guide: buying the domain and pointing it at GitHub Pages
+│   │
+│   └── scratch/                # Working space (git-ignored; kept reference files re-included)
+│       ├── qa_report.txt          # Final QA integration report (reference)
+│       ├── qa_structural_check.py # Standalone structural audit of the generated site
+│       └── .gitkeep
 │
 ├── templates/
 │   └── .gitkeep                  # Reserved for future Jinja2 templates
@@ -250,20 +249,18 @@ Manual curation layer:
 **To write a guide:**
 1. Run the corresponding prompt from `work/research_prompts.md` with a research AI
 2. Adapt the output into web-friendly format (headings, paragraphs, tables, code blocks)
-3. Add the content to `tools/generate_site.py` (or create a separate template file)
-4. Re-run `generate_site.py`
+3. Add the content as `content/guides/<slug>.md` (front matter + markdown; the guide renderer handles the rest)
+4. Re-run `tools/generate_site.py`
 5. Push
 
 ## Community Insights (Research Files)
 
-| File | Content |
-|------|---------|
-| work/scratch/insight_sentiment.md | Community sentiment analysis: themes, frustrations, enthusiasm, demographics, retention mechanics |
-| work/scratch/insight_submissions.md | Submission data analysis: hardware/backend/model/quant distribution, performance ranges, data quality |
-| work/scratch/insight_ux.md | Dashboard UX opportunities: use cases, information density, trust signals, mobile vs desktop |
-| work/website_plan.md | Full website architecture plan (15 pages, technical approach, design direction) |
-| work/PLAN_dashboard.md | Original dashboard plan (superseded by website_plan.md) |
-| work/research_prompt.md | Single comprehensive deep-research prompt (9 topics) — predecessor to research_prompts.md |
+The one-off research notes that informed the plan — community sentiment
+analysis, submission data analysis, dashboard UX opportunities, the original
+website architecture plan, and the early research prompts — were pruned in
+Phase 5 cleanup: their findings were folded into
+[`work/plans/PLAN.md`](work/plans/PLAN.md) and the built site. The
+originals remain recoverable from git history if ever needed.
 
 ## Git History
 

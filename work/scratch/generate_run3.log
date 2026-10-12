@@ -1,8 +1,0 @@
-✓ Dashboard: /home/madgoat/Documents/Local LLM Matrix/index.html
-✓ Data: /home/madgoat/Documents/Local LLM Matrix/data.json
-  (12 real rows rendered; 0 template(s) excluded)
-✓ Post #3 Viewport: /home/madgoat/Documents/Local LLM Matrix/forum/post3_viewport.md (14798 chars)
-
-✅ All outputs generated. Ready to deploy.
-   Dashboard → push to GitHub Pages (https://madgoathaz.github.io/llm-matrix)
-   Post #3   → paste into forum

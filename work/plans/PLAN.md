@@ -4,7 +4,7 @@
 **Date:** 2026-10-12
 **Status:** Approved for execution (single source of truth for all implementation work)
 **Author:** general (Architectural Planning Agent)
-**Companion docs:** `VISION.md` (philosophy), `HANDOVER.md` (current state), `work/website_plan.md` (aspirational 15-page IA reference), `work/research_prompts.md` (guide content spec)
+**Companion docs:** `VISION.md` (philosophy), `HANDOVER.md` (point-in-time snapshot), `work/research_prompts.md` (guide content spec)
 
 ---
 
@@ -14,7 +14,7 @@
 
 **Where we're going.** We're turning a data table into a complete, genuinely useful reference: (1) **eight researched, human-readable guides** that teach quantization, file formats, architectures, KV cache, context, backends, and multi-GPU/hybrid strategies — the educational heart of the product; (2) **decision tools** (a recommendation engine, a comparison view, a launch-command generator, shareable filters) that turn the data into an answer for the individual reader; and (3) **sustainable automation** (tests, CI, a weekly scheduled pull, a community submission form, data-quality validation) so the resource keeps evolving without heroic manual effort. Every phase ends in a deployable, never-half-broken state.
 
-**What makes this plan different.** It is *user-value-first*: the guides and the recommendation engine **are** the product — the data table is the substrate, not the point. It is *grounded in reality*: it is written against the actual 5-page / 826-line-generator / 12-submission codebase (not the out-of-sync 15-page fantasy in `website_plan.md`, which we use only as an IA reference). And it is *execution-ready*: every unit of work is a self-contained, verifiable **chunk** with a specific ID, exact file paths, concrete acceptance criteria, and explicit dependencies — sized for a single agent task so work can be fanned out and merged cleanly.
+**What makes this plan different.** It is *user-value-first*: the guides and the recommendation engine **are** the product — the data table is the substrate, not the point. It is *grounded in reality*: it is written against the actual 5-page / 826-line-generator / 12-submission codebase (not the out-of-sync 15-page fantasy in the earlier website plan, which we used only as an IA reference). And it is *execution-ready*: every unit of work is a self-contained, verifiable **chunk** with a specific ID, exact file paths, concrete acceptance criteria, and explicit dependencies — sized for a single agent task so work can be fanned out and merged cleanly.
 
 **The two audiences (north star for every decision).**
 - **The Learner** — "Why is my 125B model only using 3B of it? What's a quant? What's eating my VRAM?" → served by **Phase 1 (Guides)**.
