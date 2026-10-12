@@ -69,7 +69,12 @@ def render_guide(md_path: Path, title_override: str | None = None) -> str:
     body_html = md.render_markdown(body)
     related_html = _related_links(meta)
 
-    return page_shell(title, description, f"\n{body_html}\n{related_html}", depth=GUIDE_DEPTH)
+    # Wrap in the long-form ``.guide`` container: all guide typography,
+    # table, code-block, and TOC styles in css/style.css are scoped under
+    # ``.guide`` (see the GUIDE PAGE LAYER section). Diagram and callout
+    # styles are top-level, so they render inside it unchanged.
+    wrapped = f'\n<div class="guide">\n{body_html}\n{related_html}\n</div>'
+    return page_shell(title, description, wrapped, depth=GUIDE_DEPTH)
 
 
 def generate_guides(content_dir: Path, out_dir: Path) -> list[str]:

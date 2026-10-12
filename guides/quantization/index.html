@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantization Basics</title>
+    <meta name="description" content="What quantization actually does, how to read a quant name (Q4_K_M, W4A16, FP8), the VRAM formula checked against real community numbers, and which level to pick for your workload.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="../../index.html">Home</a></li>
+        <li><a href="../../matrix.html">Matrix</a></li>
+        <li><a href="../../community.html">Community</a></li>
+        <li><a href="../../guides.html">Guides</a></li>
+        <li><a href="../../about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
+
+<div class="guide">
+<h1 id="quantization-basics-what-a-quant-actually-does">Quantization Basics: What a Quant Actually Does</h1>
+<div class="callout"><p><b>The 30-second version:</b> Quantization stores a model's weights with fewer bits — 16 bits per weight becomes 8, 4, or even 2.5. A 27B model drops from ~52&nbsp;GB in FP16 to ~15&nbsp;GB at Q4_K_M — a 3.5× reduction with a small, usually acceptable quality loss. The working rules: <b>Q4_K_M is the community workhorse</b>, <b>FP8 is the sweet spot</b> when your hardware supports it natively, and anything below Q3 is a fit-only choice you should verify on your own task. And the model you pick matters more than the quant you pick.</p></div>
+
+<h2 id="the-one-idea-version">The one-idea version</h2>
+<p>A language model is, at the hardware level, a very large pile of numbers — its <em>weights</em> — that the GPU reads over and over for every token it generates. Those numbers are stored at some precision: 16 bits, 8 bits, 4 bits. <strong>Quantization is simply the act of storing them with fewer bits.</strong> It is the same trick JPEG uses on a photograph: throw away the detail the eye is least likely to notice, keep the shape.</p>
+<p>The catch is that a model's "shape" is its behavior. Weights that carry important structure deserve more precision; weights that mostly add flavor can be compressed harder. Every quantization scheme is a different answer to the question <em>which bits matter?</em> — and that answer is why two 4-bit files of the same model can behave differently. The deep dive into those schemes lives in <a href="quantization-methods/">Quantization Methods</a>; here we cover what the numbers mean and how they hit your VRAM.</p>
+<h2 id="why-we-quantize">Why we quantize</h2>
+<p>Two reasons, in order of importance:</p>
+<ol>
+<li><strong>Fit.</strong> VRAM is the bottleneck of local inference. A 70B model in FP16 needs ~130&nbsp;GB — no consumer card has that. At 4-bit it needs ~40&nbsp;GB, and at 8-bit ~65&nbsp;GB. Quantization is the difference between "impossible" and "a couple of cards."</li>
+<li><strong>Speed.</strong> Generating a token is mostly <em>reading weights from memory</em>, so fewer bytes per weight means more tokens per second. The Matrix data shows the effect is not theoretical: s1ugh34d's <code>Qwen3.8-27B</code> at <code>UD-Q2_K_XL</code> decodes at <strong>13.9&nbsp;t/s</strong> on a 16GB Radeon VII, while MadGoat's FP8 build of the same model family hits <strong>120&nbsp;t/s</strong> on 2× R9700 — precision changes bandwidth <em>and</em> compute.</li>
+</ol>
+<div class="diagram diagram--flow">
+  <div class="diagram-cell">FP16<br><b>2 bytes</b>/weight</div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">FP8 / INT8<br><b>1 byte</b>/weight</div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">Q4 / INT4<br><b>0.5 byte</b>/weight</div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">Q2 / I-Nano<br><b>~0.3 byte</b>/weight</div>
+</div>
+
+<p><em>Each step halves (or better) the memory a model needs. The quality cost is not even — see the ladder below.</em></p>
+<h2 id="the-naming-code">The naming code</h2>
+<p>The same idea wears three different costumes depending on the ecosystem. Learning to read the label saves you from a lot of mis-downloads:</p>
+<table>
+<thead>
+<tr>
+<th>Label</th>
+<th>How to read it</th>
+<th>Where you'll see it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>W4A16</code></td>
+<td><strong>W</strong>eights at 4-bit, <strong>A</strong>ctivations at 16-bit</td>
+<td>GPTQ, AWQ, AutoRound (the vLLM/PyTorch world)</td>
+</tr>
+<tr>
+<td><code>W8A8</code></td>
+<td>8-bit weights <em>and</em> 8-bit activations</td>
+<td>SmoothQuant</td>
+</tr>
+<tr>
+<td><code>FP8</code> / <code>BF16</code></td>
+<td>8-bit / 16-bit <em>floating point</em></td>
+<td>Native training and serving checkpoints</td>
+</tr>
+<tr>
+<td><code>Q4_K_M</code></td>
+<td>GGUF "k-quant", 4-bit, medium precision mix</td>
+<td>llama.cpp, Ollama, LM Studio, Strata</td>
+</tr>
+<tr>
+<td><code>IQ3_S</code>, <code>I-Nano</code></td>
+<td>imatrix 3-bit / ~2.5 bits per weight</td>
+<td>GGUF</td>
+</tr>
+<tr>
+<td><code>2.5bpw</code></td>
+<td>2.5 <strong>b</strong>its <strong>p</strong>er <strong>w</strong>eight — the raw number that matters</td>
+<td>Anywhere</td>
+</tr>
+</tbody>
+</table>
+<p>There are two big families: <strong>floating point</strong> (FP16, FP8) and <strong>integer</strong> (INT8, INT4, and GGUF's <code>Q</code>/<code>I</code> variants). The <code>W4A16</code>-style names tell you <em>what</em> was quantized (weights vs activations); the GGUF names tell you <em>how</em> the low-bit numbers were packed. Both describe the same underlying trade: fewer bits per weight, a little quality left on the table.</p>
+<h2 id="the-precision-ladder">The precision ladder</h2>
+<p>This is the memory cost of each rung, shown as a share of the FP16 footprint:</p>
+<div class="diagram diagram--kv">
+  <div class="diagram-row"><span class="diagram-label">FP16 / BF16</span><div class="diagram-bar" style="width:100%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">FP8 / Q8_0</span><div class="diagram-bar" style="width:50%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">Q5_K_M</span><div class="diagram-bar" style="width:34%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">Q4_K_M</span><div class="diagram-bar" style="width:29%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">IQ3_S</span><div class="diagram-bar" style="width:22%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">Q2_K</span><div class="diagram-bar" style="width:17%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">I-Nano</span><div class="diagram-bar" style="width:16%"></div></div>
+</div>
+
+<p>And the honest quality read for each:</p>
+<table>
+<thead>
+<tr>
+<th>Level</th>
+<th>Bytes/weight</th>
+<th>27B model needs</th>
+<th>Quality (honest read)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>FP16 / BF16</td>
+<td>2.0</td>
+<td>~52 GB</td>
+<td>The reference. Rarely needed for inference; the training standard.</td>
+</tr>
+<tr>
+<td>FP8</td>
+<td>1.0</td>
+<td>~26 GB</td>
+<td>Near-lossless on modern models. The 2026 sweet spot where hardware is native.</td>
+</tr>
+<tr>
+<td>Q8_0</td>
+<td>~1.0</td>
+<td>~26 GB</td>
+<td>Indistinguishable for most tasks. The "safe" GGUF pick.</td>
+</tr>
+<tr>
+<td>Q5_K_M</td>
+<td>~0.69</td>
+<td>~18 GB</td>
+<td>Small degradation. The quality pick for 24–48&nbsp;GB cards.</td>
+</tr>
+<tr>
+<td>Q4_K_M</td>
+<td>~0.57</td>
+<td>~15 GB</td>
+<td>The workhorse. Measurable loss on hard reasoning; best size/quality for most people.</td>
+</tr>
+<tr>
+<td>IQ3_S</td>
+<td>~0.42</td>
+<td>~11 GB</td>
+<td>Noticeable on reasoning-heavy tasks; fine for chat and summarization.</td>
+</tr>
+<tr>
+<td>Q2_K</td>
+<td>~0.35</td>
+<td>~9.6 GB</td>
+<td>Fit-only. Verify on your own task before trusting it.</td>
+</tr>
+<tr>
+<td>I-Nano</td>
+<td>~0.31 (2.5bpw)</td>
+<td>~8.7 GB</td>
+<td>The extreme. This is where MoE models shine — see below.</td>
+</tr>
+</tbody>
+</table>
+<p>The quality-vs-size curve is <strong>not linear</strong>. From FP16 down to Q8 it is nearly flat; Q8→Q4 is a small dip; Q4→Q3 is steeper; and below Q3 it depends heavily on the model and the task. Draw the curve and you get a long, flat shoulder and then a cliff — which is exactly why Q4_K_M sits where it does: just past the edge of the shoulder, at a third of the memory.</p>
+<h3 id="the-fine-print-group-sizes-symmetry-and-qat">The fine print: group sizes, symmetry, and QAT</h3>
+<ul>
+<li><strong>Group size.</strong> Low-bit schemes don't quantize the whole tensor with one scale — they work in small blocks (128 weights is common), each with its own scale and offset. The <code>_K</code> in <code>Q4_K_M</code> refers to this "k-quant" block structure. Bigger groups = fewer scale parameters = slightly smaller file, slightly coarser fit.</li>
+<li><strong>Symmetric vs asymmetric.</strong> Symmetric quantization centers the range on zero; asymmetric adds an offset to track the weight distribution better. Most modern GGUF quants are effectively asymmetric via their group scales — you rarely need to choose.</li>
+<li><strong>QAT (quantization-aware training).</strong> The most accurate quants are made by <em>training the model with quantization noise in the loop</em>, so it learns to live at low precision. QAT is rarer in the consumer GGUF world — most published quants are post-training (RTN, GPTQ, AWQ, AutoRound — see <a href="quantization-methods/">Quantization Methods</a>). The frontier is hardware-native low precision: FP8 training and microscaling formats like MXFP4/NVFP4 are moving from datacenter to consumer cards in 2026 — <strong>new and evolving</strong>, not settled.</li>
+</ul>
+<h2 id="the-vram-formula">The VRAM formula</h2>
+<p>The whole discipline reduces to one line:</p>
+<pre><code>VRAM (GiB) ≈ params × bytes_per_weight ÷ 1024³
+</code></pre>
+<p>Add the KV cache and engine overhead on top (the <a href="kv-cache/">KV Cache</a> guide covers that number), and you can estimate any model before downloading it. Here is the formula checked against real Matrix submissions:</p>
+<table>
+<thead>
+<tr>
+<th>Model (from the Matrix)</th>
+<th>Quant</th>
+<th>Formula (weights)</th>
+<th>What the Matrix actually observed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Qwen3.5-4B</td>
+<td>Q4_K_M</td>
+<td>~2.3 GiB</td>
+<td>5.3 GB at 65k context (s1ugh34d)</td>
+</tr>
+<tr>
+<td>DeepSeek-R1-0528-Qwen3-8B</td>
+<td>Q4_K_M</td>
+<td>~4.5 GiB</td>
+<td>7.4 GB (s1ugh34d)</td>
+</tr>
+<tr>
+<td>Qwen3.8-27B</td>
+<td>UD-Q2_K_XL</td>
+<td>~9.7 GiB</td>
+<td>13.8 GB on a 16GB Radeon VII (s1ugh34d)</td>
+</tr>
+<tr>
+<td>Qwen3.8-27B</td>
+<td>FP8</td>
+<td>~26 GiB</td>
+<td>Runs on 2× R9700, 48 GB total (MadGoat)</td>
+</tr>
+<tr>
+<td>Qwen3.6-MoE-35B-A3B</td>
+<td>I-Nano (2.5bpw)</td>
+<td>~10.2 GiB</td>
+<td>12.7 GB incl. KV, 54.4 t/s (s1ugh34d)</td>
+</tr>
+<tr>
+<td>Qwen3.8-Flash-Next (125B MoE)</td>
+<td>IQ3_S</td>
+<td>~49 GiB total</td>
+<td>13.4 GB in VRAM, rest in RAM/SSD (MadGoat, Strata)</td>
+</tr>
+</tbody>
+</table>
+<p>The gap between formula and observation is KV cache plus overhead — budget 10–30% extra on top of the weight math, and more if you run long context. Notice the last row: the formula says ~49&nbsp;GB, and the <em>submission</em> says 13.4&nbsp;GB in VRAM. That is not a math error — it is a hybrid engine keeping only the hot experts in VRAM. The formula tells you the model's <em>total</em> memory need; the engine decides where that memory lives.</p>
+<h3 id="vram-calculator-weights-only">VRAM calculator (weights only)</h3>
+<table>
+<thead>
+<tr>
+<th>Model size</th>
+<th>FP16</th>
+<th>FP8</th>
+<th>Q4_K_M</th>
+<th>Q2_K / I-Nano</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>4B</td>
+<td>7.5 GB</td>
+<td>3.7 GB</td>
+<td>2.3 GB</td>
+<td>1.3 GB</td>
+</tr>
+<tr>
+<td>8B</td>
+<td>14.9 GB</td>
+<td>7.5 GB</td>
+<td>4.5 GB</td>
+<td>2.6 GB</td>
+</tr>
+<tr>
+<td>27B</td>
+<td>52 GB</td>
+<td>26 GB</td>
+<td>15.3 GB</td>
+<td>9.6 GB</td>
+</tr>
+<tr>
+<td>35B (MoE)</td>
+<td>65 GB</td>
+<td>33 GB</td>
+<td>19.9 GB</td>
+<td>10.2 GB (I-Nano)</td>
+</tr>
+<tr>
+<td>70B</td>
+<td>130 GB</td>
+<td>65 GB</td>
+<td>39.7 GB</td>
+<td>24 GB</td>
+</tr>
+<tr>
+<td>125B (MoE)</td>
+<td>233 GB</td>
+<td>116 GB</td>
+<td>65 GB</td>
+<td>~49 GB (IQ3_S)</td>
+</tr>
+</tbody>
+</table>
+<p>Read the MoE rows carefully: total parameter counts are huge, so FP16 is fantasy — but at 2.5–3&nbsp;bits per weight a 125B MoE becomes a ~50&nbsp;GB object, and a hybrid engine shrinks the <em>VRAM</em> slice of that to a single 24GB card. That is the entire reason the Matrix's headline 125B submission exists.</p>
+<h2 id="which-quant-should-i-pick">Which quant should I pick?</h2>
+<p>Walk the ladder from your workload, not from the file size:</p>
+<div class="diagram diagram--stack">
+  <div class="diagram-cell">Agentic coding / reasoning → <b>Q4_K_M floor</b>; Q5_K_M or FP8 if VRAM allows. Keep KV unquantized.</div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell">Chat / writing / Q&amp;A → <b>Q4_K_M</b>; IQ3_S is acceptable when VRAM is tight.</div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell">Long-context exploration → drop one level (<b>IQ3_S</b>) to buy KV headroom; quantize the KV (Q8_0 / int8).</div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell">16 GB or less, maximum fit → prefer <b>MoE at I-Nano/Q2</b> over dense: the 35B-A3B at 54 t/s beats a dense 27B at 14 t/s on the same card.</div>
+</div>
+
+<p>Four concrete recommendations, tied to what the community is actually running:</p>
+<h3 id="for-agentic-coding-and-reasoning">For agentic coding and reasoning</h3>
+<p><strong>Q4_K_M is the floor; go higher if you can.</strong> These workloads stress exactly the capabilities low-bit quantization degrades first — precise recall, multi-step logic. If your card holds Q5_K_M (a 27B at ~18&nbsp;GB fits a 24GB card with room for context), take it. If you have native-FP8 hardware, FP8 is near-lossless and the best quality per byte you can get. And keep the KV cache in FP16 here — quantizing it saves memory you do not have to spend on a coding agent. (Details in the <a href="kv-cache/">KV Cache</a> guide.)</p>
+<h3 id="for-chat-writing-and-document-qa">For chat, writing, and document Q&amp;A</h3>
+<p><strong>Q4_K_M.</strong> It is the reason the format won the consumer world: ~90%+ of FP16 behavior on general tasks at a third of the memory. The Matrix's 4B and 8B Q4_K_M submissions (5.3&nbsp;GB and 7.4&nbsp;GB) are the archetype — small, fast, always-loaded.</p>
+<h3 id="for-long-context-work">For long-context work</h3>
+<p><strong>Trade one quant level for KV headroom.</strong> A 3-bit model with 64k–128k of context usually serves you better than a 4-bit model that runs out of memory at 16k. The s1ugh34d submissions show the pattern: quantized KV keeps VRAM nearly flat from 4k to 65k tokens, which is what makes the big contexts affordable.</p>
+<h3 id="for-small-cards-16gb-and-under">For small cards (16GB and under)</h3>
+<p><strong>Pick MoE, then go aggressive on bits.</strong> A 35B-A3B at I-Nano (2.5bpw) fit in 12.7&nbsp;GB <em>including</em> KV on a 16GB card and decoded at 54.4&nbsp;t/s — because only ~3B of its parameters are active per token, the low-bit damage matters less. Dense models on 16GB are a speed cliff (see the 27B Q2_K_XL at 13.9&nbsp;t/s in the same data). If you must run dense, use Q3 and verify it on your actual task.</p>
+<h2 id="common-misconceptions">Common misconceptions</h2>
+<ol>
+<li><strong>"Q4 is 75% of the model."</strong> No. The degradation curve has a long flat shoulder: Q4_K_M retains most FP16 behavior on general tasks; what you lose is the last 5–10% of capability, concentrated in hard reasoning.</li>
+<li><strong>"More quantization is strictly worse."</strong> A Q4 27B beats a FP16 7B on most tasks. <em>Size beats precision up to a point</em> — the community's favorite trade.</li>
+<li><strong>"The quant <em>is</em> the model."</strong> Base-model quality dominates; the quant is a delivery format. A well-quantized new model beats a poorly-quantized old one, every time.</li>
+<li><strong>"FP8 is a datacenter thing."</strong> Not in 2026. Consumer Blackwell and RDNA4 hardware do FP8 natively, and the Matrix shows 27B FP8 serving at 120&nbsp;t/s on two R9700s.</li>
+<li><strong>"The KV cache is part of the weights."</strong> It is not. Weights are loaded once; the KV cache grows with every token of context. Quantizing weights and quantizing KV are separate decisions with separate tradeoffs.</li>
+</ol>
+<h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
+<p>Every row in the <a href="../../matrix.html">Matrix</a> carries a quant, and now you can read it: the format family (GGUF vs FP8 vs …), the bit level, and the memory the formula predicts. Use the calculator above to sanity-check a submission's numbers before you trust its speed claims — and when your own setup is ready, name both the format <em>and</em> the level in your submission.</p>
+
+  <section class="guide-related">
+    <h2>Related guides</h2>
+    <ul>
+      <li><a href="file-formats/">File Formats</a></li>
+      <li><a href="quantization-methods/">Quantization Methods</a></li>
+    </ul>
+  </section>
+</div>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="../../js/main.js"></script>
+</body>
+</html>
