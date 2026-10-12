@@ -94,6 +94,7 @@ def nav(depth: int = 0, guides_menu: list[tuple[str, str]] | None = None) -> str
       <ul class="nav-links">
         <li><a href="{p}index.html">Home</a></li>
         <li><a href="{p}matrix.html">Matrix</a></li>
+        <li><a href="{p}recommend/">Recommend</a></li>
         <li><a href="{p}community.html">Community</a></li>
 {guides_item}
         <li><a href="{p}about.html">About</a></li>
@@ -104,7 +105,8 @@ def nav(depth: int = 0, guides_menu: list[tuple[str, str]] | None = None) -> str
 
 def page_shell(title: str, description: str, body: str,
               depth: int = 0,
-              guides_menu: list[tuple[str, str]] | None = None) -> str:
+              guides_menu: list[tuple[str, str]] | None = None,
+              extra_scripts: list[str] | None = None) -> str:
     """Assemble a complete HTML document around ``body``.
 
     Args:
@@ -113,11 +115,20 @@ def page_shell(title: str, description: str, body: str,
         body: The page's inner HTML (inside ``<main>``).
         depth: Directory depth of the output page (0 = repo root).
         guides_menu: Optional Guides-dropdown entries (see :func:`nav`).
+        extra_scripts: Optional list of extra ``<script src>`` paths (relative
+            to the repo root, e.g. ``"js/recommend.js"``). Each is prefixed with
+            the depth-relative asset path and emitted after ``js/main.js``.
+            ``None`` (the default) keeps the single-``main.js`` shell so the
+            legacy pages stay byte-identical.
 
     Returns:
         The full ``<!DOCTYPE html>`` document as a string.
     """
     p = asset_prefix(depth)
+    scripts = [f'<script src="{p}js/main.js"></script>']
+    for s in (extra_scripts or []):
+        scripts.append(f'<script src="{p}{s}"></script>')
+    scripts_html = "\n".join(scripts)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -134,7 +145,7 @@ def page_shell(title: str, description: str, body: str,
 {body}
 </main>
 {FOOTER}
-<script src="{p}js/main.js"></script>
+{scripts_html}
 </body>
 </html>
 '''

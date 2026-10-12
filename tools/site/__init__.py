@@ -26,7 +26,7 @@ from pathlib import Path
 
 from . import guides
 from . import utils
-from .pages import about, community, guides_index, homepage, matrix
+from .pages import about, community, guides_index, homepage, matrix, recommend
 
 __all__ = ["main"]
 
@@ -105,6 +105,17 @@ def main(workspace: str | Path | None = None,
         path = ws / name
         path.write_text(html, encoding="utf-8")
         print(f"  wrote {name} ({len(html)} bytes)")
+
+    # --- Recommend page (recommend/index.html, depth 1; P2-1) ---
+    content_dir = ws / "content"
+    try:
+        rec_html = recommend.render(schema, content_dir, guides_menu)
+        rec_path = ws / "recommend" / "index.html"
+        rec_path.parent.mkdir(parents=True, exist_ok=True)
+        rec_path.write_text(rec_html, encoding="utf-8")
+        print(f"  wrote recommend/index.html ({len(rec_html)} bytes)")
+    except FileNotFoundError as e:
+        print(f"WARNING: {e}", file=sys.stderr)
 
     # --- data.json (raw dataset for client-side use) ---
     data_json = ws / "data.json"

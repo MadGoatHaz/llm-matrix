@@ -134,17 +134,31 @@ def render(subs: list[dict], schema: dict, stats: dict,
     </div>
   </section>'''
 
+    # --- Recommendation teaser (the P2-1 core feature, front and center) ---
+    teaser_html = '''
+  <section class="recommend-teaser" aria-labelledby="rec-teaser-title">
+    <div class="card recommend-teaser-card">
+      <div class="recommend-teaser-copy">
+        <h2 id="rec-teaser-title">🎯 Not sure what to run?</h2>
+        <p>Tell us your VRAM and what you need — we'll rank the community's real, working setups that fit your hardware, with honest tradeoffs. No guesswork, no server.</p>
+      </div>
+      <a href="recommend/" class="btn-large btn-large-primary recommend-teaser-cta">Find My Model →</a>
+    </div>
+  </section>'''
+
     body = f'''
   <section class="hero">
     <h1>The <span>Local AI Stack</span></h1>
     <p class="tagline">Your community-driven guide to running AI models on your own hardware</p>
     <div class="actions">
-      <a href="matrix.html" class="btn-large btn-large-primary">Browse the Matrix →</a>
+      <a href="recommend/" class="btn-large btn-large-primary">🎯 Find My Model</a>
+      <a href="matrix.html" class="btn-large btn-large-secondary">Browse the Matrix →</a>
       <a href="guides/" class="btn-large btn-large-secondary">Explore Guides →</a>
     </div>
   </section>
 
 {stats_html}
+{teaser_html}
 {highlights_html}
 {how_html}
 {related_html}'''

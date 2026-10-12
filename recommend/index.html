@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Find Your Model — The Local AI Stack</title>
+    <meta name="description" content="Tell us how much VRAM you have and what you want to do — we&#x27;ll rank the community&#x27;s real, working setups that fit, with honest tradeoffs.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="../index.html">Home</a></li>
+        <li><a href="../matrix.html">Matrix</a></li>
+        <li><a href="../recommend/">Recommend</a></li>
+        <li><a href="../community.html">Community</a></li>
+        <li class="nav-dropdown">
+          <a href="../guides/" class="nav-dropdown-toggle">Guides ▾</a>
+          <ul class="nav-dropdown-menu">
+            <li><a href="../guides/quantization/">Quantization Basics</a></li>
+            <li><a href="../guides/file-formats/">File Formats</a></li>
+            <li><a href="../guides/quantization-methods/">Quantization Methods</a></li>
+            <li><a href="../guides/model-architectures/">Model Architectures</a></li>
+            <li><a href="../guides/kv-cache/">KV Cache</a></li>
+            <li><a href="../guides/context-extension/">Context Extension</a></li>
+            <li><a href="../guides/backends/">Backends</a></li>
+            <li><a href="../guides/multi-gpu/">Multi-GPU &amp; Hybrid</a></li>
+          </ul>
+        </li>
+        <li><a href="../about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
+
+  <div class="page-header">
+    <h1>Find Your Model</h1>
+    <p class="subtitle">Tell us what you have and what you need — we'll rank the community's real fits.</p>
+  </div>
+
+<div class="callout"><p><b>The 30-second version:</b> You don't need to be an engineer to pick a local model. Tell us how much video memory (VRAM) your GPU has and what you want to do with it, and we'll line up the <b>real setups the community is actually running</b> that fit your hardware — ranked for you, with a plain-English reason for each one. Everything is computed right here in your browser from the <a href="../matrix.html">Matrix</a> data. No sign-up, no server, no guesswork.</p></div>
+
+<h2 id="how-to-use-it">How to use it</h2>
+<ol>
+<li><strong>Pick your VRAM.</strong> This is the only required answer — and the single biggest constraint on what you can run. A model has to fit inside your video memory, with a little headroom left for the context cache.</li>
+<li><strong>Tell us what you need</strong> <em>(optional).</em> Coding, chat, long documents, research… We match your use case against what each community setup was actually used for.</li>
+<li><strong>Set a priority</strong> <em>(optional).</em> Do you care most about speed, quality, or how much the model can remember? We rank for that and show you the tradeoff.</li>
+</ol>
+<h2 id="reading-the-results">Reading the results</h2>
+<p>Each card is a <strong>real, working setup submitted by a community member</strong> — not a theoretical recommendation. You'll see the model, the hardware it ran on, its speed, context, and precision, plus a one-line <strong>"why this matched."</strong> Follow any card into the <a href="../matrix.html">Matrix</a> for the full submission and the original forum post.</p>
+<div class="callout callout--warning"><p><b>Stay honest with yourself:</b> these are community-reported numbers, not lab benchmarks. A setup that fits your VRAM tier is a great starting point, but your exact GPU, driver, and model file will change the speed. When in doubt, start with the <b>smallest model that does the job</b> — it's faster, cooler, and leaves you room to grow.</p></div>
+
+  <section class="recommend-tool" aria-labelledby="rec-tool-title">
+    <h2 id="rec-tool-title" class="section-title">🎯 What should you run?</h2>
+    <form class="rec-form" id="rec-form" autocomplete="off">
+      <div class="rec-field rec-field--primary">
+        <label for="rec-tier">How much video memory (VRAM) does your GPU have?</label>
+        <select id="rec-tier" name="tier">
+        <option value="" disabled selected>Select your VRAM…</option>
+        <option value="t1">≤16GB</option>
+        <option value="t2">16-24GB</option>
+        <option value="t3">24-32GB</option>
+        <option value="t4">48-64GB</option>
+        <option value="t5">96-128GB</option>
+        <option value="t6">196-256GB+</option>
+        </select>
+      </div>
+
+      <details class="rec-advanced">
+        <summary>More options <span class="rec-advanced-hint">(optional — refine your results)</span></summary>
+        <div class="rec-advanced-body">
+          <div class="rec-field">
+            <label for="rec-usecase">What do you want to do with it?</label>
+            <select id="rec-usecase" name="use_case">
+        <option value="">Any use</option>
+        <option value="Agentic Coding">Agentic Coding</option>
+        <option value="Repo Editing">Repo Editing</option>
+        <option value="Deep Reasoning">Deep Reasoning</option>
+        <option value="Math/Logic">Math/Logic</option>
+        <option value="RAG">RAG</option>
+        <option value="Document Ingestion">Document Ingestion</option>
+        <option value="Creative Writing">Creative Writing</option>
+        <option value="Roleplay">Roleplay</option>
+        <option value="General Chat">General Chat</option>
+        <option value="Translation">Translation</option>
+        <option value="Security Research">Security Research</option>
+        <option value="Multimodal">Multimodal</option>
+        <option value="Production Serving">Production Serving</option>
+        <option value="Embeddings">Embeddings</option>
+        <option value="Other">Other</option>
+            </select>
+          </div>
+          <div class="rec-field">
+            <label for="rec-vendor">Which GPU vendor do you have?</label>
+            <select id="rec-vendor" name="vendor">
+        <option value="">Doesn't matter</option>
+        <option value="NVIDIA">NVIDIA</option>
+        <option value="AMD">AMD</option>
+        <option value="Apple">Apple</option>
+        <option value="Intel">Intel</option>
+        <option value="Mixed">Mixed</option>
+            </select>
+          </div>
+          <div class="rec-field">
+            <label for="rec-priority">What matters most to you?</label>
+            <select id="rec-priority" name="priority">
+              <option value="balanced" selected>Balanced (a bit of everything)</option>
+              <option value="speed">Speed — tokens per second</option>
+              <option value="quality">Quality — model precision</option>
+              <option value="context">Context — how much it can remember</option>
+            </select>
+          </div>
+        </div>
+      </details>
+    </form>
+
+    <div class="rec-results" id="rec-results" role="status" aria-live="polite">
+      <div class="rec-placeholder">
+        <p>Pick your VRAM above and the community's best fits will appear here.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="recommend-how" aria-labelledby="rec-how-title">
+    <h2 id="rec-how-title" class="section-title">How the ranking works</h2>
+    <div class="card">
+      <p><strong>Fit first.</strong> A result only appears if it runs in your VRAM tier (or a smaller one). Setups bigger than your card are never shown — they wouldn't fit.</p>
+      <p><strong>Then your needs.</strong> Pick a use case and we match it against what each setup was actually used for. Pick a vendor and matching hardware ranks higher. Your priority (speed / quality / context) sets the main sort order.</p>
+      <p><strong>Always honest.</strong> Every card is a real community submission with a plain-English "why this matched." The numbers are community-reported, not lab-tested — a starting point, not a guarantee.</p>
+    </div>
+  </section>
+  <script type="application/json" id="recommend-config">
+{
+  "tiers": [
+    {
+      "id": "t1",
+      "label": "\u226416GB",
+      "range": [
+        0,
+        16
+      ]
+    },
+    {
+      "id": "t2",
+      "label": "16-24GB",
+      "range": [
+        16,
+        24
+      ]
+    },
+    {
+      "id": "t3",
+      "label": "24-32GB",
+      "range": [
+        24,
+        32
+      ]
+    },
+    {
+      "id": "t4",
+      "label": "48-64GB",
+      "range": [
+        48,
+        64
+      ]
+    },
+    {
+      "id": "t5",
+      "label": "96-128GB",
+      "range": [
+        96,
+        128
+      ]
+    },
+    {
+      "id": "t6",
+      "label": "196-256GB+",
+      "range": [
+        196,
+        999
+      ]
+    }
+  ],
+  "use_cases": [
+    "Agentic Coding",
+    "Repo Editing",
+    "Deep Reasoning",
+    "Math/Logic",
+    "RAG",
+    "Document Ingestion",
+    "Creative Writing",
+    "Roleplay",
+    "General Chat",
+    "Translation",
+    "Security Research",
+    "Multimodal",
+    "Production Serving",
+    "Embeddings",
+    "Other"
+  ],
+  "vendors": [
+    "NVIDIA",
+    "AMD",
+    "Apple",
+    "Intel",
+    "Mixed"
+  ]
+}
+  </script>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="../js/main.js"></script>
+<script src="../js/recommend.js"></script>
+</body>
+</html>

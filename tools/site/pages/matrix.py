@@ -70,7 +70,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
             highlight = ' highlighted' if s.get("highlight") else ''
             vendor = utils.clean_value(utils.hw(s).get("vendor"))
             backend = utils.normalize_backend(s.get("backend", ""), schema)
-            body_rows.append(f'''        <tr class="{utils.html_escape(tier_id)}{highlight}" data-tier="{utils.html_escape(tier_id)}" data-vendor="{utils.html_escape(vendor)}" data-backend="{utils.html_escape(backend)}">
+            body_rows.append(f'''        <tr id="{utils.html_escape(s["id"])}" class="{utils.html_escape(tier_id)}{highlight}" data-tier="{utils.html_escape(tier_id)}" data-vendor="{utils.html_escape(vendor)}" data-backend="{utils.html_escape(backend)}">
           {td(s["source"]["username"])}
           {td(utils.hw(s).get("description"))}
           {td(utils.hw(s).get("vendor"))}
