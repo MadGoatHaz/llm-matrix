@@ -1,88 +1,432 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>The Local LLM Matrix</title>
-  <style>
-    :root {
-      --bg: #0d1117;
-      --panel: #161b22;
-      --text: #e6edf3;
-      --text-muted: #8b949e;
-      --accent: #58a6ff;
-      --border: #30363d;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--bg);
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      padding: 2rem;
-    }
-    .card {
-      max-width: 640px;
-      width: 100%;
-      background: var(--panel);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 2.5rem;
-      text-align: center;
-    }
-    h1 { margin: 0 0 0.5rem; font-size: 2rem; }
-    .tagline { color: var(--text-muted); font-size: 1.05rem; margin: 0 0 1.5rem; }
-    .status {
-      display: inline-block;
-      background: rgba(88, 166, 255, 0.12);
-      color: var(--accent);
-      border: 1px solid var(--border);
-      border-radius: 999px;
-      padding: 0.4rem 0.9rem;
-      font-size: 0.85rem;
-      margin-bottom: 1.5rem;
-    }
-    .btn {
-      display: inline-block;
-      background: var(--accent);
-      color: #0d1117;
-      font-weight: 700;
-      text-decoration: none;
-      border-radius: 8px;
-      padding: 0.8rem 1.6rem;
-      margin: 0.4rem;
-      transition: opacity 0.15s ease;
-    }
-    .btn:hover { opacity: 0.85; }
-    .btn-secondary {
-      background: transparent;
-      color: var(--accent);
-      border: 1px solid var(--border);
-    }
-    .footer { margin-top: 2rem; font-size: 0.8rem; color: var(--text-muted); }
-    .footer a { color: var(--accent); text-decoration: none; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Local LLM Matrix — Dashboard</title>
+    <meta name="description" content="Interactive dashboard of community-submitted local LLM setups, organized by VRAM tier, hardware, backend, and use case.">
+    <style>
+        :root {
+            --bg: #0f1117;
+            --surface: #1a1d2e;
+            --border: #2a2d3e;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #3b82f6;
+            --highlight: #f59e0b;
+            --green: #10b981;
+            --red: #ef4444;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            padding: 2rem;
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
+        header p { color: var(--text-muted); font-size: 0.9rem; }
+        .branding { text-align: center; margin-bottom: 1rem; }
+        .tagline { color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem; }
+        .forum-credit {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }
+        .forum-link {
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent);
+        }
+        .forum-link:hover { border-bottom-style: solid; }
+        .stats {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            margin: 1rem 0;
+            flex-wrap: wrap;
+        }
+        .stat {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0.75rem 1.25rem;
+            text-align: center;
+        }
+        .stat .num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
+        .stat .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
+        .filters {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+        }
+        .filters select, .filters input {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+        }
+        .filters input { flex: 1; min-width: 200px; }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.85rem;
+        }
+        th {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 2px solid var(--border);
+            color: var(--text-muted);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+        th:hover { color: var(--accent); }
+        td {
+            padding: 0.6rem 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+        td:first-child { font-weight: 600; color: var(--text); }
+        tr.tier-header td {
+            background: var(--surface);
+            font-weight: 700;
+            color: var(--accent);
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8rem;
+        }
+        tr.highlighted { border-left: 3px solid var(--highlight); }
+        tr:hover { background: rgba(59, 130, 246, 0.05); }
+        .how-it-works {
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0;
+        }
+        .how-it-works summary {
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+        .how-it-works[open] summary {
+            border-bottom: 1px solid var(--border);
+        }
+        .how-content {
+            padding: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }
+        .how-content a { color: var(--accent); }
+        .how-content p { margin-bottom: 0.5rem; }
+        .footer {
+            margin-top: 3rem;
+            padding-top: 1.5rem;
+            border-top: 1px solid var(--border);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+        }
+        .footer a { color: var(--accent); text-decoration: none; }
+        .footer-main { margin-bottom: 1rem; font-size: 0.85rem; }
+        .footer-cta { margin-bottom: 1rem; }
+        .btn-forum {
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }
+        .btn-forum:hover { opacity: 0.85; }
+        .footer-meta { font-size: 0.75rem; opacity: 0.7; }
+        .footer-meta a { color: var(--text-muted); }
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .filters { flex-direction: column; }
+            table { font-size: 0.75rem; }
+            td, th { padding: 0.4rem; }
+        }
+    </style>
 </head>
 <body>
-  <div class="card">
-    <h1>📊 The Local LLM Matrix</h1>
-    <p class="tagline">A community-driven reference for running local AI models on real silicon</p>
-    <div class="status">Dashboard is being generated — content loads once the data pipeline runs.</div>
-    <p>
-      <a class="btn" href="dashboard/">Open the Dashboard</a>
-      <a class="btn btn-secondary" href="https://forum.level1techs.com/t/256443">View the Forum Thread</a>
-    </p>
-    <div class="footer">
-      <p>
-        From the <a href="https://forum.level1techs.com/t/256443">Machine Learning, LLMs &amp; AI</a> community at
-        <a href="https://forum.level1techs.com"><strong>Level1Techs</strong></a>.
-      </p>
-      <p>Not an official Level1Techs product — a community resource built by forum members.</p>
+    <div class="container">
+        <header>
+            <div class="branding">
+                <h1>📊 The Local LLM Matrix</h1>
+                <p class="tagline">A community-driven reference for running local AI models on real silicon</p>
+                <p class="forum-credit">
+                    From the <a href="https://forum.level1techs.com/t/256443" class="forum-link">Machine Learning, LLMs &amp; AI</a> community at
+                    <a href="https://forum.level1techs.com" class="forum-link"><strong>Level1Techs</strong></a>
+                </p>
+            </div>
+            <div class="stats">
+                <div class="stat"><div class="num">13</div><div class="label">Submissions</div></div>
+                <div class="stat"><div class="num">3</div><div class="label">Vendors</div></div>
+                <div class="stat"><div class="num">9</div><div class="label">Backends</div></div>
+                <div class="stat"><div class="num">3</div><div class="label">Tiers</div></div>
+            </div>
+        </header>
+
+        <details class="how-it-works">
+        <summary>ℹ️ How This Dashboard Works</summary>
+        <div class="how-content">
+            <p>This is a <strong>read-only view</strong> of community submissions from the
+            <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread on Level1Techs</a>.</p>
+            <p><strong>How to contribute:</strong> Head to the
+            <a href="https://forum.level1techs.com/t/256443/2">forum thread</a> and use the submission template in Post #2.
+            Your data will appear here within the next weekly update.</p>
+            <p><strong>Data is community-reported.</strong> We don't independently verify benchmarks.
+            Treat numbers as user-experienced, not lab-tested. Hardware, drivers, and setup all affect results.</p>
+            <p><strong>Respect the contributors.</strong> The data here is people sharing their time and experience.
+            Link back to the forum, credit usernames, and keep the discussion constructive.</p>
+        </div>
+        </details>
+
+        <div class="filters">
+            <input type="text" id="search" placeholder="Search models, hardware, notes...">
+            <select id="filter-tier">
+                <option value="">All Tiers</option>
+                <option value="t1">≤16GB</option><option value="t2">16-24GB</option><option value="t3">24-32GB</option><option value="t4">48-64GB</option><option value="t5">96-128GB</option><option value="t6">196-256GB+</option>
+            </select>
+            <select id="filter-vendor">
+                <option value="">All Vendors</option>
+                <option>AMD</option><option>Mixed</option><option>NVIDIA</option>
+            </select>
+            <select id="filter-backend">
+                <option value="">All Backends</option>
+                <option>Ollama</option><option>Strata 0.1.42</option><option>[vLLM | llama.cpp | LM Studio | Ollama | Unsloth Desktop | llama-swap | Colibri | Other]</option><option>llama-swap (llama.cpp subprocess)</option><option>llama-swap (llama.cpp subprocess, ROCm)</option><option>llama-swap (llama.cpp subprocess, ROCm/ROCm backends)</option><option>llamacpp</option><option>vLLM</option><option>vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)</option>
+            </select>
+        </div>
+
+        <table id="main-table">
+            <thead>
+                <tr>
+                    <th onclick="sortTable(0)">Contributor</th>
+                    <th onclick="sortTable(1)">Hardware</th>
+                    <th onclick="sortTable(2)">Vendor</th>
+                    <th onclick="sortTable(3)">Backend</th>
+                    <th onclick="sortTable(4)">Model</th>
+                    <th onclick="sortTable(5)">Quant</th>
+                    <th onclick="sortTable(6)">Speed</th>
+                    <th onclick="sortTable(7)">Context</th>
+                </tr>
+            </thead>
+            <tbody>
+                
+      <tr class="tier-header"><td colspan="8">≤16GB</td></tr>
+
+      <tr>
+        <td>MadGoat</td>
+        <td>[e.g., 2x RX 7900 XTX 24GB, 4x MI210, 1x RTX 4060 Ti 16GB, M</td>
+        <td>NVIDIA</td>
+        <td>[vLLM | llama.cpp | LM Studio | Ollama | Unsloth Desktop | llama-swap | Colibri | Other]</td>
+        <td>[Full model repository or exact filename</td>
+        <td>[e.g., AutoRound W4A16, GGUF Q</td>
+        <td>[Decode tok/s]</td>
+        <td>[Actual token count </td>
+      </tr>
+      <tr>
+        <td>MadGoat</td>
+        <td>1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RA</td>
+        <td>AMD</td>
+        <td>llama-swap (llama.cpp subprocess, ROCm)</td>
+        <td>samuelcardillo/Carnice-Qwen3.6-MoE-35B-A</td>
+        <td>GGUF I-Nano</td>
+        <td>54.4 decode</td>
+        <td>65536 tokens (NIAH h</td>
+      </tr>
+      <tr>
+        <td>Burhan</td>
+        <td>1x RTX-4000 Ada SFF (20 GB)</td>
+        <td>NVIDIA</td>
+        <td>Ollama</td>
+        <td>* Qwen3.6-27b-q4_KM</td>
+        <td>[e.g., AutoRound W4A16, GGUF Q</td>
+        <td>~20-30 t/s</td>
+        <td>* 52k Qwen3.6-27b</td>
+      </tr>
+      <tr>
+        <td>s1ugh34d</td>
+        <td>Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM</td>
+        <td>AMD</td>
+        <td>llama-swap (llama.cpp subprocess, ROCm/ROCm backends)</td>
+        <td>samuelcardillo/Carnice-Qwen3.6-MoE-35B-A</td>
+        <td>GGUF I-Nano</td>
+        <td>54.4 tps decode / 215 tok/s prefill (short ctx)</td>
+        <td>65536 tokens native </td>
+      </tr>
+      <tr>
+        <td>s1ugh34d</td>
+        <td>Radeon VII 16GB HBM2 (gfx906)</td>
+        <td>AMD</td>
+        <td>llama-swap (llama.cpp subprocess)</td>
+        <td>deadbydawn101/gemma-4-E4B-Agentic-Opus-R</td>
+        <td>GGUF Q4_K_M</td>
+        <td>86.7 tps decode / 408 tok/s prefill</td>
+        <td>49152 tokens (NIAH h</td>
+      </tr>
+      <tr>
+        <td>s1ugh34d</td>
+        <td>Radeon VII 16GB HBM2 (gfx906)</td>
+        <td>AMD</td>
+        <td>llama-swap (llama.cpp subprocess)</td>
+        <td>unsloth/Qwen3.8-27B-GGUF (UD-Q2_K_XL)</td>
+        <td>GGUF UD-Q2_K_XL</td>
+        <td>13.9 tps decode / 79 tok/s prefill</td>
+        <td>49152 tokens (NIAH h</td>
+      </tr>
+      <tr>
+        <td>s1ugh34d</td>
+        <td>Radeon VII 16GB HBM2 (gfx906)</td>
+        <td>AMD</td>
+        <td>llama-swap (llama.cpp subprocess)</td>
+        <td>MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-</td>
+        <td>GGUF Q4_K_M</td>
+        <td>84.4 tps decode / 490 tok/s prefill</td>
+        <td>16384 tokens (native</td>
+      </tr>
+      <tr>
+        <td>s1ugh34d</td>
+        <td>Radeon VII 16GB HBM2 (gfx906)</td>
+        <td>AMD</td>
+        <td>llama-swap (llama.cpp subprocess)</td>
+        <td>bartowski/Qwen_Qwen3.5-4B-GGUF</td>
+        <td>GGUF Q4_K_M</td>
+        <td>96.4 tps decode / 468 tok/s prefill</td>
+        <td>65536 tokens (native</td>
+      </tr>
+      <tr class="tier-header"><td colspan="8">24-32GB</td></tr>
+
+      <tr>
+        <td>MadGoat</td>
+        <td>1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 99</td>
+        <td>NVIDIA</td>
+        <td>Strata 0.1.42</td>
+        <td>Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)</td>
+        <td>GGUF IQ3_S (ISTA-DASLab GSQ-RC</td>
+        <td>99-128 decode (median 108)</td>
+        <td>131072 configured; ></td>
+      </tr>
+      <tr class="tier-header"><td colspan="8">48-64GB</td></tr>
+
+      <tr>
+        <td>MadGoat</td>
+        <td>2x AMD R9700 (48GB total)</td>
+        <td>AMD</td>
+        <td>vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)</td>
+        <td>d0xin/Swift-Qwen3.8-27B-Uncensored-FP8</td>
+        <td>FP8</td>
+        <td>120 (code) / 70 (chat)</td>
+        <td>~240k tokens</td>
+      </tr>
+      <tr>
+        <td>digitalscream</td>
+        <td>2 x R9700</td>
+        <td>AMD</td>
+        <td>vLLM</td>
+        <td>d0xin/Swift-Qwen3.8-27B-Uncensored-FP8</td>
+        <td>FP8</td>
+        <td>120t/s code, 70t/s chat</td>
+        <td>~240k</td>
+      </tr>
+      <tr>
+        <td>PawingUnplug</td>
+        <td>2 x w7900</td>
+        <td>AMD</td>
+        <td>llamacpp</td>
+        <td>Qwen3.8-Flash-Next-Q4_K_M</td>
+        <td></td>
+        <td>~35t/s chat</td>
+        <td>~262k</td>
+      </tr>
+            </tbody>
+        </table>
+
+        <div class="footer">
+            <p class="footer-main">
+                <strong>The Local LLM Matrix</strong> is a community project originating from
+                <a href="https://forum.level1techs.com/t/256443">Level1Techs</a>.
+                All data is community-submitted and user-reported.
+            </p>
+            <p class="footer-cta">
+                <a href="https://forum.level1techs.com/t/256443" class="btn-forum">
+                    💬 Join the Discussion / Submit Your Setup
+                </a>
+            </p>
+            <p class="footer-meta">
+                Last updated: 2026-10-12 |
+                <a href="https://forum.level1techs.com">forum.level1techs.com</a> |
+                Not an official Level1Techs product — a community resource built by forum members.
+            </p>
+        </div>
     </div>
-  </div>
+
+    <script>
+        // Simple client-side filtering
+        const search = document.getElementById('search');
+        const tierFilter = document.getElementById('filter-tier');
+        const vendorFilter = document.getElementById('filter-vendor');
+        const backendFilter = document.getElementById('filter-backend');
+        const rows = document.querySelectorAll('#main-table tbody tr');
+
+        function applyFilters() {
+            const q = search.value.toLowerCase();
+            const tier = tierFilter.value;
+            const vendor = vendorFilter.value;
+            const backend = backendFilter.value;
+
+            rows.forEach(row => {
+                if (row.classList.contains('tier-header')) {
+                    row.style.display = '';
+                    return;
+                }
+                const text = row.textContent.toLowerCase();
+                const cells = row.cells;
+                let show = true;
+                if (q && !text.includes(q)) show = false;
+                if (vendor && cells[2] && cells[2].textContent !== vendor) show = false;
+                if (backend && cells[3] && cells[3].textContent !== backend) show = false;
+                row.style.display = show ? '' : 'none';
+            });
+        }
+
+        search.addEventListener('input', applyFilters);
+        tierFilter.addEventListener('change', applyFilters);
+        vendorFilter.addEventListener('change', applyFilters);
+        backendFilter.addEventListener('change', applyFilters);
+
+        // Simple sort
+        let sortDir = 1;
+        function sortTable(col) {
+            const tbody = document.querySelector('#main-table tbody');
+            const dataRows = Array.from(tbody.querySelectorAll('tr:not(.tier-header)'));
+            dataRows.sort((a, b) => {
+                const av = a.cells[col]?.textContent || '';
+                const bv = b.cells[col]?.textContent || '';
+                return av.localeCompare(bv, undefined, {numeric: true}) * sortDir;
+            });
+            dataRows.forEach(r => tbody.appendChild(r));
+            sortDir *= -1;
+        }
+    </script>
 </body>
 </html>

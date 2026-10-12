@@ -1,0 +1,17 @@
+✓ Parsed 13 submissions from 20 posts
+✓ Output: /home/madgoat/Documents/Local LLM Matrix/data/submissions.json
+
+Tier distribution:
+  t1: 8
+  t3: 1
+  t4: 3
+  unclassified: 1
+
+Hardware vendors:
+  AMD: 9
+  Mixed: 1
+  NVIDIA: 3
+
+⚠️  2 warning(s):
+  - Post #2 (MadGoat): Could not normalize tier from 'N/A'
+  - Post #2 (MadGoat): No backend specified
