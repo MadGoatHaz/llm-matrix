@@ -1,67 +1,86 @@
-"""``guides.html`` — the guides hub.
+"""Guides index and redirect stub.
 
-The eight guide topics as cards. In this phase each is a "Coming Soon" card;
-P1-9 replaces them with live links to the authored ``guides/<slug>/`` pages.
+Two documents are produced:
+
+* ``guides/index.html`` — the real guides hub, rendered from
+  ``content/guides/index.md`` at depth 1. This is the landing point
+  for the educational section.
+* ``guides.html`` — a thin redirect stub (meta refresh + canonical)
+  that preserves back-compat with any existing links to the old
+  flat-page URL.
 """
 
 from __future__ import annotations
 
+from pathlib import Path
+
+from .. import markdown as md
 from .. import utils
 from ..template import page_shell
 
-#: (icon, name, description) for each of the eight guides.
-GUIDES = [
-    ("🔢", "Quantization Basics",
-     "What are W4A16, FP8, Q4_K_M? How precision affects quality and speed."),
-    ("📦", "File Formats",
-     "GGUF vs safetensors vs MLX. What's inside a model file and when to use which."),
-    ("⚙️", "Quantization Methods",
-     "AutoRound, AWQ, GPTQ, RTN, SmoothQuant. How quants are made and their tradeoffs."),
-    ("🧠", "Model Architectures",
-     "Dense vs MoE. What A3B means. How 125B models run on 24GB."),
-    ("💾", "KV Cache",
-     "The memory eater. Why context length costs VRAM and when to quantize it."),
-    ("📏", "Context Extension",
-     "RoPE, YaRN, NTK. Pushing models beyond their native context window."),
-    ("⚡", "Backends Deep Dive",
-     "vLLM, llama.cpp, Strata, Radiance, Ollama. When to use which."),
-    ("🖥️", "Multi-GPU & Hybrid",
-     "Tensor parallel, layer offload, VRAM+RAM+SSD. Making big models fit."),
-]
-
 
 def render() -> str:
-    """Render the guides hub document.
+    """Render the ``guides.html`` redirect stub.
+
+    A minimal page that meta-refreshes to ``guides/`` and carries a
+    canonical link so search engines follow the move.
 
     Returns:
-        The full ``guides.html`` document.
+        The full ``guides.html`` document (depth 0).
     """
-    cards = []
-    for icon, name, desc in GUIDES:
-        cards.append(f'''
-    <div class="guide-card">
-      <div class="guide-icon">{icon}</div>
-      <h3>{utils.html_escape(name)}</h3>
-      <p>{utils.html_escape(desc)}</p>
-      <div class="guide-meta"><span class="badge badge-amber">Coming Soon</span></div>
-    </div>''')
-
-    body = f'''
-  <div class="page-header">
-    <h1>Guides</h1>
-    <p class="subtitle">Understand the technology behind your setup</p>
-  </div>
-
-  <div class="card-grid">
-{chr(10).join(cards)}
-  </div>
-
-  <div class="card">
-    <h3>🚧 Guides are being written</h3>
-    <p>Check back soon. In the meantime, the <a href="{utils.FORUM_THREAD}">forum thread</a> has the discussion.</p>
-  </div>'''
-
+    body = (
+        '  <div class="page-header">\n'
+        '    <h1>Guides</h1>\n'
+        '    <p class="subtitle">Redirecting to the guides index&hellip;</p>\n'
+        '  </div>\n'
+        '  <p><a href="guides/">Continue to the Guides index →</a></p>'
+    )
     title = "Guides — The Local AI Stack"
-    desc = ("Understand the technology behind your setup: quantization, file formats, KV cache, "
-            "model architectures, context extension, backends, and multi-GPU.")
-    return page_shell(title, desc, body)
+    desc = ("Understand the technology behind your setup: quantization, file formats, "
+            "KV cache, model architectures, context extension, backends, and multi-GPU.")
+    html = page_shell(title, desc, body)
+    # Inject the meta refresh + canonical right after the <title> tag.
+    meta_refresh = ('    <meta http-equiv="refresh" content="0; url=guides/">\n'
+                    '    <link rel="canonical" href="guides/">')
+    html = html.replace("</title>", f"</title>\n{meta_refresh}", 1)
+    return html
+
+
+def render_index(content_dir: Path,
+                 guides_menu: list[tuple[str, str]] | None = None) -> str:
+    """Render the guides index from ``content/guides/index.md``.
+
+    The index lives at ``guides/index.html`` (depth 1). It is rendered
+    through the same markdown pipeline as the individual guides, but
+    without the ``.guide`` wrapper (the index uses the normal page layout
+    with card grids).
+
+    Args:
+        content_dir: The authored-content directory (``content/guides``).
+        guides_menu: Optional ``(label, url)`` list for the nav dropdown.
+
+    Returns:
+        The full ``guides/index.html`` document.
+
+    Raises:
+        FileNotFoundError: if ``content/guides/index.md`` does not exist.
+    """
+    index_path = content_dir / "index.md"
+    if not index_path.exists():
+        raise FileNotFoundError(f"Guides index not found: {index_path}")
+
+    text = index_path.read_text(encoding="utf-8")
+    meta, body = md.split_front_matter(text)
+
+    title = meta.get("title", "Guides")
+    description = meta.get(
+        "description",
+        "The complete educational series for local LLMs.")
+
+    body_html = md.render_markdown(body)
+    # The index page uses the normal page layout (not the .guide long-form
+    # wrapper), so the card-grid and guide-card styles apply directly.
+    wrapped = f'\n{body_html}'
+
+    return page_shell(title, description, wrapped, depth=1,
+                      guides_menu=guides_menu)

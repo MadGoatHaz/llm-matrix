@@ -10,7 +10,8 @@ from .. import utils
 from ..template import page_shell
 
 
-def render(subs: list[dict], schema: dict, stats: dict) -> str:
+def render(subs: list[dict], schema: dict, stats: dict,
+           guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render the homepage document.
 
     Args:
@@ -139,7 +140,7 @@ def render(subs: list[dict], schema: dict, stats: dict) -> str:
     <p class="tagline">Your community-driven guide to running AI models on your own hardware</p>
     <div class="actions">
       <a href="matrix.html" class="btn-large btn-large-primary">Browse the Matrix →</a>
-      <a href="guides.html" class="btn-large btn-large-secondary">Explore Guides →</a>
+      <a href="guides/" class="btn-large btn-large-secondary">Explore Guides →</a>
     </div>
   </section>
 
@@ -151,4 +152,4 @@ def render(subs: list[dict], schema: dict, stats: dict) -> str:
     title = "The Local AI Stack — Community-Driven Local LLM Reference"
     desc = ("Your community-driven guide to running AI models on your own hardware. "
             "Browse the matrix, explore guides, and see what the community is running.")
-    return page_shell(title, desc, body)
+    return page_shell(title, desc, body, guides_menu=guides_menu)

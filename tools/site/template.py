@@ -65,7 +65,7 @@ def _guides_dropdown(p: str, guides_menu: list[tuple[str, str]]) -> str:
     )
     return (
         '        <li class="nav-dropdown">\n'
-        f'          <a href="{p}guides.html" class="nav-dropdown-toggle">Guides ▾</a>\n'
+        f'          <a href="{p}guides/" class="nav-dropdown-toggle">Guides ▾</a>\n'
         f'          <ul class="nav-dropdown-menu">\n{items}\n          </ul>\n'
         '        </li>'
     )

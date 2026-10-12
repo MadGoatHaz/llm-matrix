@@ -23,7 +23,8 @@ def td(value) -> str:
     return f'<td title="{v}">{v}</td>'
 
 
-def render(subs: list[dict], schema: dict, stats: dict) -> str:
+def render(subs: list[dict], schema: dict, stats: dict,
+           guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render the matrix document.
 
     Args:
@@ -134,4 +135,4 @@ def render(subs: list[dict], schema: dict, stats: dict) -> str:
     title = "The Matrix — The Local AI Stack"
     desc = ("All community submissions, filterable and sortable: VRAM tier, hardware, vendor, "
             "backend, model, quant, use case, speed, context, KV cache, power, engine mode.")
-    return page_shell(title, desc, body)
+    return page_shell(title, desc, body, guides_menu=guides_menu)

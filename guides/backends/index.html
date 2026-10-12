@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backends Deep Dive</title>
+    <meta name="description" content="Every local LLM inference engine compared — llama.cpp, llama-swap, Ollama, LM Studio, Unsloth Desktop, vLLM, TensorRT-LLM, Strata, Radiance, MLX, and Colibri. What each does, when to use it, the exact command to start, and the golden rules for picking.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="../../index.html">Home</a></li>
+        <li><a href="../../matrix.html">Matrix</a></li>
+        <li><a href="../../community.html">Community</a></li>
+        <li class="nav-dropdown">
+          <a href="../../guides/" class="nav-dropdown-toggle">Guides ▾</a>
+          <ul class="nav-dropdown-menu">
+            <li><a href="../../guides/quantization/">Quantization Basics</a></li>
+            <li><a href="../../guides/file-formats/">File Formats</a></li>
+            <li><a href="../../guides/quantization-methods/">Quantization Methods</a></li>
+            <li><a href="../../guides/model-architectures/">Model Architectures</a></li>
+            <li><a href="../../guides/kv-cache/">KV Cache</a></li>
+            <li><a href="../../guides/context-extension/">Context Extension</a></li>
+            <li><a href="../../guides/backends/">Backends</a></li>
+            <li><a href="../../guides/multi-gpu/">Multi-GPU &amp; Hybrid</a></li>
+          </ul>
+        </li>
+        <li><a href="../../about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
+
+<div class="guide">
+<h1 id="choosing-your-backend-every-local-llm-inference-engine-compared">Choosing Your Backend: Every Local LLM Inference Engine Compared</h1>
+<div class="callout"><p><b>The 30-second version:</b> A *backend* is the program that loads your model file and turns tokens in, tokens out. It decides what formats you can run, what hardware you can use, how fast things go, and how much control you get. There is no single "best" backend — there is a best one *for your situation*. The short version: <b>Ollama or LM Studio</b> if you want it working in five minutes, <b>llama.cpp</b> if you want control on a single GPU, <b>vLLM or Radiance</b> if you are serving production workloads, and <b>Strata</b> if you are running a big MoE model on a consumer card with lots of RAM. The decision matrix at the end of this guide makes it concrete.</p></div>
+
+<h2 id="why-the-backend-matters">Why the backend matters</h2>
+<p>The model file is the <em>what</em>; the backend is the <em>how</em>. The same 27B model at Q4_K_M can decode at 14 t/s on a 16GB card through one backend and 54 t/s through another, depending on kernel quality, memory management, and how efficiently the engine moves data between VRAM, RAM, and SSD. The backend also determines which file formats you can use, which GPUs and operating systems it supports, and what performance features are available (continuous batching, PagedAttention, speculative decoding, prompt caching).</p>
+<p>The Matrix tracks five backends across its twelve submissions: <strong>llama-swap</strong> (6), <strong>vLLM</strong> (2), <strong>llama.cpp</strong> (2), <strong>Strata</strong> (1), and <strong>Ollama</strong> (1). That distribution tells you what the community is actually running. The eleven engines below are the full landscape as of late 2026.</p>
+<h2 id="the-master-comparison">The master comparison</h2>
+<p>This is the table to bookmark. Every backend in the local-inference world, one row each:</p>
+<table>
+<thead>
+<tr>
+<th>Backend</th>
+<th>Formats</th>
+<th>GPU / OS</th>
+<th>Key Strength</th>
+<th>Best For</th>
+<th>Avoid When</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>llama.cpp</strong></td>
+<td>GGUF (all quants)</td>
+<td>CUDA, ROCm, Vulkan, Metal, CPU</td>
+<td>The universal baseline. Every quant, every GPU, every OS.</td>
+<td>Single-GPU control, custom builds, benchmarking</td>
+<td>Multi-GPU tensor parallel (use vLLM/Radiance), production serving</td>
+</tr>
+<tr>
+<td><strong>llama-swap</strong></td>
+<td>GGUF (via llama.cpp)</td>
+<td>CUDA, ROCm, Vulkan, Metal</td>
+<td>Auto-swaps multiple models on one GPU. OpenAI API.</td>
+<td>"Always-on" single-GPU setups, multiple models, OpenAI clients</td>
+<td>You need one model at full speed with no swap overhead</td>
+</tr>
+<tr>
+<td><strong>Ollama</strong></td>
+<td>GGUF</td>
+<td>CUDA, ROCm, Metal, CPU</td>
+<td>Five-minute setup. <code>ollama run &lt;model&gt;</code>. No config.</td>
+<td>Quick testing, casual chat, getting started</td>
+<td>Power users who need context flags, KV quant, custom kernels</td>
+</tr>
+<tr>
+<td><strong>LM Studio</strong></td>
+<td>GGUF</td>
+<td>CUDA, ROCm, Metal, CPU</td>
+<td>GUI model browser, one-click server, beginner-friendly.</td>
+<td>Visual discovery, non-terminal users, trying models</td>
+<td>Scripting, headless servers, multi-model automation</td>
+</tr>
+<tr>
+<td><strong>Unsloth Desktop</strong></td>
+<td>GGUF, safetensors, FP8, MLX</td>
+<td>CUDA, ROCm, Metal</td>
+<td>All-in-one: run, chat, fine-tune, serve. Multiple formats.</td>
+<td>The complete local AI workstation, format flexibility</td>
+<td>You only need one format and one model</td>
+</tr>
+<tr>
+<td><strong>vLLM</strong></td>
+<td>safetensors, FP8, AutoRound, AWQ</td>
+<td>CUDA (multi-GPU)</td>
+<td>Continuous batching, PagedAttention, tensor parallel, OpenAI API.</td>
+<td>Production serving, multi-user, high throughput</td>
+<td>Single-GPU consumer cards, GGUF-only workflows</td>
+</tr>
+<tr>
+<td><strong>TensorRT-LLM</strong></td>
+<td>safetensors, FP8, NVFP4</td>
+<td>CUDA (NVIDIA only)</td>
+<td>Kernel-level optimization, max NVIDIA performance.</td>
+<td>Absolute peak NVIDIA throughput, datacenter-grade serving</td>
+<td>AMD/Apple, GGUF, anything not NVIDIA</td>
+</tr>
+<tr>
+<td><strong>Strata</strong></td>
+<td>GGUF (I-Nano, IQ3_S, K-quants)</td>
+<td>CUDA, ROCm, CPU</td>
+<td>Hybrid VRAM+RAM+SSD offload. Prompt caching. One-click.</td>
+<td>125B+ MoE on consumer hardware, long-context agents</td>
+<td>Dense models that don't benefit from hybrid offload</td>
+</tr>
+<tr>
+<td><strong>Radiance</strong></td>
+<td>safetensors, FP8, NVFP4</td>
+<td>ROCm (RDNA3/4), MI300X</td>
+<td>AMD-optimized kernels, MTP speculative decoding, 200+ t/s.</td>
+<td>AMD multi-GPU, the best AMD answer to vLLM</td>
+<td>NVIDIA, Apple, single-GPU consumer AMD</td>
+</tr>
+<tr>
+<td><strong>MLX</strong></td>
+<td>MLX format</td>
+<td>Apple Silicon (Metal)</td>
+<td>Unified memory, native Apple performance.</td>
+<td>Mac-only setups, Apple Silicon users</td>
+<td>NVIDIA/AMD, non-Apple hardware</td>
+</tr>
+<tr>
+<td><strong>Colibri</strong></td>
+<td>GGUF, safetensors</td>
+<td>CPU only (no GPU)</td>
+<td>Runs on 1TB+ RAM systems. No GPU required.</td>
+<td>CPU-only servers, niche batch work, 1–5 t/s is acceptable</td>
+<td>Anything needing interactive speed, GPU hardware available</td>
+</tr>
+</tbody>
+</table>
+<h2 id="one-card-per-backend">One card per backend</h2>
+<p>Each card below gives the one-sentence identity, the exact getting-started command, and the honest tradeoffs.</p>
+<h3 id="llamacpp">llama.cpp</h3>
+<p><strong>The universal engine.</strong> Every local LLM story starts here. It reads GGUF files, runs on virtually every GPU architecture (CUDA, ROCm, Vulkan, Metal) and pure CPU, and exposes a C API that a dozen other tools wrap. It is the reference implementation: if a quant works anywhere, it works in llama.cpp first.</p>
+<pre><code class="language-bash"># Single GPU, all layers offloaded, 32k context
+llama-server -m Qwen3.8-27B-Q4_K_M.gguf -ngl 99 -c 32768 --host 0.0.0.0 --port 8080
+
+# AMD (ROCm)
+llama-server -m Qwen3.8-27B-Q4_K_M.gguf -ngl 99 -c 16384 --main-gpu 0
+
+# CPU only (no GPU)
+llama-server -m Qwen3.8-27B-Q4_K_M.gguf -ngl 0 -c 8192 -t 32
+</code></pre>
+<p><strong>When to use:</strong> Maximum control on a single GPU. Benchmarking. Custom workflows. A quant no other engine supports.</p>
+<p><strong>When to avoid:</strong> Multi-GPU tensor parallel (vLLM/Radiance). Five-minute setup (Ollama/LM Studio). Multi-user serving (vLLM).</p>
+<p>The Matrix's llama.cpp submissions (s1ugh34d's 27B UD-Q2_K_XL on a 16GB Radeon VII at 13.9 t/s) show both the power and the pain: raw llama.cpp gives you every flag, but you have to wire up the model path, context length, and GPU offload yourself.</p>
+<h3 id="llama-swap">llama-swap</h3>
+<p><strong>Multi-model auto-swapping on one GPU.</strong> llama-swap wraps llama.cpp as a subprocess and adds a model router: when a client requests a model that is not currently loaded, it evicts the current one and loads the new. The result is an "always-on" OpenAI-compatible API that can serve dozens of models from a single GPU without manual intervention.</p>
+<pre><code class="language-bash"># Install
+pip install llama-swap
+
+# Run with auto-swap, 24GB GPU
+llama-swap --model-dir ./models --host 0.0.0.0 --port 1234
+
+# Request a specific model via the OpenAI API
+curl http://localhost:1234/v1/chat/completions \
+  -H &quot;Content-Type: application/json&quot; \
+  -d '{&quot;model&quot;: &quot;Qwen3.8-27B-Q4_K_M&quot;, &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello&quot;}]}'
+</code></pre>
+<p><strong>When to use:</strong> Multiple models on one GPU with no manual swapping. OpenAI-compatible clients (Cursor, Continue, Cline). The most popular backend in the Matrix (6 of 12) because it is the practical answer to "five models on my 24GB card."</p>
+<p><strong>When to avoid:</strong> One model at full speed (swap overhead is small but nonzero). Production multi-user serving (vLLM batching is superior).</p>
+<h3 id="ollama">Ollama</h3>
+<p><strong>The "Docker for LLMs."</strong> One command to install, one command to run a model, zero configuration. Ollama pulls GGUF models from its registry, manages them locally, and exposes a simple API. It is the fastest path from "I have a GPU" to "I am chatting with a 27B model."</p>
+<pre><code class="language-bash"># Install (Linux)
+curl -fsSL https://ollama.com/install.sh | sh
+
+# Run a model (pulls it automatically on first use)
+ollama run qwen3.8-27b
+
+# Use a specific quant
+ollama run qwen3.8-27b:q4_K_M
+
+# Run as a server (for API access)
+ollama serve
+</code></pre>
+<p><strong>When to use:</strong> New to local LLMs. Testing a model in under five minutes. No need for fine-grained context flags, KV quantization, or custom kernels. The on-ramp.</p>
+<p><strong>When to avoid:</strong> Context lengths beyond defaults. KV cache quantization. Production serving. Formats Ollama does not ship (safetensors, FP8). You have outgrown Ollama — move to llama.cpp or vLLM.</p>
+<h3 id="lm-studio">LM Studio</h3>
+<p><strong>The GUI wrapper.</strong> LM Studio is a desktop app with a model browser, one-click download, a chat interface, and a built-in server. It wraps llama.cpp under the hood, so the models it runs are the same GGUF files — you just do not have to type the commands.</p>
+<pre><code class="language-bash"># No command needed — it is a GUI app.
+# Download from https://lmstudio.ai
+# Open the app → &quot;My Models&quot; → search → download → chat or start server.
+</code></pre>
+<p><strong>When to use:</strong> You prefer a visual interface. You are exploring models and want to compare them without reading terminal output. You are on Windows and want the least-friction path.</p>
+<p><strong>When to avoid:</strong> You are on a headless Linux server. You need scripting or API integration beyond what the built-in server offers. You want to fine-tune (use Unsloth Desktop).</p>
+<h3 id="unsloth-desktop">Unsloth Desktop</h3>
+<p><strong>The all-in-one workstation.</strong> Unsloth Desktop runs, chats, fine-tunes, and serves models from a single application. It supports multiple formats (GGUF, safetensors, FP8, MLX) and multiple backends (llama.cpp core + vLLM serving), making it the most capable single-package option for a local AI setup.</p>
+<pre><code class="language-bash"># Install
+pip install unsloth
+
+# Run a model
+unsloth run --model Qwen3.8-27B --quant Q4_K_M --context 32768
+
+# Fine-tune (LoRA)
+unsloth finetune --model Qwen3.8-27B --dataset ./my_data --epochs 3
+
+# Serve
+unsloth serve --model Qwen3.8-27B --port 8080
+</code></pre>
+<p><strong>When to use:</strong> You want one tool that does everything: run models, chat, fine-tune, and serve. You work across formats (GGUF for inference, safetensors for training). You are on a single machine that is your whole AI lab.</p>
+<p><strong>When to avoid:</strong> You only need to run one model. You are in a production multi-GPU cluster (use vLLM directly). The all-in-one flexibility has a small performance overhead versus a purpose-built engine.</p>
+<h3 id="vllm">vLLM</h3>
+<p><strong>The production server.</strong> vLLM is the standard for serious LLM deployment. Its two signature features are <strong>continuous batching</strong> (requests are interleaved at the token level, so one slow request does not block others) and <strong>PagedAttention</strong> (KV cache is managed in pages, eliminating fragmentation). It supports multi-GPU tensor parallelism, FP8, and the full safetensors/AutoRound/AWQ format ecosystem.</p>
+<pre><code class="language-bash"># Single GPU
+vllm serve Qwen/Qwen3.8-27B --quantization fp8 --max-model-len 32768
+
+# Two GPUs (tensor parallel)
+vllm serve Qwen/Qwen3.8-27B --tensor-parallel-size 2 --max-model-len 32768
+
+# Four GPUs
+vllm serve Qwen/Qwen3.8-Flash-Next --tensor-parallel-size 4 --quantization fp8
+</code></pre>
+<p><strong>When to use:</strong> Serving multiple users. High throughput, low latency. 2+ GPUs with tensor parallelism. Datacenter or serious homelab. The "grown-up" choice.</p>
+<p><strong>When to avoid:</strong> Single consumer GPU for casual chat (Ollama/llama.cpp is simpler). GGUF-only workflows (vLLM prefers safetensors/FP8). AMD (use Radiance).</p>
+<p>The Matrix's vLLM submissions (digitalscream's 27B on 2× R9700 via the vllm-radiance fork at 120 t/s, and MadGoat's 125B MoE) show vLLM at its best: multi-GPU, high throughput, production-grade.</p>
+<h3 id="tensorrt-llm">TensorRT-LLM</h3>
+<p><strong>NVIDIA's max-performance option.</strong> TensorRT-LLM compiles your model into optimized CUDA kernels, fusing operations and eliminating memory round-trips. It is the fastest NVIDIA engine available, but it requires a NVIDIA GPU, a model in safetensors/FP8/NVFP4 format, and a willingness to wrestle with a build process.</p>
+<pre><code class="language-bash"># Build and serve (requires TensorRT, CUDA 12+)
+trtllm-build --model_dir ./Qwen3.8-27B-FP8 \
+  --precision fp8 --use_weight_streaming
+
+trtllm-serve --model_dir ./Qwen3.8-27B-FP8 --port 8000
+</code></pre>
+<p><strong>When to use:</strong> You have NVIDIA hardware and need the absolute highest tokens/second. You are in a datacenter. You are willing to spend time on the build pipeline.</p>
+<p><strong>When to avoid:</strong> You are on AMD, Apple, or a single consumer GPU. You use GGUF. You want a five-minute setup. The learning curve is the highest of any backend here.</p>
+<h3 id="strata">Strata</h3>
+<p><strong>The hybrid offload engine.</strong> <em>New and evolving.</em> Strata is designed for one specific problem: running 125B+ MoE models on consumer hardware that has one or two GPUs and a lot of system RAM. It splits the model across three memory tiers — VRAM for the hot experts, RAM for the warm ones, and NVMe SSD for the cold — and uses prompt caching to keep the KV cache for repeated agent prefixes in fast memory.</p>
+<pre><code class="language-bash"># One-click install
+curl -fsSL https://strata.ai/install.sh | sh
+
+# Run a 125B MoE model with hybrid offload
+strata run Qwen3.8-Flash-Next --kv-cache int8 --context 131072
+
+# With prompt caching (for agent workloads)
+strata run Qwen3.8-Flash-Next --prompt-cache --kv-cache int8
+</code></pre>
+<p><strong>When to use:</strong> You have a big MoE model (125B+) and a consumer GPU (24–48GB) plus 64–256GB of system RAM. You are running long-context agent workloads where prompt caching gives 90%+ hit rates. This is the backend that makes the Matrix's headline 125B submission possible: 13.4GB in VRAM, the rest in RAM/SSD.</p>
+<p><strong>When to avoid:</strong> You are running a dense model (the hybrid tiers add latency without the MoE benefit). You have a proper multi-GPU setup (vLLM tensor parallel is faster). You need sub-second latency on every token (the RAM/SSD tiers add milliseconds).</p>
+<div class="callout callout--warning"><p><b>Strata is new.</b> The engine is moving fast — versions, features, and performance characteristics change frequently. The commands above reflect the 0.1.x line as of late 2026. Verify the current syntax against the Strata docs before relying on it in production.</p></div>
+
+<h3 id="radiance">Radiance</h3>
+<p><strong>The AMD answer to vLLM.</strong> Radiance is a ROCm-optimized inference engine built for AMD's RDNA3/RDNA4 consumer GPUs (R9700, RX 7900 series) and the datacenter MI300X. It supports MTP (Multi-Token Prediction) speculative decoding, which lets compatible models verify multiple tokens per step and push past 200 t/s.</p>
+<pre><code class="language-bash"># Two R9700s, tensor parallel, MTP enabled
+radiance serve Qwen/Qwen3.8-27B --tensor-parallel 2 \
+  --mtp 8 --quantization fp8 --max-model-len 32768
+
+# Single R9700
+radiance serve Qwen/Qwen3.8-27B --quantization fp8 --context 16384
+</code></pre>
+<p><strong>When to use:</strong> You have AMD GPUs and want the best performance. You are running 2+ R9700s and want tensor parallel. You want MTP speculative decoding on a compatible model. This is the backend the Matrix's fastest AMD submissions use.</p>
+<p><strong>When to avoid:</strong> You are on NVIDIA (use vLLM or TensorRT-LLM). You have a single AMD GPU and just want simplicity (llama.cpp ROCm works fine). You use GGUF (Radiance prefers safetensors/FP8).</p>
+<p>The Matrix's 120 t/s submission (MadGoat's 27B FP8 on 2× R9700 via the vllm-radiance fork) is Radiance-adjacent: the same kernels, the same MTP pipeline, served through a vLLM-compatible interface.</p>
+<h3 id="mlx">MLX</h3>
+<p><strong>Apple Silicon's native engine.</strong> MLX is a tensor framework designed for Apple's unified memory architecture. Models in MLX format run natively on M-series Macs with no GPU driver layer, no CUDA translation, and no VRAM/RAM boundary — the memory is just memory.</p>
+<pre><code class="language-bash"># Install
+pip install mlx-lm
+
+# Generate
+mlx_lm.generate --model mlx-community/Qwen3.8-27B-4bit \
+  --prompt &quot;Explain KV cache in one sentence.&quot;
+
+# Server (OpenAI-compatible)
+mlx_lm.server --model mlx-community/Qwen3.8-27B-4bit --port 8080
+</code></pre>
+<p><strong>When to use:</strong> You are on a Mac. You want the best performance Apple Silicon can give. You are running models that fit in unified memory (up to ~128GB on M3 Ultra).</p>
+<p><strong>When to avoid:</strong> You are on NVIDIA or AMD. You need a format MLX does not support. You are running a 125B+ model that exceeds even the largest Mac's memory.</p>
+<p>The Matrix has zero MLX submissions — the biggest demographic gap in the data. If you are a Mac user, your setup is the one the community most needs to see.</p>
+<h3 id="colibri">Colibri</h3>
+<p><strong>CPU-only inference.</strong> Colibri runs LLMs on pure CPU with no GPU. It is designed for systems with 1TB+ of RAM where a GPU is absent, broken, or simply not worth the power draw. Speed is the trade: expect 1–5 tokens/second, which is fine for unattended batch work and not fine for interactive chat.</p>
+<pre><code class="language-bash"># Run a model on CPU
+colibri run --model Qwen3.8-27B-Q4_K_M.gguf \
+  --threads 64 --context 8192
+
+# Serve (slow, but functional)
+colibri serve --model Qwen3.8-27B-Q4_K_M.gguf --port 9000
+</code></pre>
+<p><strong>When to use:</strong> You have a big-RAM server with no GPU. You are running overnight batch jobs (document processing, translation, embeddings) where 1–5 t/s is acceptable. You want zero GPU dependency.</p>
+<p><strong>When to avoid:</strong> You need interactive speed. You have any GPU available. You are running a model too large for your RAM.</p>
+<h2 id="pick-your-backend">Pick your backend</h2>
+<p>The decision tree, condensed:</p>
+<div class="diagram diagram--stack">
+  <div class="diagram-cell"><b>What is your hardware?</b></div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell">Mac (Apple Silicon) → <b>MLX</b></div>
+  <div class="diagram-cell">CPU only, 1TB+ RAM → <b>Colibri</b> (accept 1–5 t/s)</div>
+  <div class="diagram-cell">NVIDIA / AMD / Vulkan → <b>continue below</b></div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell"><b>How many GPUs?</b></div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell">One GPU → <b>llama.cpp</b> (control) or <b>Ollama</b> (simplicity) or <b>llama-swap</b> (multi-model)</div>
+  <div class="diagram-cell">Two+ GPUs, NVIDIA → <b>vLLM</b> (tensor parallel) or <b>TensorRT-LLM</b> (max perf)</div>
+  <div class="diagram-cell">Two+ GPUs, AMD → <b>Radiance</b> (MTP + tensor parallel)</div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell"><b>Big MoE model + lots of RAM?</b></div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell">Yes → <b>Strata</b> (hybrid VRAM+RAM+SSD, prompt caching)</div>
+  <div class="diagram-cell">No → the single/multi-GPU choice above stands</div>
+</div>
+
+<h2 id="the-golden-rules">The golden rules</h2>
+<ol>
+<li><strong>Start simple.</strong> If you are new, use Ollama or LM Studio. Get a model running in five minutes. Understand the feel of local inference before you optimize.</li>
+<li><strong>Graduate to llama.cpp.</strong> When you want control — specific context lengths, KV quantization, layer offloading, custom builds — llama.cpp is the engine that gives you every knob.</li>
+<li><strong>Move to vLLM or Radiance for production.</strong> When you are serving multiple users, need continuous batching, or have 2+ GPUs, the production engines are worth the setup cost.</li>
+<li><strong>Use Strata for big MoE on small GPUs.</strong> This is the one case where the "unusual" backend is the right answer: a 125B MoE model on a 24GB card + 128GB RAM is a Strata job, not a vLLM job.</li>
+<li><strong>Match the format to the backend.</strong> GGUF for llama.cpp/Ollama/LM Studio/Strata. Safetensors/FP8 for vLLM/TensorRT-LLM/Radiance. MLX format for MLX. The <a href="file-formats/">File Formats</a> guide covers what is inside each.</li>
+</ol>
+<h2 id="performance-expectations-per-tier">Performance expectations per tier</h2>
+<p>What "good" looks like, by the VRAM tier the Matrix uses:</p>
+<table>
+<thead>
+<tr>
+<th>Tier</th>
+<th>VRAM</th>
+<th>Dense model</th>
+<th>MoE model</th>
+<th>Realistic decode speed</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>T1</td>
+<td>≤16GB</td>
+<td>7–8B Q4_K_M</td>
+<td>35B-A3B I-Nano</td>
+<td>30–100 t/s (dense), 50–60 t/s (MoE)</td>
+</tr>
+<tr>
+<td>T2</td>
+<td>16–24GB</td>
+<td>27B Q4_K_M</td>
+<td>35B-A3B Q4_K_M</td>
+<td>15–30 t/s (dense), 40–60 t/s (MoE)</td>
+</tr>
+<tr>
+<td>T3</td>
+<td>24–32GB</td>
+<td>27B Q5_K_M / FP8</td>
+<td>70B-A6B Q4_K_M</td>
+<td>10–25 t/s (dense), 20–40 t/s (MoE)</td>
+</tr>
+<tr>
+<td>T4</td>
+<td>48–64GB</td>
+<td>70B Q4_K_M / FP8</td>
+<td>125B IQ3_S (Strata)</td>
+<td>5–15 t/s (dense), 15–30 t/s (MoE hybrid)</td>
+</tr>
+<tr>
+<td>T5</td>
+<td>96–128GB</td>
+<td>70B FP16 / 125B Q4</td>
+<td>200B+ MoE (vLLM 2×48GB)</td>
+<td>3–10 t/s (dense), 10–20 t/s (MoE)</td>
+</tr>
+<tr>
+<td>T6</td>
+<td>196GB+</td>
+<td>70B+ FP16</td>
+<td>671B (CPU+GPU hybrid)</td>
+<td>1–5 t/s (CPU), 5–15 t/s (multi-GPU)</td>
+</tr>
+</tbody>
+</table>
+<p>These are the ranges the Matrix data supports. A well-tuned setup at the top of a tier beats a poorly configured one at the bottom of the next tier — the backend and its flags matter as much as the hardware.</p>
+<h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
+<p>Every row in the <a href="../../matrix.html">Matrix</a> carries a backend. The six llama-swap submissions are the "always-on single GPU" answer; the two vLLM submissions are the "multi-GPU production" answer; the Strata submission is the "hybrid MoE" answer; the Ollama and llama.cpp submissions are the "getting started" and "raw control" answers.</p>
+<p>When you submit your own setup, name the backend <em>and</em> the key flags (context length, KV precision, tensor parallel size, MTP setting). That is what makes a submission useful to the next reader.</p>
+
+  <section class="guide-related">
+    <h2>Related guides</h2>
+    <ul>
+      <li><a href="file-formats/">File Formats</a></li>
+      <li><a href="multi-gpu/">Multi-GPU &amp; Hybrid</a></li>
+      <li><a href="quantization/">Quantization Basics</a></li>
+    </ul>
+  </section>
+</div>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="../../js/main.js"></script>
+</body>
+</html>

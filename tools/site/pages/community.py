@@ -10,7 +10,8 @@ from .. import utils
 from ..template import page_shell
 
 
-def render(subs: list[dict], schema: dict, stats: dict) -> str:
+def render(subs: list[dict], schema: dict, stats: dict,
+           guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render the community document.
 
     Args:
@@ -76,4 +77,4 @@ def render(subs: list[dict], schema: dict, stats: dict) -> str:
     title = "Community — The Local AI Stack"
     desc = ("The people behind the data. A showcase of every contributor to the Local AI Stack "
             "and the setups they run.")
-    return page_shell(title, desc, body)
+    return page_shell(title, desc, body, guides_menu=guides_menu)

@@ -11,10 +11,11 @@ monolith. The package splits the work into focused modules:
 * :mod:`tools.site.markdown`  — markdown → HTML + front-matter (guide layer).
 * :mod:`tools.site.guides`    — the generic ``guides/<slug>/index.html`` renderer.
 
-:func:`main` is the single orchestration point: it loads the data, renders the
-five core pages, writes ``data.json``, and (once authored guides exist) renders
-them. Run it directly (``python -m tools.site``) or via the thin
-``tools/generate_site.py`` entry point.
+:func:`main` is the single orchestration point: it loads the data, builds the
+guides nav dropdown, renders the five core pages + the guides index, writes
+``data.json``, and renders the individual guides. Run it directly
+(``python -m tools.site``) or via the thin ``tools/generate_site.py`` entry
+point.
 """
 
 from __future__ import annotations
@@ -30,11 +31,24 @@ from .pages import about, community, guides_index, homepage, matrix
 __all__ = ["main"]
 
 
+def _build_guides_menu() -> list[tuple[str, str]]:
+    """Build the ``(label, url)`` list for the Guides nav dropdown.
+
+    The URLs are relative to the repo root (the nav is rendered at depth 0
+    for the core pages; ``template.nav()`` computes the correct prefix).
+    Each guide lives at ``guides/<slug>/``.
+    """
+    return [
+        (label, f"guides/{slug}/")
+        for slug, label in guides.GUIDE_LABELS.items()
+    ]
+
+
 def main(workspace: str | Path | None = None,
          data_dir: str | Path | None = None,
          submissions: str | Path | None = None,
          schema: str | Path | None = None) -> None:
-    """Generate the full site (five core pages + ``data.json`` + guides).
+    """Generate the full site (core pages + guides index + guides + data.json).
 
     All paths default to the real repo root, but each can be overridden — the
     test suite points them at a temp workspace so the committed site is never
@@ -76,13 +90,16 @@ def main(workspace: str | Path | None = None,
     subs = utils.real_submissions(data)
     stats = utils.compute_stats(subs, schema)
 
-    # --- Write the five core pages ---
+    # --- Build the Guides nav dropdown (shared by every page) ---
+    guides_menu = _build_guides_menu()
+
+    # --- Write the core pages (all get the Guides dropdown) ---
     pages = {
-        "index.html": homepage.render(subs, schema, stats),
-        "matrix.html": matrix.render(subs, schema, stats),
-        "community.html": community.render(subs, schema, stats),
+        "index.html": homepage.render(subs, schema, stats, guides_menu),
+        "matrix.html": matrix.render(subs, schema, stats, guides_menu),
+        "community.html": community.render(subs, schema, stats, guides_menu),
         "guides.html": guides_index.render(),
-        "about.html": about.render(),
+        "about.html": about.render(guides_menu),
     }
     for name, html in pages.items():
         path = ws / name
@@ -95,8 +112,19 @@ def main(workspace: str | Path | None = None,
         json.dump(data, f, indent=2)
     print(f"  wrote data.json ({data_json.stat().st_size} bytes)")
 
-    # --- Guides (no-op until content/guides/ has real .md files) ---
-    for slug in guides.generate_guides(ws / "content" / "guides", ws):
+    # --- Guides index (guides/index.html, depth 1) ---
+    content_guides = ws / "content" / "guides"
+    try:
+        index_html = guides_index.render_index(content_guides, guides_menu)
+        index_path = ws / "guides" / "index.html"
+        index_path.parent.mkdir(parents=True, exist_ok=True)
+        index_path.write_text(index_html, encoding="utf-8")
+        print(f"  wrote guides/index.html ({len(index_html)} bytes)")
+    except FileNotFoundError as e:
+        print(f"WARNING: {e}", file=sys.stderr)
+
+    # --- Individual guides (guides/<slug>/index.html, depth 2) ---
+    for slug in guides.generate_guides(content_guides, ws, guides_menu):
         print(f"  wrote guides/{slug}/index.html")
 
     print(f"\nSite generated: {stats['submissions']} submissions, "

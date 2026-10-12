@@ -10,7 +10,7 @@ from .. import utils
 from ..template import page_shell
 
 
-def render() -> str:
+def render(guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render the about document.
 
     Returns:
@@ -57,4 +57,4 @@ def render() -> str:
     title = "About — The Local AI Stack"
     desc = ("About The Local AI Stack — a community-driven resource for running AI models on your "
             "own hardware, born from the Level1Techs forum.")
-    return page_shell(title, desc, body)
+    return page_shell(title, desc, body, guides_menu=guides_menu)

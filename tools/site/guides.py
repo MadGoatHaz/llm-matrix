@@ -72,13 +72,15 @@ def _related_links(meta: dict[str, Any]) -> str:
   </section>'''
 
 
-def render_guide(md_path: Path, title_override: str | None = None) -> str:
+def render_guide(md_path: Path, title_override: str | None = None,
+                guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render a single guide markdown file to a full HTML document.
 
     Args:
         md_path: Path to the ``.md`` guide (e.g. ``content/guides/kv-cache.md``).
         title_override: Optional ``<title>``; defaults to the front-matter
             ``title``, then the file stem.
+        guides_menu: Optional ``(label, url)`` list for the nav dropdown.
 
     Returns:
         The full ``guides/<slug>/index.html`` document (depth-2 shell).
@@ -97,19 +99,23 @@ def render_guide(md_path: Path, title_override: str | None = None) -> str:
     # ``.guide`` (see the GUIDE PAGE LAYER section). Diagram and callout
     # styles are top-level, so they render inside it unchanged.
     wrapped = f'\n<div class="guide">\n{body_html}\n{related_html}\n</div>'
-    return page_shell(title, description, wrapped, depth=GUIDE_DEPTH)
+    return page_shell(title, description, wrapped, depth=GUIDE_DEPTH,
+                      guides_menu=guides_menu)
 
 
-def generate_guides(content_dir: Path, out_dir: Path) -> list[str]:
+def generate_guides(content_dir: Path, out_dir: Path,
+                   guides_menu: list[tuple[str, str]] | None = None) -> list[str]:
     """Render every authored guide in ``content_dir`` into ``out_dir``.
 
     Each ``content_dir/<slug>.md`` becomes ``out_dir/guides/<slug>/index.html``.
     Files whose name starts with ``_`` are treated as drafts/samples and are
-    skipped, so a proof-of-concept never ships.
+    skipped, so a proof-of-concept never ships. The ``index.md`` file is also
+    skipped here — it is rendered separately by ``guides_index.render_index()``.
 
     Args:
         content_dir: The authored-content directory (``content/guides``).
         out_dir: Where generated pages are written (the repo root).
+        guides_menu: Optional ``(label, url)`` list for the nav dropdown.
 
     Returns:
         The list of guide slugs written (empty if there is no content).
@@ -120,7 +126,9 @@ def generate_guides(content_dir: Path, out_dir: Path) -> list[str]:
     for md_path in sorted(content_dir.glob("*.md")):
         if md_path.name.startswith("_"):
             continue
-        html = render_guide(md_path)
+        if md_path.stem == "index":
+            continue  # rendered by guides_index.render_index()
+        html = render_guide(md_path, guides_menu=guides_menu)
         dest = out_dir / "guides" / md_path.stem / "index.html"
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(html, encoding="utf-8")
