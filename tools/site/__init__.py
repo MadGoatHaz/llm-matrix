@@ -100,7 +100,7 @@ def main(workspace: str | Path | None = None,
         "index.html": homepage.render(subs, schema, stats, guides_menu),
         "matrix.html": matrix.render(subs, schema, stats, guides_menu),
         "community.html": community.render(subs, schema, stats, guides_menu),
-        "guides.html": guides_index.render(),
+        "guides.html": guides_index.render(guides_menu),
         "about.html": about.render(guides_menu),
     }
     for name, html in pages.items():

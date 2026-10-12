@@ -355,7 +355,7 @@ colibri serve --model Qwen3.8-27B-Q4_K_M.gguf --port 9000
 <li><strong>Graduate to llama.cpp.</strong> When you want control — specific context lengths, KV quantization, layer offloading, custom builds — llama.cpp is the engine that gives you every knob.</li>
 <li><strong>Move to vLLM or Radiance for production.</strong> When you are serving multiple users, need continuous batching, or have 2+ GPUs, the production engines are worth the setup cost.</li>
 <li><strong>Use Strata for big MoE on small GPUs.</strong> This is the one case where the "unusual" backend is the right answer: a 125B MoE model on a 24GB card + 128GB RAM is a Strata job, not a vLLM job.</li>
-<li><strong>Match the format to the backend.</strong> GGUF for llama.cpp/Ollama/LM Studio/Strata. Safetensors/FP8 for vLLM/TensorRT-LLM/Radiance. MLX format for MLX. The <a href="file-formats/">File Formats</a> guide covers what is inside each.</li>
+<li><strong>Match the format to the backend.</strong> GGUF for llama.cpp/Ollama/LM Studio/Strata. Safetensors/FP8 for vLLM/TensorRT-LLM/Radiance. MLX format for MLX. The <a href="../file-formats/"">File Formats</a> guide covers what is inside each.</li>
 </ol>
 <h2 id="performance-expectations-per-tier">Performance expectations per tier</h2>
 <p>What "good" looks like, by the VRAM tier the Matrix uses:</p>
@@ -422,9 +422,9 @@ colibri serve --model Qwen3.8-27B-Q4_K_M.gguf --port 9000
   <section class="guide-related">
     <h2>Related guides</h2>
     <ul>
-      <li><a href="file-formats/">File Formats</a></li>
-      <li><a href="multi-gpu/">Multi-GPU &amp; Hybrid</a></li>
-      <li><a href="quantization/">Quantization Basics</a></li>
+      <li><a href="../file-formats/">File Formats</a></li>
+      <li><a href="../multi-gpu/">Multi-GPU &amp; Hybrid</a></li>
+      <li><a href="../quantization/">Quantization Basics</a></li>
     </ul>
   </section>
 </div>

@@ -1,0 +1,331 @@
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+.WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+........................WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_charts_y_6dqxya/content/api.md'
+..........WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_charts_yddad26c/content/api.md'
+..WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_charts_86c735z1/content/api.md'
+....WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_commands_rlc95uta/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_commands_rlc95uta/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_commands_rlc95uta/content/guides/index.md
+......WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_compare_70cyekbh/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_compare_70cyekbh/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_compare_70cyekbh/content/guides/index.md
+.................WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_detail_25n1482e/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_detail_25n1482e/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_detail_25n1482e/content/guides/index.md
+......WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_p42_t_whc3sx/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_p42_t_whc3sx/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_p42_t_whc3sx/content/guides/index.md
+........WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_filters_pssck7ua/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_filters_pssck7ua/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_filters_pssck7ua/content/guides/index.md
+...........WARNING: recommend page skipped: [Errno 2] No such file or directory: '/tmp/las_test_rrxurhwj/content/recommend.md'
+WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_test_rrxurhwj/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_test_rrxurhwj/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_test_rrxurhwj/content/guides/index.md
+......WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+......................................WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+.......WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_recommend_v26_4p7j/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_recommend_v26_4p7j/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_recommend_v26_4p7j/content/guides/index.md
+..............................................
+----------------------------------------------------------------------
+Ran 186 tests in 0.821s
+
+OK
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote data/api/v1/benchmarks.json (2642 bytes)
+  wrote data/api/v1/hardware.json (2118 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote guides/backends/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+================================================================
+DATA QUALITY REPORT — The Local AI Stack
+================================================================
+ ✓ [PASS] valid-json: data/submissions.json
+ ✓ [PASS] valid-json: data/benchmarks.json
+ ✓ [PASS] valid-json: data/hardware.json
+ ✓ [PASS] valid-json: data/category_threads.json
+ ✓ [PASS] valid-json: data/last_seen.json
+ ✓ [PASS] valid-json: tools/schema.json
+ ✓ [PASS] valid-json: tools/tags.json
+ ✓ [PASS] required-fields — 12 submissions carry all 19 keys
+ ✓ [PASS] enum-conformance — all enum values are schema-legal
+ ✓ [PASS] duplicates — 12 unique submission ids
+ ✓ [PASS] vram-reasonable — all 12 VRAM values within (0, 1000GB]
+ ✓ [PASS] referential-integrity — post ids and the schema's thread references are sound
+ ⚠ [WARN] data-gaps (info) — 0 Apple/MLX submissions (biggest demographic gap) | 11/12 engine_mode empty | 0 use_cases strings map to no schema category | 5 model urls are not http(s) links
+----------------------------------------------------------------
+SUMMARY: 12 passed, 0 failed, 1 warning(s)
+================================================================
+
+RESULT: VALID — the data passes all hard checks.

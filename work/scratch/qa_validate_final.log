@@ -1,0 +1,21 @@
+================================================================
+DATA QUALITY REPORT — The Local AI Stack
+================================================================
+ ✓ [PASS] valid-json: data/submissions.json
+ ✓ [PASS] valid-json: data/benchmarks.json
+ ✓ [PASS] valid-json: data/hardware.json
+ ✓ [PASS] valid-json: data/category_threads.json
+ ✓ [PASS] valid-json: data/last_seen.json
+ ✓ [PASS] valid-json: tools/schema.json
+ ✓ [PASS] valid-json: tools/tags.json
+ ✓ [PASS] required-fields — 12 submissions carry all 19 keys
+ ✓ [PASS] enum-conformance — all enum values are schema-legal
+ ✓ [PASS] duplicates — 12 unique submission ids
+ ✓ [PASS] vram-reasonable — all 12 VRAM values within (0, 1000GB]
+ ✓ [PASS] referential-integrity — post ids and the schema's thread references are sound
+ ⚠ [WARN] data-gaps (info) — 0 Apple/MLX submissions (biggest demographic gap) | 11/12 engine_mode empty | 0 use_cases strings map to no schema category | 5 model urls are not http(s) links
+----------------------------------------------------------------
+SUMMARY: 12 passed, 0 failed, 1 warning(s)
+================================================================
+
+RESULT: VALID — the data passes all hard checks.

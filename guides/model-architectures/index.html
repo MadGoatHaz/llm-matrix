@@ -98,7 +98,7 @@
 <li><strong>Memory is the bottleneck.</strong> The 125B Flash-Next is a ~50GB object at 3-bit; you cannot avoid loading it all.</li>
 <li><strong>Compute is cheap.</strong> Only ~3B active per token, so the GPU is rarely the limit.</li>
 </ul>
-<p>This is exactly why <strong>hybrid offload works so well for MoE</strong> (the <a href="multi-gpu/">Multi-GPU &amp; Hybrid</a> guide covers the mechanics): because the idle experts are not being read every token, they can live in slow RAM or on an NVMe SSD with little speed penalty. Only the active experts need fast VRAM. A dense model can't do this — every one of its parameters is hot on every token, so offloading a dense model to RAM collapses its speed (see the 27B <code>UD-Q2_K_XL</code> at 13.9 t/s when it nearly fills a 16GB card). MoE turns "doesn't fit" into "fits, and stays fast."</p>
+<p>This is exactly why <strong>hybrid offload works so well for MoE</strong> (the <a href="../multi-gpu/"">Multi-GPU &amp; Hybrid</a> guide covers the mechanics): because the idle experts are not being read every token, they can live in slow RAM or on an NVMe SSD with little speed penalty. Only the active experts need fast VRAM. A dense model can't do this — every one of its parameters is hot on every token, so offloading a dense model to RAM collapses its speed (see the 27B <code>UD-Q2_K_XL</code> at 13.9 t/s when it nearly fills a 16GB card). MoE turns "doesn't fit" into "fits, and stays fast."</p>
 <h2 id="mtp-speculative-decoding">MTP + speculative decoding</h2>
 <p>Some models in the Matrix get a second speed boost from <strong>MTP (Multi-Token Prediction)</strong> and the <strong>speculative decoding</strong> it enables.</p>
 <p>MTP is a special head, trained alongside the model, that predicts <em>several</em> future tokens at once. On its own that is just a faster draft. The power comes from pairing it with <strong>speculative decoding</strong>:</p>
@@ -136,13 +136,13 @@
 <p><strong>Dense</strong> — Qwen3.8-27B (two runs: 120 t/s FP8 on 2× R9700, 13.9 t/s <code>UD-Q2_K_XL</code> on 16GB), Qwen3.5-4B (96.4 t/s), DeepSeek-R1-8B (84.4 t/s), and the 9B coder/MTP models. Speed tracks total size, exactly as the dense rule predicts.</p>
 <p><strong>MoE</strong> — Qwen3.6-MoE-35B-A3B (<code>I-Nano</code>, 12.7GB, <strong>54.4 t/s</strong>) and Qwen3.8-Flash-Next, the 125B model (<strong>13.4GB VRAM</strong> hybrid at <strong>99–128 t/s</strong>; also a <code>Q4_K_M</code> run on 2× w7900 at ~35 t/s). Note the inversion that is the whole point: the <em>biggest</em> model in the data (125B) decodes <em>faster</em> than the mid-size dense 27B, because only a few billion of its parameters are active per token.</p>
 <p><strong>MTP</strong> — appears on the 27B (vLLM <code>MTP=8</code>), the 9B model, and <code>gemma4:26b-a4b-it-mtp</code>, the speculative-decoding boost layered on top of both architectures.</p>
-<p>When you submit your own setup, name the architecture the way the data does — total <em>and</em> active params for MoE (<code>35B-A3B</code>, <code>125B</code>), plus an MTP note where present — and the next reader can see at a glance why your speeds are the way they are. The memory side of the story (why context length eats VRAM regardless of architecture) is the <a href="kv-cache/">KV Cache</a> guide, and the engines that make all of this run are in <a href="backends/">Backends</a>.</p>
+<p>When you submit your own setup, name the architecture the way the data does — total <em>and</em> active params for MoE (<code>35B-A3B</code>, <code>125B</code>), plus an MTP note where present — and the next reader can see at a glance why your speeds are the way they are. The memory side of the story (why context length eats VRAM regardless of architecture) is the <a href="../kv-cache/"">KV Cache</a> guide, and the engines that make all of this run are in <a href="../backends/"">Backends</a>.</p>
 
   <section class="guide-related">
     <h2>Related guides</h2>
     <ul>
-      <li><a href="kv-cache/">KV Cache</a></li>
-      <li><a href="backends/">Backends</a></li>
+      <li><a href="../kv-cache/">KV Cache</a></li>
+      <li><a href="../backends/">Backends</a></li>
     </ul>
   </section>
 </div>

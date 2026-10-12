@@ -412,14 +412,14 @@ ollama run qwen3.8-70b:q4_K_M
 <h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
 <p>Every row in the <a href="../../matrix.html">Matrix</a> has an <em>engine mode</em> field. The one submission that flags it (MadGoat's 125B Strata) is the hybrid case: <code>Hybrid (VRAM+RAM+SSD)</code>. The llama-swap submissions are <code>VRAM-only</code> (single GPU). The vLLM 2× R9700 submission is <code>VRAM-only</code> with tensor parallel.</p>
 <p>When you submit your own setup, <strong>fill in the engine mode</strong>. A 120 t/s number means very different things on a 2× R9700 tensor-parallel vLLM setup versus a 1× 24GB Strata hybrid — the model and quant are the same, but <em>where the weights live</em> changes the picture.</p>
-<p>The <a href="kv-cache/">KV Cache</a> guide covers the memory cost of context. The <a href="backends/">Backends</a> guide covers which engine to use for each split strategy. The <a href="model-architectures/">Model Architectures</a> guide explains why MoE makes the hybrid path work.</p>
+<p>The <a href="../kv-cache/"">KV Cache</a> guide covers the memory cost of context. The <a href="../backends/"">Backends</a> guide covers which engine to use for each split strategy. The <a href="../model-architectures/"">Model Architectures</a> guide explains why MoE makes the hybrid path work.</p>
 
   <section class="guide-related">
     <h2>Related guides</h2>
     <ul>
-      <li><a href="kv-cache/">KV Cache</a></li>
-      <li><a href="backends/">Backends</a></li>
-      <li><a href="model-architectures/">Model Architectures</a></li>
+      <li><a href="../kv-cache/">KV Cache</a></li>
+      <li><a href="../backends/">Backends</a></li>
+      <li><a href="../model-architectures/">Model Architectures</a></li>
     </ul>
   </section>
 </div>

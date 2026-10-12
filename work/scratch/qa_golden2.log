@@ -1,0 +1,33 @@
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (3763 bytes)
+  wrote about.html (6004 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8904 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  updated tests/golden/index.html
+  updated tests/golden/matrix.html
+  updated tests/golden/community.html
+  updated tests/golden/guides.html
+  updated tests/golden/about.html
+  updated tests/golden/data.json
+  updated tests/golden/api/index.html
+
+Golden baselines regenerated. Review the diff before committing.

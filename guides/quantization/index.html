@@ -52,7 +52,7 @@
 
 <h2 id="the-one-idea-version">The one-idea version</h2>
 <p>A language model is, at the hardware level, a very large pile of numbers — its <em>weights</em> — that the GPU reads over and over for every token it generates. Those numbers are stored at some precision: 16 bits, 8 bits, 4 bits. <strong>Quantization is simply the act of storing them with fewer bits.</strong> It is the same trick JPEG uses on a photograph: throw away the detail the eye is least likely to notice, keep the shape.</p>
-<p>The catch is that a model's "shape" is its behavior. Weights that carry important structure deserve more precision; weights that mostly add flavor can be compressed harder. Every quantization scheme is a different answer to the question <em>which bits matter?</em> — and that answer is why two 4-bit files of the same model can behave differently. The deep dive into those schemes lives in <a href="quantization-methods/">Quantization Methods</a>; here we cover what the numbers mean and how they hit your VRAM.</p>
+<p>The catch is that a model's "shape" is its behavior. Weights that carry important structure deserve more precision; weights that mostly add flavor can be compressed harder. Every quantization scheme is a different answer to the question <em>which bits matter?</em> — and that answer is why two 4-bit files of the same model can behave differently. The deep dive into those schemes lives in <a href="../quantization-methods/"">Quantization Methods</a>; here we cover what the numbers mean and how they hit your VRAM.</p>
 <h2 id="why-we-quantize">Why we quantize</h2>
 <p>Two reasons, in order of importance:</p>
 <ol>
@@ -192,13 +192,13 @@
 <ul>
 <li><strong>Group size.</strong> Low-bit schemes don't quantize the whole tensor with one scale — they work in small blocks (128 weights is common), each with its own scale and offset. The <code>_K</code> in <code>Q4_K_M</code> refers to this "k-quant" block structure. Bigger groups = fewer scale parameters = slightly smaller file, slightly coarser fit.</li>
 <li><strong>Symmetric vs asymmetric.</strong> Symmetric quantization centers the range on zero; asymmetric adds an offset to track the weight distribution better. Most modern GGUF quants are effectively asymmetric via their group scales — you rarely need to choose.</li>
-<li><strong>QAT (quantization-aware training).</strong> The most accurate quants are made by <em>training the model with quantization noise in the loop</em>, so it learns to live at low precision. QAT is rarer in the consumer GGUF world — most published quants are post-training (RTN, GPTQ, AWQ, AutoRound — see <a href="quantization-methods/">Quantization Methods</a>). The frontier is hardware-native low precision: FP8 training and microscaling formats like MXFP4/NVFP4 are moving from datacenter to consumer cards in 2026 — <strong>new and evolving</strong>, not settled.</li>
+<li><strong>QAT (quantization-aware training).</strong> The most accurate quants are made by <em>training the model with quantization noise in the loop</em>, so it learns to live at low precision. QAT is rarer in the consumer GGUF world — most published quants are post-training (RTN, GPTQ, AWQ, AutoRound — see <a href="../quantization-methods/"">Quantization Methods</a>). The frontier is hardware-native low precision: FP8 training and microscaling formats like MXFP4/NVFP4 are moving from datacenter to consumer cards in 2026 — <strong>new and evolving</strong>, not settled.</li>
 </ul>
 <h2 id="the-vram-formula">The VRAM formula</h2>
 <p>The whole discipline reduces to one line:</p>
 <pre><code>VRAM (GiB) ≈ params × bytes_per_weight ÷ 1024³
 </code></pre>
-<p>Add the KV cache and engine overhead on top (the <a href="kv-cache/">KV Cache</a> guide covers that number), and you can estimate any model before downloading it. Here is the formula checked against real Matrix submissions:</p>
+<p>Add the KV cache and engine overhead on top (the <a href="../kv-cache/"">KV Cache</a> guide covers that number), and you can estimate any model before downloading it. Here is the formula checked against real Matrix submissions:</p>
 <table>
 <thead>
 <tr>
@@ -319,7 +319,7 @@
 
 <p>Four concrete recommendations, tied to what the community is actually running:</p>
 <h3 id="for-agentic-coding-and-reasoning">For agentic coding and reasoning</h3>
-<p><strong>Q4_K_M is the floor; go higher if you can.</strong> These workloads stress exactly the capabilities low-bit quantization degrades first — precise recall, multi-step logic. If your card holds Q5_K_M (a 27B at ~18&nbsp;GB fits a 24GB card with room for context), take it. If you have native-FP8 hardware, FP8 is near-lossless and the best quality per byte you can get. And keep the KV cache in FP16 here — quantizing it saves memory you do not have to spend on a coding agent. (Details in the <a href="kv-cache/">KV Cache</a> guide.)</p>
+<p><strong>Q4_K_M is the floor; go higher if you can.</strong> These workloads stress exactly the capabilities low-bit quantization degrades first — precise recall, multi-step logic. If your card holds Q5_K_M (a 27B at ~18&nbsp;GB fits a 24GB card with room for context), take it. If you have native-FP8 hardware, FP8 is near-lossless and the best quality per byte you can get. And keep the KV cache in FP16 here — quantizing it saves memory you do not have to spend on a coding agent. (Details in the <a href="../kv-cache/"">KV Cache</a> guide.)</p>
 <h3 id="for-chat-writing-and-document-qa">For chat, writing, and document Q&amp;A</h3>
 <p><strong>Q4_K_M.</strong> It is the reason the format won the consumer world: ~90%+ of FP16 behavior on general tasks at a third of the memory. The Matrix's 4B and 8B Q4_K_M submissions (5.3&nbsp;GB and 7.4&nbsp;GB) are the archetype — small, fast, always-loaded.</p>
 <h3 id="for-long-context-work">For long-context work</h3>
@@ -340,8 +340,8 @@
   <section class="guide-related">
     <h2>Related guides</h2>
     <ul>
-      <li><a href="file-formats/">File Formats</a></li>
-      <li><a href="quantization-methods/">Quantization Methods</a></li>
+      <li><a href="../file-formats/">File Formats</a></li>
+      <li><a href="../quantization-methods/">Quantization Methods</a></li>
     </ul>
   </section>
 </div>

@@ -54,7 +54,7 @@ def render(guides_menu: list[tuple[str, str]] | None = None) -> str:
     <h2>{utils.icon("🔌")} The Data API</h2>
     <p>Every dataset the site shows is published as <a href="api/">stable, versioned JSON</a> —
        fetch <code>data.json</code> from your own scripts or sites, validate it against the
-       <a href="api/v1/schema.json">JSON Schema</a>, and build your own tools on the community's data.</p>
+       <a href="data/api/v1/schema.json">JSON Schema</a>, and build your own tools on the community's data.</p>
   </div>
 
   <div class="card">

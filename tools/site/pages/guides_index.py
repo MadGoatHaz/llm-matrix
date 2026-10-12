@@ -19,11 +19,16 @@ from .. import utils
 from ..template import page_shell
 
 
-def render() -> str:
+def render(guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render the ``guides.html`` redirect stub.
 
     A minimal page that meta-refreshes to ``guides/`` and carries a
     canonical link so search engines follow the move.
+
+    Args:
+        guides_menu: Optional ``(label, url)`` list for the Guides nav
+            dropdown, matching every other page. ``None`` falls back to
+            the plain ``Guides`` link.
 
     Returns:
         The full ``guides.html`` document (depth 0).
@@ -38,7 +43,7 @@ def render() -> str:
     title = "Guides — The Local AI Stack"
     desc = ("Understand the technology behind your setup: quantization, file formats, "
             "KV cache, model architectures, context extension, backends, and multi-GPU.")
-    html = page_shell(title, desc, body)
+    html = page_shell(title, desc, body, guides_menu=guides_menu)
     # Inject the meta refresh + canonical right after the <title> tag.
     meta_refresh = ('    <meta http-equiv="refresh" content="0; url=guides/">\n'
                     '    <link rel="canonical" href="guides/">')

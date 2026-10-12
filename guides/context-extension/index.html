@@ -174,16 +174,16 @@
 <li><strong>You do not need it</strong> when a 128k–1M-native model is available to you — just run it. Extending a 32k model to 128k is usually a worse result than running a model that was <em>trained</em> at 128k, because the trained model learned the long-range positions properly.</li>
 </ul>
 <h2 id="the-vram-cost">The VRAM cost</h2>
-<p>Extension and the <a href="kv-cache/">KV Cache</a> are the same coin. Doubling the context <strong>doubles the KV cache</strong> — a 27B at 32k/FP16 (~8 GiB of cache) becomes ~16 GiB at 64k, before a single weight is added. So a context extension is only as good as your memory allows: you can set <code>-c 131072</code> freely, but if the resulting KV cache does not fit, you out-of-memory. This is why the two guides pair up — <strong>extension lets you stretch the window; KV quantization lets you afford it.</strong> A YaRN 2× stretch on a model with FP8 KV is a very different VRAM story than the same stretch on FP16 KV.</p>
+<p>Extension and the <a href="../kv-cache/"">KV Cache</a> are the same coin. Doubling the context <strong>doubles the KV cache</strong> — a 27B at 32k/FP16 (~8 GiB of cache) becomes ~16 GiB at 64k, before a single weight is added. So a context extension is only as good as your memory allows: you can set <code>-c 131072</code> freely, but if the resulting KV cache does not fit, you out-of-memory. This is why the two guides pair up — <strong>extension lets you stretch the window; KV quantization lets you afford it.</strong> A YaRN 2× stretch on a model with FP8 KV is a very different VRAM story than the same stretch on FP16 KV.</p>
 <h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
-<p>The <code>context.stable</code> column is where extension shows up. Read it two ways: a <strong>"native"</strong> note (the 4B and 35B-A3B at 65k, the DeepSeek-8B at its 16k server cap) means the model was used within its trained window; a <strong>configured-beyond-native</strong> note (the 27B at ~240k, the 125B at 131k) means the engine is running it past a smaller trained base — and the cleanest reading of the 2026 data is that most of those big numbers are <em>native</em> to the model, not stretched. When you submit, say which it is: the native window, and whether you applied YaRN/NTK at what factor. That single line tells the next person whether your long-context number is earned by the model or borrowed by the encoder. The memory side of that number — what the longer context costs in VRAM — is the <a href="kv-cache/">KV Cache</a> guide, and the models with the biggest native windows are the <a href="model-architectures/">Model Architectures</a> story.</p>
+<p>The <code>context.stable</code> column is where extension shows up. Read it two ways: a <strong>"native"</strong> note (the 4B and 35B-A3B at 65k, the DeepSeek-8B at its 16k server cap) means the model was used within its trained window; a <strong>configured-beyond-native</strong> note (the 27B at ~240k, the 125B at 131k) means the engine is running it past a smaller trained base — and the cleanest reading of the 2026 data is that most of those big numbers are <em>native</em> to the model, not stretched. When you submit, say which it is: the native window, and whether you applied YaRN/NTK at what factor. That single line tells the next person whether your long-context number is earned by the model or borrowed by the encoder. The memory side of that number — what the longer context costs in VRAM — is the <a href="../kv-cache/"">KV Cache</a> guide, and the models with the biggest native windows are the <a href="../model-architectures/"">Model Architectures</a> story.</p>
 
   <section class="guide-related">
     <h2>Related guides</h2>
     <ul>
-      <li><a href="kv-cache/">KV Cache</a></li>
-      <li><a href="model-architectures/">Model Architectures</a></li>
-      <li><a href="backends/">Backends</a></li>
+      <li><a href="../kv-cache/">KV Cache</a></li>
+      <li><a href="../model-architectures/">Model Architectures</a></li>
+      <li><a href="../backends/">Backends</a></li>
     </ul>
   </section>
 </div>

@@ -10,6 +10,7 @@ This module is the foundation the eight P1-1…P1-8 guides build on.
 
 from __future__ import annotations
 
+import re
 from pathlib import Path
 from typing import Any
 
@@ -43,6 +44,40 @@ def _label_for(slug: str) -> str:
     return GUIDE_LABELS.get(slug, slug.replace("-", " ").title())
 
 
+def _sibling_slugs(md_path: Path) -> set[str]:
+    """Slugs of all authored guides — the valid sibling-link targets.
+
+    Drafts (``_``-prefixed) and the separately-rendered ``index.md`` are
+    excluded. A link is only rewritten when its target actually exists, so a
+    typo in the content stays a visible 404 instead of being masked.
+    """
+    return {p.stem for p in md_path.parent.glob("*.md")
+            if not p.name.startswith("_") and p.stem != "index"}
+
+
+def _fixup_sibling_links(body_html: str, slugs: set[str]) -> str:
+    """Rewrite bare sibling-guide hrefs to depth-2-correct relative paths.
+
+    Content writers naturally link between guides as ``[KV Cache](kv-cache/)``
+    — correct from the depth-1 guides index, but a 404 from
+    ``guides/<slug>/index.html`` (depth 2), where the sibling directory is
+    reached with ``../<sibling>/``. Any ``<a href>`` whose value is exactly a
+    known guide slug (optional trailing slash) gets the ``../`` prefix.
+    Everything else — anchors, external URLs, already-prefixed relative
+    paths (``../``, ``../../``), non-guide paths — is left untouched.
+    """
+    pattern = re.compile(r'(<a\b[^>]*\bhref=")([^"]+)(")')
+
+    def _rewrite(match: re.Match) -> str:
+        href = match.group(2)
+        slug = href.rstrip("/")
+        if slug in slugs and not href.startswith(("#", "//", "mailto:", "data:")):
+            return f'{match.group(1)}../{slug}/"{match.group(3)}'
+        return match.group(0)
+
+    return pattern.sub(_rewrite, body_html)
+
+
 def _parse_extra_scripts(value: Any) -> list[str] | None:
     """Front-matter ``extra_scripts`` -> a list of script paths (or ``None``).
 
@@ -74,8 +109,11 @@ def _related_links(meta: dict[str, Any]) -> str:
         slugs = [str(s) for s in related]
     if not slugs:
         return ""
+    # The guide page lives at ``guides/<slug>/index.html`` (depth 2); a sibling
+    # guide is at ``guides/<sibling>/`` — one level up, so the relative href
+    # needs the ``../`` prefix (a bare ``<slug>/`` would 404 on GitHub Pages).
     items = "\n".join(
-        f'      <li><a href="{slug}/">{utils.html_escape(_label_for(slug))}</a></li>'
+        f'      <li><a href="../{slug}/">{utils.html_escape(_label_for(slug))}</a></li>'
         for slug in slugs
     )
     return f'''
@@ -112,6 +150,7 @@ def render_guide(md_path: Path, title_override: str | None = None,
     description = meta.get("description", "")
 
     body_html = md.render_markdown(body)
+    body_html = _fixup_sibling_links(body_html, _sibling_slugs(md_path))
     related_html = _related_links(meta)
 
     # Wrap in the long-form ``.guide`` container: all guide typography,

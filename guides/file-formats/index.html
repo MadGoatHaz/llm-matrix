@@ -53,7 +53,7 @@
 <h2 id="whats-inside-a-model-file">What's inside a model file</h2>
 <p>Before comparing containers, know what they hold. Every model file packages four things:</p>
 <ul>
-<li><strong>Weights</strong> — the trained numbers. 99%+ of the file's size, and the part quantization touches (see <a href="quantization/">Quantization Basics</a>).</li>
+<li><strong>Weights</strong> — the trained numbers. 99%+ of the file's size, and the part quantization touches (see <a href="../quantization/"">Quantization Basics</a>).</li>
 <li><strong>Config</strong> — architecture parameters: layer counts, attention heads, vocabulary size, native context length.</li>
 <li><strong>Tokenizer</strong> — the mapping between text and tokens. Without it the model is just numbers.</li>
 <li><strong>Metadata</strong> — quantization details, chat template, license, and (in GGUF) the tensor layout itself.</li>
@@ -151,10 +151,10 @@
 </tr>
 </tbody>
 </table>
-<p>If you are not sure which backend to run, that is a <a href="backends/">Backends</a> question — answer it first, and the format follows. Never download a format "just in case": a 27B model is 15–26&nbsp;GB per format, and they are not interchangeable.</p>
+<p>If you are not sure which backend to run, that is a <a href="../backends/"">Backends</a> question — answer it first, and the format follows. Never download a format "just in case": a 27B model is 15–26&nbsp;GB per format, and they are not interchangeable.</p>
 <h2 id="shards-why-big-models-come-in-boxes">Shards: why big models come in boxes</h2>
 <p>A 70B model in FP16 is ~140&nbsp;GB. File systems, download managers, and disk quotas all choke on single files that big — so the safetensors world splits models into <strong>shards</strong>: <code>model-00001-of-00008.safetensors</code> through <code>…-00008…</code>, each around 16&nbsp;GB, plus a small index JSON that tells the loader which tensor lives in which shard. You download them all; the loader stitches them in memory transparently.</p>
-<p>GGUF sidesteps the problem entirely with a single file — one of the practical reasons it won the consumer space. (A 70B at Q4_K_M is a single ~40&nbsp;GB file; at I-Nano-class bits it shrinks further. The per-size math is the same VRAM formula from the <a href="quantization/">Quantization Basics</a> guide — it works for disk space too.)</p>
+<p>GGUF sidesteps the problem entirely with a single file — one of the practical reasons it won the consumer space. (A 70B at Q4_K_M is a single ~40&nbsp;GB file; at I-Nano-class bits it shrinks further. The per-size math is the same VRAM formula from the <a href="../quantization/"">Quantization Basics</a> guide — it works for disk space too.)</p>
 <h2 id="can-i-convert-between-formats">Can I convert between formats?</h2>
 <p>Yes — in one direction. The rule is: <strong>you can quantize down from full precision; you cannot un-quantize up.</strong></p>
 <ul>
@@ -169,8 +169,8 @@
   <section class="guide-related">
     <h2>Related guides</h2>
     <ul>
-      <li><a href="quantization/">Quantization Basics</a></li>
-      <li><a href="backends/">Backends</a></li>
+      <li><a href="../quantization/">Quantization Basics</a></li>
+      <li><a href="../backends/">Backends</a></li>
     </ul>
   </section>
 </div>

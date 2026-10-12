@@ -7,7 +7,7 @@ your own site (GitHub Pages serves it with permissive CORS).
 
 The explainer copy lives in ``content/api.md`` (markdown, rendered by the
 shared ``tools.site.markdown`` layer); the page itself is static. No client
-script is needed — the JSON lives next door at ``api/v1/`` and ``data.json``.
+script is needed — the JSON lives at ``data/api/v1/`` and ``data.json``.
 
 The page lives at ``api/index.html`` (depth 1).
 """
@@ -56,8 +56,8 @@ def render(content_dir: Path,
     <h2 id="api-next-title" class="section-title">Next steps</h2>
     <div class="card">
       <p><strong>Read the full contract.</strong> Every field, the versioning policy, and the changelog live in the <a href="{utils.GITHUB_REPO}/blob/main/data/api/README.md" target="_blank" rel="noopener">API README</a> in the repo.</p>
-      <p><strong>Validate against the schema.</strong> The formal JSON Schema (draft 2020-12) is served at <a href="v1/schema.json">api/v1/schema.json</a> — point your validator at it.</p>
-      <p><strong>Fetch the data.</strong> <a href="../data.json">data.json</a> (site root) or <a href="v1/submissions.json">api/v1/submissions.json</a> — same payload, the versioned path is the one to code against.</p>
+      <p><strong>Validate against the schema.</strong> The formal JSON Schema (draft 2020-12) is served at <a href="../data/api/v1/schema.json">data/api/v1/schema.json</a> — point your validator at it.</p>
+      <p><strong>Fetch the data.</strong> <a href="../data.json">data.json</a> (site root) or <a href="../data/api/v1/submissions.json">data/api/v1/submissions.json</a> — same payload, the versioned path is the one to code against.</p>
     </div>
   </section>'''
 
