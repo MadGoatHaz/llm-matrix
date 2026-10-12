@@ -52,6 +52,7 @@ from tests.test_generate import TagChecker
 ALL_PAGES = (
     "index.html", "matrix.html", "community.html", "guides.html",
     "about.html", "compare/index.html", "recommend/index.html",
+    "submit/index.html",
     "guides/index.html",
     "guides/quantization/index.html", "guides/file-formats/index.html",
     "guides/quantization-methods/index.html",
@@ -66,6 +67,7 @@ REQUIRED_INPUTS = (
     "css/style.css",
     "js/main.js",
     "content/recommend.md",
+    "content/submit.md",
 )
 
 
@@ -315,6 +317,22 @@ class TestAccessibility(unittest.TestCase):
                 f"missing <label for={label_id}>")
             self.assertRegex(
                 text, r'<select id="' + control + r'"')
+
+    def test_submit_form_controls_have_programmatic_names(self):
+        text = self._page("submit/index.html")
+        for control in ("sub-tier", "sub-hardware", "sub-backend", "sub-model",
+                        "sub-quant", "sub-usecase", "sub-notes", "sub-url"):
+            with self.subTest(control=control):
+                self.assertRegex(
+                    text, r'<label for="' + control + r'">',
+                    f"missing <label for={control}>")
+                self.assertRegex(text, r'id="' + control + r'"')
+        # required fields expose the aria-required state to AT
+        self.assertRegex(text, r'id="sub-tier"[^>]*aria-required="true"')
+        self.assertRegex(text, r'id="sub-hardware"[^>]*aria-required="true"')
+        # the copy button + status region are labelled / live
+        self.assertIn('id="submit-copy"', text)
+        self.assertRegex(text, r'id="submit-status" role="status" aria-live="polite"')
 
     # --- color contrast (tokens re-verified against WCAG 2.1) ----------------
 

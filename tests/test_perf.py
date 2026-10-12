@@ -43,6 +43,7 @@ OG_IMAGE_BUDGET = 100 * 1024
 ALL_PAGES = (
     "index.html", "matrix.html", "community.html", "guides.html",
     "about.html", "compare/index.html", "recommend/index.html",
+    "submit/index.html",
     "guides/index.html",
     "guides/quantization/index.html", "guides/file-formats/index.html",
     "guides/quantization-methods/index.html",
@@ -57,6 +58,7 @@ REQUIRED_INPUTS = (
     "css/style.css",
     "js/main.js",
     "content/recommend.md",
+    "content/submit.md",
 )
 
 
@@ -125,7 +127,8 @@ class TestPerformanceBudget(unittest.TestCase):
         # looser anti-bloat cap (the source is committed unminified).
         js_sizes = {
             name: (ROOT / "js" / name).read_bytes()
-            for name in ("main.js", "recommend.js", "compare.js", "commands.js")
+            for name in ("main.js", "recommend.js", "compare.js", "commands.js",
+                         "submit.js")
         }
         page_scripts = {
             "index.html": ["main.js"],
@@ -135,6 +138,7 @@ class TestPerformanceBudget(unittest.TestCase):
             "about.html": ["main.js"],
             "compare/index.html": ["main.js", "compare.js", "commands.js"],
             "recommend/index.html": ["main.js", "recommend.js", "commands.js"],
+            "submit/index.html": ["main.js", "submit.js"],
             "guides/index.html": ["main.js"],
         }
         # The eight guides: main.js only, except backends (commands.js).

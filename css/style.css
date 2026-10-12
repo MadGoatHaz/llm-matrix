@@ -1402,6 +1402,131 @@ body.detail-open { overflow: hidden; }
     .detail-panel, .detail-scrim { transition: none; }
 }
 
+/* === SUBMIT (P3-4: the community submission form) === */
+.submit-tool { margin: 2rem 0; }
+
+.submit-form {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1.5rem;
+}
+
+/* Fieldset groups, each headed by a legend (a11y grouping). */
+.submit-group {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem 1.25rem 0.25rem;
+    margin-bottom: 1.25rem;
+}
+.submit-group legend {
+    font-weight: 700;
+    font-size: 0.95rem;
+    color: var(--accent);
+    padding: 0 0.5rem;
+}
+.group-opt {
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+.submit-field { margin-bottom: 1rem; }
+.submit-field label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.4rem;
+    color: var(--text);
+}
+.req {
+    color: var(--warning);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 0.35rem;
+}
+.opt {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-left: 0.35rem;
+}
+.submit-field input,
+.submit-field select,
+.submit-field textarea {
+    width: 100%;
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 0.7rem 0.9rem;     /* ≥ 44px touch target */
+    border-radius: var(--radius);
+    font-size: 0.95rem;
+    font-family: inherit;
+}
+.submit-field textarea { resize: vertical; min-height: 90px; }
+.submit-field input:focus,
+.submit-field select:focus,
+.submit-field textarea:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+}
+.submit-field input.invalid,
+.submit-field select.invalid,
+.submit-field textarea.invalid {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.18);
+}
+.field-hint {
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    margin-top: 0.35rem;
+}
+.field-err {
+    color: var(--danger);
+    font-size: 0.82rem;
+    margin-top: 0.35rem;
+}
+
+/* Actions row (copy for the forum / open a GitHub issue). */
+.submit-actions {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.25rem;
+}
+.submit-actions .btn { min-height: 44px; }
+
+/* The generated [COMMUNITY-SUBMISSION] preview. */
+.submit-preview {
+    margin-top: 1.5rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--success);
+    border-radius: var(--radius);
+    padding: 1.25rem 1.5rem;
+}
+.submit-preview h3 { font-size: 1.05rem; margin-bottom: 0.75rem; color: var(--text); }
+.submit-preview pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    color: var(--text);
+    margin: 0 0 0.75rem;
+}
+.submit-preview-link { color: var(--text-secondary); font-size: 0.9rem; }
+
+.submit-next { margin: 2rem 0; }
+
 /* === MOBILE === */
 @media (max-width: 768px) {
     .container { padding: 1rem; }
@@ -1430,4 +1555,8 @@ body.detail-open { overflow: hidden; }
     /* The detail panel becomes a full-screen modal on small screens. */
     .detail-panel { width: 100%; border-left: none; }
     .detail-header, .detail-body { padding-left: 1rem; padding-right: 1rem; }
+    /* Submit form: tighten the padding so the fields breathe on small screens. */
+    .submit-form { padding: 1rem; }
+    .submit-group { padding: 0.75rem 1rem 0.1rem; }
+    .submit-actions .btn { flex: 1 1 auto; }
 }

@@ -138,6 +138,13 @@ jobs:
                 f"{', '.join(str(f) for f in files)}")
           PY
 
+      # Data-quality validation (PLAN.md P3-5): the committed data must
+      # conform to schema.json (required fields, enum values, no duplicates,
+      # sane VRAM, referential integrity). A hard failure exits non-zero and
+      # blocks the PR; informational data-gap warnings never fail the build.
+      - name: Validate the data (tools/validate.py)
+        run: python tools/validate.py
+
   # --------------------------------------------------------------------------
   # 3. BUILD — run the generator and verify the output contract.
   # Catches a generator that silently skips a page (PLAN.md §5.2: a page that
@@ -174,12 +181,13 @@ jobs:
           # Authored shared assets the generator requires (must already exist).
           authored = ["css/style.css", "js/main.js"]
           # Generated outputs the site depends on.
-          generated = [
-              "index.html", "matrix.html", "community.html",
-              "guides.html", "about.html", "data.json",
-              "recommend/index.html", "compare/index.html",
-              "guides/index.html",
-          ]
+           generated = [
+               "index.html", "matrix.html", "community.html",
+               "guides.html", "about.html", "data.json",
+               "recommend/index.html", "compare/index.html",
+               "submit/index.html",
+               "guides/index.html",
+           ]
           # Every individual guide page (guides/<slug>/index.html).
           guides = sorted((root / "guides").glob("*/index.html"))
           all_paths = authored + generated

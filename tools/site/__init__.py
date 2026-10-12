@@ -26,7 +26,8 @@ from pathlib import Path
 
 from . import guides
 from . import utils
-from .pages import about, community, compare, guides_index, homepage, matrix, recommend
+from .pages import (about, community, compare, guides_index, homepage, matrix,
+                   recommend, submit)
 
 __all__ = ["main"]
 
@@ -129,6 +130,19 @@ def main(workspace: str | Path | None = None,
         print(f"  wrote compare/index.html ({len(cmp_html)} bytes)")
     except FileNotFoundError as e:
         print(f"WARNING: {e}", file=sys.stderr)
+
+    # --- Submit page (submit/index.html, depth 1; P3-4) ---
+    # Static community submission form. Uses the same content dir as the
+    # recommend page; degrades with a reported warning if content/submit.md
+    # or the `markdown` dep is missing (never silently).
+    try:
+        submit_html = submit.render(schema, content_dir, guides_menu)
+        submit_path = ws / "submit" / "index.html"
+        submit_path.parent.mkdir(parents=True, exist_ok=True)
+        submit_path.write_text(submit_html, encoding="utf-8")
+        print(f"  wrote submit/index.html ({len(submit_html)} bytes)")
+    except (FileNotFoundError, ImportError) as e:
+        print(f"WARNING: submit page skipped: {e}", file=sys.stderr)
 
     # --- data.json (raw dataset for client-side use) ---
     data_json = ws / "data.json"

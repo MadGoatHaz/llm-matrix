@@ -1,0 +1,128 @@
+# ============================================================================
+# The Local AI Stack — scheduled weekly data pull (PLAN.md P3-3)
+#
+# Automates the weekly cycle's first steps. Every Monday at 06:00 UTC (or on
+# demand via the "Run workflow" button) this workflow:
+#
+#   pull.py        -> re-fetch the 4 monitored forum threads (browser UA +
+#                     curl-fallback semantics; a 403 is reported, not fatal)
+#   diff.py        -> report what is new/changed since the last seen state
+#   parse.py       -> rebuild data/submissions.json from the main thread
+#   parse_thread.py-> rebuild benchmarks / hardware / category data
+#   validate.py    -> the data-quality gate (blocks the push on hard failures)
+#   tools.site     -> regenerate the static site from the fresh data
+#
+# If the run produced new data, it commits the updated data files + the
+# regenerated site and pushes them to `main` (the GitHub Pages source). If
+# nothing changed, it logs "no new data" and exits cleanly — no empty commit,
+# so a quiet week never spawns a bot commit or a re-trigger loop.
+#
+# Design notes (consistent with .github/workflows/ci.yml):
+#   * `pull.py` catches per-thread fetch errors and reports them in its
+#     summary, so a forum 403 degrades to "no new data" rather than a hard
+#     crash — the failure is visible in the run log, never silently dropped.
+#   * `validate.py` is the quality gate: a hard data failure (bad enum,
+#     missing field, duplicate, absurd VRAM) fails the run before anything is
+#     pushed.
+#   * The push is idempotent: it only commits when `git diff --staged` is
+#     non-empty, and only to `main` (a manual run on another branch stages the
+#     changes and reports them without force-pushing).
+#   * Only `contents: write` is requested — the least privilege needed to
+#     commit + push the generated outputs.
+# ============================================================================
+
+name: Weekly Data Pull
+
+on:
+  schedule:
+    # Monday 06:00 UTC.
+    - cron: "0 6 * * 1"
+  # Manual trigger from the Actions UI ("Run workflow").
+  workflow_dispatch: {}
+
+# Least-privilege default; the single job widens it to write (it pushes).
+permissions:
+  contents: read
+
+# Never cancel a scheduled pull mid-flight; at most one runs at a time.
+concurrency:
+  group: weekly-pull
+  cancel-in-progress: false
+
+jobs:
+  pull:
+    name: "Pull + parse + validate + regenerate + push"
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write   # required to commit + push the regenerated outputs
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          # Full history so the staged-diff check and the push work correctly.
+          fetch-depth: 0
+
+      - name: Set up Python 3.14 (with pip cache)
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.14"
+          cache: pip
+
+      - name: Install the project (editable) + dependencies
+        run: pip install -e .
+
+      - name: Configure the committing identity
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      # --- The pipeline (pull -> diff -> parse -> parse_thread) -------------
+      # Each `run` is `bash -e`, so a hard failure (missing input, parse error)
+      # stops the workflow. `pull.py` itself swallows per-thread fetch errors
+      # and reports them, so a 403 is a "no new data" outcome, not a crash.
+
+      - name: "1/5 Pull the monitored forum threads"
+        run: python tools/pull.py
+
+      - name: "2/5 Diff against the last seen state"
+        run: python tools/diff.py
+
+      - name: "3/5 Parse the main thread -> submissions.json"
+        run: python tools/parse.py
+
+      - name: "4/5 Parse the secondary threads (benchmarks/hardware/category)"
+        run: python tools/parse_thread.py
+
+      # --- Quality gate: refuse to push data that breaks the contract -------
+      - name: "Validate the data (blocks on hard failures)"
+        run: python tools/validate.py
+
+      # --- Regenerate the static site from the fresh data -------------------
+      - name: "5/5 Regenerate the site"
+        run: python -m tools.site
+
+      # --- Commit + push (only if something actually changed) ---------------
+      - name: Commit + push updated data and site (only if changed)
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No new data found this run — the forum is unchanged."
+            echo "Nothing to commit; exiting cleanly (no empty commit)."
+            exit 0
+          fi
+
+          echo "Changed files this rollup:"
+          git diff --staged --name-only
+
+          # The scheduled run is always on main. A manual "Run workflow" on
+          # another branch stages the changes and reports them, but does not
+          # force-push across branches.
+          if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            git commit -m "chore(data): weekly rollup — updated data + regenerated site [skip ci]"
+            git push origin main
+            echo "Weekly rollup committed and pushed to main (GitHub Pages source)."
+          else
+            echo "Running on $GITHUB_REF (not main) — changes are staged but not pushed."
+            echo "Review the file list above; push manually if this was intentional."
+          fi
