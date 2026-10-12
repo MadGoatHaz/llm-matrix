@@ -10,7 +10,8 @@ Reads:
     tools/schema.json
 
 Writes (all at repo root):
-    index.html        (homepage: hero, stats, find-your-setup, highlights)
+     index.html        (homepage: hero, stats, community highlights,
+                       how-it-works, related resources)
     matrix.html       (the data table: filters + sortable, tier-grouped)
     community.html    (contributor showcase)
     guides.html       (guides hub, "Coming Soon" cards)
@@ -214,32 +215,84 @@ def group_by_contributor(subs):
     return sorted(by_user.items(), key=lambda kv: (-len(kv[1]), kv[0].lower()))
 
 
-def pick_highlights(subs, n=4):
-    """Up to n distinct setups: curated highlights first, then bigger tiers.
+# Quant/format/author tokens used to reduce a raw (messy, repo-prefixed,
+# comma-separated) model name down to a clean "family" label for trend
+# grouping — e.g. "Swift-Qwen3.8-27B-Uncensored-FP8" -> "Qwen3.8-27B".
+FAMILY_AUTHOR_PREFIX = re.compile(
+    r"^(?:swift|carnice|unsloth|bartowski|deadbydawn101|d0xin|"
+    r"maziyarpanahi|samuelcardillo|kwaipilot)[-_]?", re.I)
+FAMILY_TAIL_TOKEN = re.compile(
+    r"[-_](?:gguf|sft|fp16|fp8|bf16|nvfp4|mxfp4|iq\d[\w.]*|q\d[\w.]*|"
+    r"i-nano|uncensored|w\d+a\d+|exl2[\w.]*|the-defiant[\w-]*|"
+    r"heretic[\w-]*|neo-max[\w-]*|mtp[\w-]*|agentic[\w-]*|opus[\w-]*|"
+    r"reasoning[\w-]*|gemini-?cli[\w-]*|dev)\b[\w.-]*$", re.I)
 
-    Deduplicated by model name so the same model from two contributors
-    doesn't take two slots.
-    """
-    tier_rank = {"t1": 1, "t2": 2, "t3": 3, "t4": 4, "t5": 5, "t6": 6}
-    scored = sorted(
-        subs,
-        key=lambda s: (
-            1000 if s.get("highlight") else 0
-            + tier_rank.get(s.get("tier", ""), 0),
-        ),
-        reverse=True,
-    )
-    seen = set()
-    out = []
-    for s in scored:
-        key = model_name(s)
-        if not key or key in seen:
-            continue
-        seen.add(key)
-        out.append(s)
-        if len(out) == n:
+
+def model_family(name):
+    """Reduce a raw model name to a clean family label (first model only)."""
+    if not name:
+        return ""
+    s = str(name).split(",")[0].strip()
+    if "/" in s and not s.lower().startswith(("http", "www")):
+        s = s.split("/", 1)[1].strip()
+    s = re.sub(r"\s*\([^)]*\)\s*$", "", s).strip()   # drop trailing parenthetical
+    s = FAMILY_AUTHOR_PREFIX.sub("", s).strip()
+    for _ in range(6):  # peel trailing quant/format tokens one at a time
+        new = FAMILY_TAIL_TOKEN.sub("", s).strip(" -_")
+        if new == s:
             break
+        s = new
+    return s
+
+
+def parse_speed(value):
+    """First numeric token in a decode_tps string, as float (or None)."""
+    m = re.search(r"(\d+(?:\.\d+)?)", clean_value(value))
+    return float(m.group(1)) if m else None
+
+
+def trending_models(subs, n=3):
+    """Top-n model families by submission count: [(family, count, note)]."""
+    counts = {}
+    best_speed = {}
+    for s in subs:
+        fam = model_family(model_name(s))
+        if not fam:
+            continue
+        counts[fam] = counts.get(fam, 0) + 1
+        sp = parse_speed(perf(s).get("decode_tps"))
+        if sp is not None:
+            best_speed[fam] = max(best_speed.get(fam, 0.0), sp)
+    ranked = sorted(counts.items(), key=lambda kv: (-kv[1], kv[0].lower()))[:n]
+    out = []
+    for fam, c in ranked:
+        sp = best_speed.get(fam)
+        note = f"Up to {sp:g} t/s decode" if sp else "Community favorite"
+        out.append((fam, c, note))
     return out
+
+
+def popular_backends(subs, schema, n=3):
+    """Top-n backends by usage: [(backend, count)]."""
+    counts = {}
+    for s in subs:
+        b = normalize_backend(s.get("backend", ""), schema)
+        if b:
+            counts[b] = counts.get(b, 0) + 1
+    return sorted(counts.items(), key=lambda kv: (-kv[1], kv[0].lower()))[:n]
+
+
+def fastest_setups(subs, n=3):
+    """Top-n submissions by decode speed: [(username, model, speed, hardware)]."""
+    rows = []
+    for s in subs:
+        sp = parse_speed(perf(s).get("decode_tps"))
+        if sp is None:
+            continue
+        rows.append((sp, s["source"]["username"], model_name(s),
+                     hw(s).get("description")))
+    rows.sort(key=lambda r: -r[0])
+    return [(u, m, sp, h) for sp, u, m, h in rows[:n]]
 
 
 # ---------------------------------------------------------------------------
@@ -300,8 +353,6 @@ def page_shell(title, description, body):
 # ---------------------------------------------------------------------------
 
 def render_homepage(subs, schema, stats):
-    tiers = schema.get("tiers", [])
-
     # --- Stats row ---
     stats_html = '''
   <div class="stats-row">
@@ -311,88 +362,60 @@ def render_homepage(subs, schema, stats):
     <div class="stat-card"><div class="value">{backends}</div><div class="label">Backends</div></div>
   </div>'''.format(**stats)
 
-    # --- Find Your Setup: GPU table (one row per tier, data-driven) ---
-    gpu_rows = []
-    for t in tiers:
-        tier_subs = [s for s in subs if s.get("tier") == t["id"]]
-        s = tier_subs[0] if tier_subs else None
-        gpu_rows.append(
-            f'''        <tr>
-          <td><span class="badge badge-blue">{html_escape(t["label"])}</span></td>
-          <td title="{html_escape(clean_value(hw(s).get("description")) if s else "")}">{html_escape(clean_value(hw(s).get("description")) if s else "—")}</td>
-          <td title="{html_escape(model_name(s)) if s else ""}">{html_escape(short_model(model_name(s))) if s else "—"}</td>
-          <td>{html_escape(clean_value(perf(s).get("decode_tps"))) if s else "—"}</td>
-        </tr>'''
-        )
-    gpu_table = f'''
-  <div class="card">
-    <h3>🎮 By GPU / VRAM Tier</h3>
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr><th>Tier</th><th>Example Hardware</th><th>What Runs</th><th>Speed</th></tr>
-        </thead>
-        <tbody>
-{chr(10).join(gpu_rows)}
-        </tbody>
-      </table>
-    </div>
-  </div>'''
+    # --- Community Highlights (all data-driven, from submissions.json) ---
 
-    # --- Find Your Setup: use-case table (curated editorial content) ---
-    use_cases = [
-        ("Agentic Coding", "16-24GB+", "Fast MoE (A3B) or dense 27B; 100+ tps decode keeps agents responsive"),
-        ("Deep Reasoning", "24GB+", "Thinking models burn context — budget max_tokens, use quantized KV"),
-        ("RAG / Document Ingestion", "16GB+", "48k+ stable context with flat VRAM growth (quantized KV cache)"),
-        ("Creative Writing / Roleplay", "16GB+", "Q4_K_M quality sweet spot; 8-30B dense models fit comfortably"),
-        ("General Chat", "≤16GB", "Small fast model (4-9B) that stays resident with massive KV headroom"),
-        ("Production Serving", "48-64GB+", "vLLM / TensorRT-LLM with FP8 or NVFP4 weights; multi-GPU for scale"),
-    ]
-    uc_rows = []
-    for name, tier, note in use_cases:
-        uc_rows.append(
-            f'''        <tr>
-          <td>{html_escape(name)}</td>
-          <td><span class="badge badge-cyan">{html_escape(tier)}</span></td>
-          <td title="{html_escape(note)}">{html_escape(note)}</td>
-        </tr>'''
-        )
-    uc_table = f'''
-  <div class="card">
-    <h3>🎯 By Use Case</h3>
-    <div class="table-wrapper">
-      <table>
-        <thead>
-          <tr><th>Use Case</th><th>Target Tier</th><th>What to Look For</th></tr>
-        </thead>
-        <tbody>
-{chr(10).join(uc_rows)}
-        </tbody>
-      </table>
-    </div>
-  </div>'''
-
-    # --- Community Highlights (best distinct setups) ---
-    highlights = pick_highlights(subs, n=4)
-    tier_labels = {t["id"]: t["label"] for t in tiers}
-    hl_cards = []
-    for s in highlights:
-        hl_cards.append(f'''
+    # Trending Models: top 3 model families by submission count.
+    trend_cards = []
+    for fam, count, note in trending_models(subs, n=3):
+        trend_cards.append(f'''
     <div class="card">
-      <h3>⚡ {html_escape(short_model(model_name(s)))}</h3>
-      <p>{html_escape(clean_value(hw(s).get("description")))}</p>
-      <p class="mono">{html_escape(clean_value(perf(s).get("decode_tps")))} · {html_escape(clean_value(ctx(s).get("stable")))}</p>
-      <p><span class="badge badge-blue">{html_escape(tier_labels.get(s.get("tier", ""), s.get("tier", "")))}</span>
-         <span class="badge badge-purple">{html_escape(normalize_backend(s.get("backend", ""), schema))}</span></p>
-      <p>by <strong>{html_escape(s["source"]["username"])}</strong> · <a href="matrix.html">See in the matrix →</a></p>
+      <h3>🔥 {html_escape(fam)}</h3>
+      <p><span class="badge badge-blue">{count} submission{'s' if count != 1 else ''}</span></p>
+      <p class="mono">{html_escape(note)}</p>
     </div>''')
-    highlights_html = f'''
-  <h2 class="section-title">🏆 Community Highlights</h2>
-  <div class="card-grid">
-{chr(10).join(hl_cards)}
-  </div>''' if hl_cards else ""
+    trend_html = (
+        f'\n  <div class="card-grid">\n{chr(10).join(trend_cards)}\n  </div>'
+        if trend_cards else "")
 
-    # --- How It Works ---
+    # Popular Backends: top 3 backends by usage.
+    backend_items = []
+    for backend, count in popular_backends(subs, schema, n=3):
+        backend_items.append(
+            f'    <div class="stat-card"><div class="value">{count}</div>'
+            f'<div class="label">{html_escape(backend)}</div></div>')
+    backend_html = (
+        f'\n  <div class="stats-row">\n{chr(10).join(backend_items)}\n  </div>'
+        if backend_items else "")
+
+    # Fastest Setups: top 3 submissions by decode speed.
+    fast_cards = []
+    for username, model, speed, hardware in fastest_setups(subs, n=3):
+        fast_cards.append(f'''
+    <div class="card">
+      <h3>⚡ {speed:g} t/s</h3>
+      <p>{html_escape(short_model(model))}</p>
+      <p class="mono">{html_escape(clean_value(hardware))}</p>
+      <p>by <strong>{html_escape(username)}</strong> · <a href="matrix.html">See in the matrix →</a></p>
+    </div>''')
+    fast_html = (
+        f'\n  <div class="card-grid">\n{chr(10).join(fast_cards)}\n  </div>'
+        if fast_cards else "")
+
+    highlights_html = f'''
+  <section>
+    <h2 class="section-title">🏆 Community Highlights</h2>
+
+    <h3 style="margin: 1rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase;">Trending Models</h3>
+{trend_html}
+
+    <h3 style="margin: 1.5rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase;">Popular Backends</h3>
+{backend_html}
+
+    <h3 style="margin: 1.5rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase;">Fastest Setups</h3>
+{fast_html}
+  </section>'''
+
+    # --- How It Works (kept as-is) ---
     how_html = '''
   <h2 class="section-title">🔄 How It Works</h2>
   <div class="card-grid">
@@ -410,16 +433,37 @@ def render_homepage(subs, schema, stats):
     </div>
   </div>'''
 
-    # --- Forum credit + CTA ---
-    credit_html = f'''
-  <div class="card">
-    <h3>💬 From the Community</h3>
-    <p>Built from submissions in the <a href="{FORUM_THREAD}">Local LLM Matrix thread</a> in the
-       <a href="{FORUM_CATEGORY}">Machine Learning, LLMs &amp; AI category</a> at
-       <a href="https://forum.level1techs.com">Level1Techs</a>. The data is community-reported —
-       real hardware, real numbers, real quirks.</p>
-    <p><a href="{FORUM_THREAD}" class="btn btn-primary">Join the discussion →</a></p>
-  </div>'''
+    # --- Related Resources (curated community links) ---
+    related_html = '''
+  <section>
+    <h2 class="section-title">🔗 Related Resources</h2>
+    <div class="card-grid">
+      <a class="guide-card" href="https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531">
+        <div class="guide-icon">⚗️</div>
+        <h3>Crucible: LLM Bench</h3>
+        <p>Benchmark your LLM server. Is it fast enough for everyone? Community-driven performance testing.</p>
+        <div class="guide-meta">L1Techs Thread</div>
+      </a>
+      <a class="guide-card" href="https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709">
+        <div class="guide-icon">🖥️</div>
+        <h3>Show Off Your AI Rig</h3>
+        <p>The community hardware showcase. What are people building? 40+ rigs and counting.</p>
+        <div class="guide-meta">L1Techs Thread</div>
+      </a>
+      <a class="guide-card" href="https://forum.level1techs.com/c/high-performance-computing/deep-machine-learning-ai/155">
+        <div class="guide-icon">🤖</div>
+        <h3>ML, LLMs &amp; AI Category</h3>
+        <p>The full L1Techs AI category. Benchmarks, guides, discussions, and results.</p>
+        <div class="guide-meta">L1Techs Forum</div>
+      </a>
+      <a class="guide-card" href="https://forum.level1techs.com/t/256443">
+        <div class="guide-icon">💬</div>
+        <h3>This Project's Thread</h3>
+        <p>The Local AI Stack — where the community submits data and discusses models.</p>
+        <div class="guide-meta">L1Techs Thread</div>
+      </a>
+    </div>
+  </section>'''
 
     body = f'''
   <section class="hero">
@@ -432,15 +476,9 @@ def render_homepage(subs, schema, stats):
   </section>
 
 {stats_html}
-
-  <h2 class="section-title">🧭 Find Your Setup</h2>
-  <div class="card-grid">
-{gpu_table}
-{uc_table}
-  </div>
 {highlights_html}
 {how_html}
-{credit_html}'''
+{related_html}'''
 
     title = "The Local AI Stack — Community-Driven Local LLM Reference"
     desc = ("Your community-driven guide to running AI models on your own hardware. "

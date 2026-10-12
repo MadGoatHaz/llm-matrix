@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-12T10:21:26.258235",
+  "generated_at": "2026-10-12T11:39:46.952962",
   "schema_version": "2.1",
   "source_thread": "https://forum.level1techs.com/t/256443",
   "total_submissions": 12,
@@ -140,9 +140,9 @@
         "primary_use_case": "Agentic coding via OpenAI-compatible API",
         "stable_context_tested": "131072 configured; >=106,493 observed in live sessions",
         "kv_cache_setting": "int8 (engine-native)",
+        "engine_mode": "Hybrid (VRAM+RAM+SSD)",
         "throughput_tps": "99-128 decode (median 108)",
         "prefill_tps": "825-3600 (median ~2800 with 90% prompt cache)",
-        "engine_mode": "Hybrid (VRAM+RAM+SSD)",
         "power_draw": "450W stock cap",
         "setup_notes": "125B MoE on single 24GB card. 6892 experts: 13.4GB VRAM, rest RAM, lookup NVMe. MTP=4+lookup=3. Prompt cache 90% hits \u2192 0.3-0.8s resume on 50k contexts. WSL2 needs explicit .wslconfig RAM."
       },
