@@ -399,6 +399,100 @@ def parse_speed(value: Any) -> float | None:
     return float(m.group(1)) if m else None
 
 
+# ---------------------------------------------------------------------------
+# P4-1 / P4-2: chart + advanced-filter data helpers
+# ---------------------------------------------------------------------------
+
+#: "27B", "35B-A3B" (MoE: total first), "125B" — case-insensitive.
+_MODEL_SIZE_RE = re.compile(r"(\d+(?:\.\d+)?)\s*B(?:-A\s*\d+(?:\.\d+)?\s*B)?", re.I)
+_GB_RE = re.compile(r"(\d+(?:\.\d+)?)\s*GB", re.I)
+
+
+def parse_model_size(name: Any) -> float | None:
+    """Total parameter count (billions) from a model name.
+
+    Reads the *first* model in a comma-separated list and takes the total
+    parameter count — for MoE names (``35B-A3B``) that is the first number,
+    i.e. total weights, not the active subset. ``None`` when no size is
+    stated (e.g. "Qwen3.8-Flash-Next" — the 125B is only in the notes).
+    """
+    if not name:
+        return None
+    first = str(name).split(",")[0].strip()
+    m = _MODEL_SIZE_RE.search(first)
+    return float(m.group(1)) if m else None
+
+
+def estimate_vram_gb(s: dict, schema: dict) -> float | None:
+    """Best-known VRAM footprint of a submission, in GB.
+
+    Precedence: an explicit ``N GB`` in the submitter's notes (e.g. "fits
+    12.7GB incl. KV"), then the hardware description ("16GB HBM2"), then the
+    tier's range maximum (a documented fallback — the tier band's ceiling).
+    ``None`` when none of the three yield a number.
+    """
+    m = _GB_RE.search(clean_value(s.get("notes")))
+    if m:
+        return float(m.group(1))
+    m = _GB_RE.search(clean_value(hw(s).get("description")))
+    if m:
+        return float(m.group(1))
+    for t in schema.get("tiers", []):
+        if t.get("id") == s.get("tier") and t.get("range"):
+            return float(t["range"][1])
+    return None
+
+
+def search_blob(s: dict) -> str:
+    """Lowercase concatenation of every searchable field of a submission.
+
+    Used for the P4-2 text search: the row carries this as ``data-search``
+    so the client matches model name, hardware, backend, quant, use case,
+    context, KV, performance, engine mode, notes, and submitter without
+    DOM text crawling (notes are not a table column).
+    """
+    parts = [
+        model_name(s),
+        hw(s).get("description"),
+        hw(s).get("vendor"),
+        s.get("backend"),
+        s.get("quant"),
+        s.get("weight_precision"),
+        s.get("use_cases"),
+        s.get("engine_mode"),
+        s.get("notes"),
+        ctx(s).get("stable"),
+        ctx(s).get("kv_cache"),
+        perf(s).get("decode_tps"),
+        perf(s).get("prefill_tps"),
+        perf(s).get("power_w"),
+        (s.get("source") or {}).get("username"),
+    ]
+    return " ".join(p for p in parts if p and not is_placeholder(p)).lower()
+
+
+def row_sort_attrs(s: dict, schema: dict) -> str:
+    """The numeric/date sort hints a Matrix row carries (P4-2).
+
+    ``data-sort-vram`` = estimated VRAM in GB, ``data-sort-size`` = total
+    parameter count (B), ``data-sort-speed`` = first decode t/s figure,
+    ``data-sort-date`` = the submission's ISO date (lexicographically
+    sortable). Empty attribute when a value is unknown — the client
+    orders unknowns last.
+    """
+    vram = estimate_vram_gb(s, schema)
+    size = parse_model_size(model_name(s))
+    speed = parse_speed(perf(s).get("decode_tps"))
+    date = str((s.get("source") or {}).get("submitted_at", ""))[:10]
+    return (
+        f'data-sort-vram="{vram:g}"' if vram is not None else 'data-sort-vram=""'
+    ) + (
+        f' data-sort-size="{size:g}"' if size is not None else ' data-sort-size=""'
+    ) + (
+        f' data-sort-speed="{speed:g}"' if speed is not None else ' data-sort-speed=""'
+    ) + f' data-sort-date="{html_escape(date)}"'
+
+
 def trending_models(subs: list[dict], n: int = 3) -> list[tuple[str, int, str]]:
     """Top-n model families by submission count: [(family, count, note)]."""
     counts = {}

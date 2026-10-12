@@ -2,11 +2,19 @@
 //
 //   * mobile nav toggle, active nav link, Guides dropdown
 //   * matrix table sorting (within VRAM-tier groups)
-//   * URL-synced filters (P2-4): search + tier + vendor + backend +
-//     use case + engine mode. The filter state lives in the query string
-//     (?tier=&vendor=&backend=&use_case=&mode=&q=) — loading a URL with
-//     params restores that exact view, and the 🔗 Share button copies it.
-//     Works on the Matrix (rows) and the Community page (setup lists).
+//   * URL-synced filters (P2-4, extended by P4-2): search + tier + vendor
+//     + backend + use case + engine mode. The filter state lives in the
+//     query string — loading a URL with params restores that exact view,
+//     and the 🔗 Share button copies it. Works on the Matrix (rows) and
+//     the Community page (setup lists).
+//     P4-2 adds: multi-select Backend / Use Case (OR within an axis,
+//     AND across axes), full-field text search (each row's data-search
+//     blob covers notes and every other field), a sort dropdown
+//     (VRAM / model size / speed / date + direction), removable active-
+//     filter chips, a live "Showing N of M" result count, and smooth
+//     row transitions (prefers-reduced-motion respected). The URL
+//     contract extends P2-4: repeated backend= / use_case= params plus
+//     sort= and dir=desc.
 //   * row detail panel (P2-5): clicking a Matrix row (or its ⓘ button)
 //     opens a slide-in panel with the full submission — focus-trapped,
 //     ESC to close, focus restored, and deep-linkable via the row's #id
@@ -14,6 +22,17 @@
 //
 // Vanilla, zero dependencies. Page-specific tools (compare.js,
 // commands.js, recommend.js) load after this file where needed.
+
+// P4-2 sort coordination: shared between initSorting (column headers) and
+// initFilters (the sort dropdown). Clicking a column header while a
+// dropdown sort is active returns the table to the default tier grouping
+// first, so the two mechanisms never fight.
+var matrixSort = { axis: 'default', dir: 1, applyDefault: null };
+function resetToDefaultSort() {
+    matrixSort.axis = 'default';
+    matrixSort.dir = 1;
+    if (matrixSort.applyDefault) matrixSort.applyDefault();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     initNav();
@@ -112,6 +131,9 @@ function initSorting() {
         // natively activate it), so the click below also covers keyboard.
         if (th.hasAttribute('data-nosort')) return;
         th.addEventListener('click', () => {
+            // If a dropdown sort (P4-2) is active, return to the default
+            // tier-grouped order before applying the column sort.
+            if (matrixSort.axis !== 'default') resetToDefaultSort();
             sortState[colIdx] = -(sortState[colIdx] || -1);
             sortTable(table, colIdx, sortState);
         });
@@ -168,19 +190,36 @@ function sortTable(table, col, sortState) {
 }
 
 // ---------------------------------------------------------------------------
-// Filters (P2-4) — URL-synced, shareable.
+// Filters (P2-4, extended by P4-2) — URL-synced, shareable, multi-select.
 //
-// Matrix: filters the table rows (tier-group headers hide when empty).
+// Matrix: filters the table rows (tier-group headers hide when empty),
+// sorts them (dropdown: VRAM / size / speed / date, or a column header),
+// shows active filters as removable chips, and announces a live
+// "Showing N of M submissions" count.
 // Community: filters each contributor's setup list; cards with no visible
-// setups hide. Both pages share one filter bar + one query-string contract:
-//   ?tier=&vendor=&backend=&use_case=&mode=&q=
-// Discrete changes (selects, reset) push a history entry; continuous typing
-// (search) replaces it, so the back button isn't flooded with per-keystroke
-// states. Loading a URL with these params restores the exact view.
+// setups hide (single-select axes only — the P4-2 controls degrade away
+// when absent).
+//
+// Query-string contract (fixed param order, stable and diff-friendly):
+//   ?tier=&vendor=&backend=&use_case=&mode=&q=&sort=&dir=
+//   * single-value axes: tier / vendor / mode / q
+//   * multi-value axes: backend / use_case (repeated params; OR within
+//     the axis, AND across axes)
+//   * sort: default / vram / size / speed / date; dir: desc (asc is
+//     omitted — the default)
+// Discrete changes (selects, chips, sort, reset) push a history entry;
+// continuous typing (search) replaces it, so the back button isn't
+// flooded with per-keystroke states. Loading a URL with these params
+// restores the exact view.
 // ---------------------------------------------------------------------------
 function initFilters() {
     const search = document.getElementById('filter-search');
-    const selects = Array.from(document.querySelectorAll('.filter-select'));
+    const singles = Array.from(document.querySelectorAll('.filter-select[data-filter]'));
+    const multiselects = Array.from(document.querySelectorAll('.multiselect[data-filter]'));
+    const sortSel = document.getElementById('filter-sort');
+    const dirBtn = document.getElementById('filter-dir');
+    const chipsEl = document.getElementById('filter-chips');
+    const countEl = document.getElementById('filter-count');
     const resetBtn = document.getElementById('filter-reset');
     const shareBtn = document.getElementById('filter-share');
     const table = document.getElementById('data-table');
@@ -191,32 +230,326 @@ function initFilters() {
     // data-filter value -> dataset property name ("use-case" -> "useCase").
     const dsKey = (f) => f.replace(/-([a-z])/g, (_, c) => c.toUpperCase());
     // data-filter value -> URL param key ("use-case" -> "use_case").
-    const urlKey = (s) => s.dataset.filter.replace(/-/g, '_');
+    const urlKey = (el) => el.dataset.filter.replace(/-/g, '_');
+    // Human labels for chips.
+    const AXIS_LABELS = {
+        tier: 'VRAM tier', vendor: 'Vendor', backend: 'Backend',
+        use_case: 'Use case', mode: 'Engine mode',
+    };
     // Fixed param order, so shared URLs are stable and diff-friendly.
-    const PARAM_ORDER = ['tier', 'vendor', 'backend', 'use_case', 'mode', 'q'];
+    const PARAM_ORDER = ['tier', 'vendor', 'backend', 'use_case', 'mode', 'q', 'sort', 'dir'];
 
+    function esc(v) {
+        const d = document.createElement('span');
+        d.textContent = (v == null) ? '' : String(v);
+        return d.innerHTML;
+    }
+
+    // --- Multi-select dropdowns (P4-2) ------------------------------------
+    multiselects.forEach(ms => {
+        const toggle = ms.querySelector('.multiselect-toggle');
+        const menu = ms.querySelector('.multiselect-menu');
+        const label = ms.querySelector('.multiselect-label');
+        if (label) label.dataset.placeholder = label.textContent;
+        if (toggle && menu) {
+            toggle.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const wasOpen = !menu.hidden;
+                closeAllMenus();
+                if (!wasOpen) {
+                    menu.hidden = false;
+                    toggle.setAttribute('aria-expanded', 'true');
+                }
+            });
+            // Keep clicks inside the menu from closing it (document handler).
+            menu.addEventListener('click', (e) => e.stopPropagation());
+        }
+        ms.querySelectorAll('input[type="checkbox"]').forEach(cb =>
+            cb.addEventListener('change', () => {
+                updateMsLabel(ms);
+                apply(true);
+            }));
+    });
+
+    function closeAllMenus() {
+        multiselects.forEach(ms => {
+            const menu = ms.querySelector('.multiselect-menu');
+            const toggle = ms.querySelector('.multiselect-toggle');
+            if (menu) menu.hidden = true;
+            if (toggle) toggle.setAttribute('aria-expanded', 'false');
+        });
+    }
+
+    function updateMsLabel(ms) {
+        const label = ms.querySelector('.multiselect-label');
+        const toggle = ms.querySelector('.multiselect-toggle');
+        if (!label) return;
+        const checked = Array.from(ms.querySelectorAll('input[type="checkbox"]:checked'))
+            .map(cb => cb.value);
+        label.textContent = !checked.length
+            ? label.dataset.placeholder
+            : (checked.length === 1 ? checked[0]
+                                    : checked[0] + ' +' + (checked.length - 1));
+        if (toggle) toggle.classList.toggle('active', checked.length > 0);
+    }
+
+    // Close open menus on outside click; Escape returns focus to the toggle.
+    document.addEventListener('click', closeAllMenus);
+    document.addEventListener('keydown', (e) => {
+        if (e.key !== 'Escape') return;
+        multiselects.forEach(ms => {
+            const menu = ms.querySelector('.multiselect-menu');
+            const toggle = ms.querySelector('.multiselect-toggle');
+            if (menu && !menu.hidden && menu.contains(document.activeElement)) {
+                closeAllMenus();
+                if (toggle) toggle.focus();
+            }
+        });
+    });
+
+    // --- State -------------------------------------------------------------
     function readState() {
-        const state = { q: search.value };
-        selects.forEach(s => { state[urlKey(s)] = s.value; });
+        const state = {
+            q: search.value,
+            sort: sortSel ? sortSel.value : 'default',
+            dir: dirBtn && dirBtn.getAttribute('aria-pressed') === 'true' ? -1 : 1,
+        };
+        singles.forEach(s => { state[urlKey(s)] = s.value; });
+        multiselects.forEach(ms => {
+            state[urlKey(ms)] = Array.from(
+                ms.querySelectorAll('input[type="checkbox"]:checked')
+            ).map(cb => cb.value);
+        });
         return state;
     }
 
     function writeState(state) {
         if (state.q !== undefined) search.value = state.q;
-        selects.forEach(s => {
+        singles.forEach(s => {
             const v = state[urlKey(s)];
             if (v !== undefined) s.value = v; // unmatched values keep ''
         });
+        multiselects.forEach(ms => {
+            const vals = state[urlKey(ms)] || [];
+            ms.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                cb.checked = vals.includes(cb.value);
+            });
+            updateMsLabel(ms);
+        });
+        if (sortSel) {
+            sortSel.value = state.sort || 'default';
+            matrixSort.axis = sortSel.value;
+        }
+        if (dirBtn) {
+            matrixSort.dir = state.dir === -1 ? -1 : 1;
+            updateDirBtn();
+        }
+    }
+
+    function updateDirBtn() {
+        if (!dirBtn) return;
+        dirBtn.textContent = matrixSort.dir === 1 ? '↑' : '↓';
+        dirBtn.setAttribute('aria-pressed', String(matrixSort.dir === -1));
     }
 
     function syncUrl(state, push) {
         const params = new URLSearchParams();
-        PARAM_ORDER.forEach(k => { if (state[k]) params.set(k, state[k]); });
+        PARAM_ORDER.forEach(k => {
+            const v = state[k];
+            if (v === undefined || v === null) return;
+            if (Array.isArray(v)) {
+                v.forEach(item => { if (item) params.append(k, item); });
+            } else if (k === 'dir') {
+                if (v === -1) params.set(k, 'desc'); // asc is the default
+            } else if (k === 'sort') {
+                if (v && v !== 'default') params.set(k, v);
+            } else if (v) {
+                params.set(k, v);
+            }
+        });
         const qs = params.toString();
         const url = window.location.pathname + (qs ? '?' + qs : '') + window.location.hash;
         safeHistory(() => (push ? history.pushState : history.replaceState)({ filters: state }, '', url));
     }
 
+    function stateFromUrl() {
+        const p = new URLSearchParams(window.location.search);
+        const st = {
+            q: p.get('q') || '',
+            sort: p.get('sort') || 'default',
+            dir: p.get('dir') === 'desc' ? -1 : 1,
+        };
+        singles.forEach(s => {
+            const v = p.get(urlKey(s));
+            if (v) st[urlKey(s)] = v;
+        });
+        multiselects.forEach(ms => {
+            st[urlKey(ms)] = p.getAll(urlKey(ms)).filter(v => v);
+        });
+        return st;
+    }
+
+    // --- Matching: AND across axes, OR within a multi-select axis ----------
+    function matches(state, el) {
+        const q = (state.q || '').toLowerCase().trim();
+        if (q) {
+            // data-search (gen-time blob of every field incl. notes) is the
+            // primary haystack; fall back to visible text where absent.
+            const blob = el.dataset.search || el.textContent.toLowerCase();
+            if (!blob.includes(q)) return false;
+        }
+        for (const s of singles) {
+            const val = s.value;
+            if (val && el.dataset[dsKey(s.dataset.filter)] !== val) return false;
+        }
+        for (const ms of multiselects) {
+            const vals = state[urlKey(ms)] || [];
+            if (!vals.length) continue;
+            const dv = el.dataset[dsKey(ms.dataset.filter)] || '';
+            if (!vals.includes(dv)) return false;
+        }
+        return true;
+    }
+
+    // --- Sorting (P4-2 dropdown; column headers stay within-group) --------
+    const tbody = table ? table.querySelector('tbody') : null;
+    const originalSeq = tbody ? Array.from(tbody.children) : [];
+    const GLOBAL_AXES = { size: 1, speed: 1, date: 1 };
+
+    function clearColumnSort() {
+        if (!table) return;
+        table.querySelectorAll('th').forEach(th => {
+            th.classList.remove('sort-asc', 'sort-desc');
+            th.setAttribute('aria-sort', 'none');
+            const btn = th.querySelector('.th-btn');
+            if (btn) btn.classList.remove('sort-asc', 'sort-desc');
+        });
+    }
+
+    function applySort() {
+        if (!tbody) return;
+        const axis = matrixSort.axis;
+        const dir = matrixSort.dir;
+
+        if (axis === 'default') {
+            originalSeq.forEach(el => tbody.appendChild(el));
+            tbody.querySelectorAll('.tier-header').forEach(h => h.style.display = '');
+            clearColumnSort();
+            return;
+        }
+
+        // Group the (original) sequence into tier blocks.
+        const groups = [];
+        let cur = { header: null, rows: [] };
+        originalSeq.forEach(el => {
+            if (el.classList.contains('tier-header')) {
+                if (cur.header || cur.rows.length) groups.push(cur);
+                cur = { header: el, rows: [] };
+            } else {
+                cur.rows.push(el);
+            }
+        });
+        if (cur.header || cur.rows.length) groups.push(cur);
+
+        const dsName = { vram: 'sortVram', size: 'sortSize', speed: 'sortSpeed', date: 'sortDate' }[axis];
+        const numeric = axis !== 'date';
+        const valueOf = (el) => {
+            const raw = el.dataset[dsName] || '';
+            if (numeric) {
+                const v = parseFloat(raw);
+                // Unknown values sort last (ascending) / first (descending).
+                return isNaN(v) ? (dir === 1 ? Infinity : -Infinity) : v;
+            }
+            return raw === '' ? (dir === 1 ? '99999999' : '00000000') : raw;
+        };
+        const cmp = (a, b) => {
+            const av = valueOf(a), bv = valueOf(b);
+            return (av < bv ? -1 : av > bv ? 1 : 0) * dir;
+        };
+
+        tbody.innerHTML = '';
+        if (GLOBAL_AXES[axis]) {
+            // Global sort: tier headers are hidden (grouping is meaningless
+            // when rows interleave across tiers).
+            const all = groups.flatMap(g => g.rows);
+            all.sort(cmp);
+            all.forEach(r => tbody.appendChild(r));
+            groups.forEach(g => { if (g.header) g.header.style.display = 'none'; });
+        } else {
+            // VRAM sort keeps the tier grouping (within-group order only).
+            groups.forEach(g => {
+                if (g.header) tbody.appendChild(g.header);
+                g.rows.sort(cmp);
+                g.rows.forEach(r => tbody.appendChild(r));
+            });
+        }
+        clearColumnSort();
+    }
+
+    matrixSort.applyDefault = () => {
+        if (sortSel) sortSel.value = 'default';
+        if (dirBtn) updateDirBtn();
+        apply(true);
+    };
+
+    // --- Active-filter chips (P4-2) ----------------------------------------
+    function renderChips(state) {
+        if (!chipsEl) return;
+        chipsEl.innerHTML = '';
+        const seen = new Set(); // guard against duplicate (axis, value) pairs
+        const mk = (axis, value, label) => {
+            const key = axis + '\u0000' + value;
+            if (seen.has(key)) return;
+            seen.add(key);
+            const b = document.createElement('button');
+            b.type = 'button';
+            b.className = 'filter-chip';
+            b.dataset.axis = axis;
+            b.dataset.value = value;
+            b.setAttribute('aria-label', 'Remove filter: ' + label);
+            b.innerHTML = '<span>' + esc(label) + '</span>' +
+                '<span class="chip-x" aria-hidden="true">✕</span>';
+            chipsEl.appendChild(b);
+        };
+        if (state.q && state.q.trim()) {
+            mk('q', state.q.trim(), 'Search: “' + state.q.trim() + '”');
+        }
+        singles.forEach(s => {
+            const v = state[urlKey(s)];
+            if (v) mk(urlKey(s), v, (AXIS_LABELS[urlKey(s)] || urlKey(s)) + ': ' + v);
+        });
+        multiselects.forEach(ms => {
+            (state[urlKey(ms)] || []).forEach(v =>
+                mk(urlKey(ms), v, (AXIS_LABELS[urlKey(ms)] || urlKey(ms)) + ': ' + v));
+        });
+    }
+
+    if (chipsEl) {
+        chipsEl.addEventListener('click', (e) => {
+            const chip = e.target.closest ? e.target.closest('.filter-chip') : null;
+            if (!chip) return;
+            const axis = chip.dataset.axis;
+            if (axis === 'q') {
+                search.value = '';
+            } else {
+                const single = singles.find(s => urlKey(s) === axis);
+                if (single) {
+                    single.value = '';
+                } else {
+                    const ms = multiselects.find(m => urlKey(m) === axis);
+                    if (ms) {
+                        ms.querySelectorAll('input[type="checkbox"]').forEach(cb => {
+                            if (cb.value === chip.dataset.value) cb.checked = false;
+                        });
+                        updateMsLabel(ms);
+                    }
+                }
+            }
+            apply(true);
+        });
+    }
+
+    // --- Result count (P4-2) ----------------------------------------------
     function visibleCount() {
         if (table) {
             let n = 0;
@@ -235,37 +568,63 @@ function initFilters() {
         return n;
     }
 
-    function matches(state, el) {
-        const q = (state.q || '').toLowerCase();
-        if (q && !el.textContent.toLowerCase().includes(q)) return false;
-        for (const s of selects) {
-            const val = s.value;
-            if (val && el.dataset[dsKey(s.dataset.filter)] !== val) return false;
+    function totalCount() {
+        if (table) {
+            let n = 0;
+            table.querySelectorAll('tbody tr').forEach(row => {
+                if (!row.classList.contains('tier-header')) n++;
+            });
+            return n;
         }
-        return true;
+        let n = 0;
+        cards.forEach(card => {
+            n += card.querySelectorAll('.setup-list li').length;
+        });
+        return n;
     }
 
+    function updateCount() {
+        if (!countEl) return;
+        countEl.textContent = 'Showing ' + visibleCount() + ' of ' + totalCount() + ' submissions';
+    }
+
+    // --- Apply: sort -> filter -> chips/count/empty-state -> URL ----------
     function apply(push) {
         const state = readState();
 
         if (table) {
+            applySort();
+            const global = GLOBAL_AXES[matrixSort.axis];
             table.querySelectorAll('tbody tr').forEach(row => {
                 if (row.classList.contains('tier-header')) {
-                    row.style.display = '';
+                    row.style.display = global ? 'none' : '';
                     return;
                 }
-                row.style.display = matches(state, row) ? '' : 'none';
-            });
-            // Hide tier headers whose group is fully filtered out.
-            table.querySelectorAll('.tier-header').forEach(header => {
-                let next = header.nextElementSibling;
-                let hasVisible = false;
-                while (next && !next.classList.contains('tier-header')) {
-                    if (next.style.display !== 'none') hasVisible = true;
-                    next = next.nextElementSibling;
+                const show = matches(state, row);
+                if (show && row.style.display === 'none') {
+                    // Re-entering row: fade it in (killed by the
+                    // prefers-reduced-motion block for reduced-motion users).
+                    row.style.display = '';
+                    row.classList.add('row-enter');
+                    row.addEventListener('animationend',
+                        () => row.classList.remove('row-enter'), { once: true });
+                } else if (!show && row.style.display !== 'none') {
+                    row.style.display = 'none';
                 }
-                header.style.display = hasVisible ? '' : 'none';
             });
+            // Hide tier headers whose group is fully filtered out
+            // (global sorts already hide every header).
+            if (!global) {
+                table.querySelectorAll('.tier-header').forEach(header => {
+                    let next = header.nextElementSibling;
+                    let hasVisible = false;
+                    while (next && !next.classList.contains('tier-header')) {
+                        if (next.style.display !== 'none') hasVisible = true;
+                        next = next.nextElementSibling;
+                    }
+                    header.style.display = hasVisible ? '' : 'none';
+                });
+            }
         } else {
             cards.forEach(card => {
                 card.querySelectorAll('.setup-list li').forEach(li => {
@@ -277,8 +636,14 @@ function initFilters() {
             });
         }
 
+        renderChips(state);
+        updateCount();
+
         if (emptyEl) {
-            const active = (state.q && state.q.trim()) || selects.some(s => s.value);
+            const active = (state.q && state.q.trim())
+                || singles.some(s => s.value)
+                || multiselects.some(ms =>
+                    ms.querySelectorAll('input[type="checkbox"]:checked').length > 0);
             emptyEl.hidden = !(active && visibleCount() === 0);
         }
 
@@ -286,11 +651,32 @@ function initFilters() {
     }
 
     search.addEventListener('input', () => apply(false));
-    selects.forEach(s => s.addEventListener('change', () => apply(true)));
+    singles.forEach(s => s.addEventListener('change', () => apply(true)));
+    if (sortSel) sortSel.addEventListener('change', () => {
+        matrixSort.axis = sortSel.value;
+        // The default (tier) order has no direction; reset it so the URL
+        // and the toggle read cleanly.
+        if (matrixSort.axis === 'default') matrixSort.dir = 1;
+        updateDirBtn();
+        apply(true);
+    });
+    if (dirBtn) dirBtn.addEventListener('click', () => {
+        matrixSort.dir = matrixSort.dir === 1 ? -1 : 1;
+        updateDirBtn();
+        apply(true);
+    });
 
     function reset() {
         search.value = '';
-        selects.forEach(s => { s.value = ''; });
+        singles.forEach(s => { s.value = ''; });
+        multiselects.forEach(ms => {
+            ms.querySelectorAll('input[type="checkbox"]').forEach(cb => { cb.checked = false; });
+            updateMsLabel(ms);
+        });
+        matrixSort.axis = 'default';
+        matrixSort.dir = 1;
+        if (sortSel) sortSel.value = 'default';
+        if (dirBtn) updateDirBtn();
         apply(true);
     }
     if (resetBtn) resetBtn.addEventListener('click', reset);
@@ -342,24 +728,12 @@ function initFilters() {
     }
 
     // Restore a shared/deep-linked view on load.
-    const p = new URLSearchParams(window.location.search);
-    const state = { q: p.get('q') || '' };
-    selects.forEach(s => {
-        const v = p.get(urlKey(s));
-        if (v) state[urlKey(s)] = v;
-    });
-    writeState(state);
+    writeState(stateFromUrl());
     apply(false);
 
     // Back/forward through filter states (pushState entries).
     window.addEventListener('popstate', () => {
-        const pp = new URLSearchParams(window.location.search);
-        const st = { q: pp.get('q') || '' };
-        selects.forEach(s => {
-            const v = pp.get(urlKey(s));
-            if (v) st[urlKey(s)] = v;
-        });
-        writeState(st);
+        writeState(stateFromUrl());
         apply(false);
     });
 }

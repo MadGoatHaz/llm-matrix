@@ -1,0 +1,20 @@
+  wrote index.html (15501 bytes)
+  wrote matrix.html (64349 bytes)
+  wrote community.html (11825 bytes)
+  wrote guides.html (2642 bytes)
+  wrote about.html (4917 bytes)
+  wrote recommend/index.html (22293 bytes)
+  wrote compare/index.html (17224 bytes)
+  wrote submit/index.html (19298 bytes)
+  wrote data.json (27112 bytes)
+  wrote guides/index.html (8041 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
