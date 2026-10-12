@@ -10,10 +10,9 @@ Reads:
     tools/schema.json
 
 Writes:
-    dashboard/index.html      (GitHub Pages dashboard)
-    dashboard/data.json       (raw data for client-side JS)
-    forum/post3_viewport.md   (in-forum data viewport post)
-    forum/bump_changelog.md   (what changed this cycle)
+    index.html               (GitHub Pages dashboard, at repo root)
+    data.json                (raw data for client-side JS, at repo root)
+    forum/post3_viewport.md  (in-forum data viewport post)
 
 This is the "one command to produce all outputs" script.
 """
@@ -27,7 +26,7 @@ WORKSPACE = Path(__file__).parent.parent
 DATA_DIR = WORKSPACE / "data"
 SUBMISSIONS = DATA_DIR / "submissions.json"
 SCHEMA = WORKSPACE / "tools" / "schema.json"
-DASHBOARD_DIR = WORKSPACE / "dashboard"
+DASHBOARD_DIR = WORKSPACE
 FORUM_DIR = WORKSPACE / "forum"
 
 def load_json(path):

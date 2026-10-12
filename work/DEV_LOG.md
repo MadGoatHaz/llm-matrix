@@ -3,6 +3,15 @@
 @@@ ACTIVE_WORKERS @@@
 
 @@@ HISTORY @@@
+- [DONE] ID: root-output | AGENT: general (Implementation Agent) | BRANCH: main | FILES: tools/generate.py, dashboard/.gitkeep
+  Moved dashboard output from dashboard/ to repo root for GitHub Pages. generate.py: (1) DASHBOARD_DIR = WORKSPACE
+  (was WORKSPACE / "dashboard"), so index.html + data.json now write to the repo root, overwriting the existing root
+  landing index.html when the pipeline runs; (2) docstring "Writes" section updated to root paths (index.html, data.json)
+  and dropped the stale forum/bump_changelog.md line; (3) print statements auto-resolve to root via DASHBOARD_DIR.
+  Removed dashboard/.gitkeep and the now-empty dashboard/ dir. py_compile clean; synthetic smoke test (DASHBOARD_DIR
+  redirected to /tmp/kilo/matrix_root_out) 6/6 PASS — index.html + data.json at root, no nested dashboard/ subdir.
+  Note: data/submissions.json not present, so a real run exits early (no render); root index.html (landing card)
+  is overwritten only once pull.py->parse.py produces submissions.json. Committed to main + pushed. No lease contention.
 - [DONE] ID: publish-pages | AGENT: general (Implementation Agent) | BRANCH: main | FILES: (deploy) + index.html
   Made repo MadGoatHaz/llm-matrix PUBLIC (was PRIVATE) via `gh repo edit --visibility public
   --accept-visibility-change-consequences`. GitHub Pages: the REST API `POST /pages` REJECTS
