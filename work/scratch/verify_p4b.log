@@ -1,0 +1,19 @@
+=== (a) deep-link restore: repeated multi params + sort + dir ===
+PASS  both backend checkboxes restored from repeated params  [llama.cpp,vLLM]
+PASS  use-case checkbox restored
+PASS  search box restored  [rocm]
+PASS  sort select restored to date  [date]
+PASS  dir restored to desc (↓, aria-pressed=true)
+PASS  restored view = 0 rows (AND across axes, OR within backend)  []
+PASS  date-desc order applied (2026-09-28 rows first)  []
+PASS  chips restored: 2 backend + 1 use-case + 1 search  [Remove filter: Search: “rocm” | Remove filter: Backend: llama.cpp | Remove filter: Backend: vLLM | Remove filter: Use case: Agentic Coding]
+PASS  count line restored  [Showing 0 of 12 submissions]
+
+=== (b) Community page: no P4-2 controls, graceful degradation ===
+PASS  no crash without P4-2 controls; vendor=AMD AND use_case=Agentic Coding => 2 setups  [Qwen3.6 MoE 35B,Qwen3.8 27B FP8]
+PASS  visible setups are the two Agentic-Coding AMD rows (a, b)  [a,b]
+PASS  card with no visible setups (s1ugh34d) is hidden
+PASS  empty-state region behaves (no multi-selects involved)
+PASS  reset restores all setups on the community page  [3]
+
+ALL P4-2b CHECKS PASS

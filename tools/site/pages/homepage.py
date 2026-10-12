@@ -1,12 +1,14 @@
 """``index.html`` — the homepage.
 
 Hero, headline stats, the data-driven Community Highlights (trending models,
-popular backends, fastest setups), How It Works, and Related Resources.
+popular backends, fastest setups), a "By the numbers" summary viz (P4-1:
+VRAM distribution + backend usage, inline SVG), How It Works, and Related
+Resources.
 """
 
 from __future__ import annotations
 
-from .. import utils
+from .. import charts, utils
 from ..template import page_shell
 
 
@@ -85,6 +87,22 @@ def render(subs: list[dict], schema: dict, stats: dict,
 {fast_html}
   </section>'''
 
+    # --- By the numbers (P4-1: summary visualizations, inline SVG) ---
+    # The prefixes keep the SVG <title>/<desc> ids unique to this page.
+    vram_svg = charts.vram_distribution(subs, schema, prefix="home-vram")
+    donut_svg, donut_legend = charts.backend_donut(subs, schema,
+                                                  prefix="home-backend")
+    numbers_html = f'''
+  <section aria-labelledby="numbers-title">
+    <h2 class="section-title" id="numbers-title">{utils.icon("📊")} By the numbers</h2>
+    <p class="charts-intro">The whole dataset at a glance — {stats["submissions"]} submissions,
+       updated from the forum thread every week. <a href="matrix.html">The matrix has three more views →</a></p>
+    <div class="chart-grid">
+{charts.figure("📊", "VRAM distribution", vram_svg)}
+{charts.figure("🔌", "Backend usage", donut_svg, donut_legend)}
+    </div>
+  </section>'''
+
     # --- How It Works (kept as-is) ---
     how_html = '''
   <h2 class="section-title">''' + utils.icon("🔄") + ''' How It Works</h2>
@@ -161,6 +179,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
 {stats_html}
 {teaser_html}
 {highlights_html}
+{numbers_html}
 {how_html}
 {related_html}'''
 

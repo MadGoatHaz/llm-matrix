@@ -7,140 +7,7 @@ const fs = require('fs');
 const path = require('path');
 const ROOT = path.resolve(__dirname, '..', '..');
 
-function htmlEscape(s) {
-  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-}
-
-// --- minimal element -------------------------------------------------------
-let elCount = 0;
-function makeEl(tag, attrs) {
-  attrs = attrs || {};
-  const el = {
-    _id: 'el' + (++elCount),
-    tagName: (tag || 'div').toUpperCase(),
-    _listeners: {},
-    _attrs: Object.assign({}, attrs),
-    children: [],
-    style: {},
-    checked: false,
-    disabled: false,
-    hidden: false,
-    textContent: '',
-    dataset: {},
-    classList: {
-      _s: new Set((attrs['class'] || '').split(/\s+/).filter(Boolean)),
-      add(c) { this._s.add(c); },
-      remove(c) { this._s.delete(c); },
-      toggle(c, f) {
-        if (f === undefined) { this._s.has(c) ? this._s.delete(c) : this._s.add(c); }
-        else if (f) this._s.add(c); else this._s.delete(c);
-        return this._s.has(c);
-      },
-      contains(c) { return this._s.has(c); },
-    },
-  };
-  // populate dataset from data-* attrs
-  Object.keys(attrs).forEach(k => {
-    if (k.startsWith('data-')) {
-      el.dataset[k.replace('data-', '').replace(/-([a-z])/g, (m, c) => c.toUpperCase())] = attrs[k];
-    }
-  });
-  if (attrs.id) el.id = attrs.id;
-  Object.defineProperty(el, 'textContent', {
-    get() { return el._text != null ? el._text : ''; },
-    set(v) { el._text = v; el._inner = htmlEscape(v == null ? '' : String(v)); },
-    configurable: true,
-  });
-  el.setAttribute = function (k, v) {
-    this._attrs[k] = v;
-    if (k === 'id') this.id = v;
-    if (k.startsWith('data-')) this.dataset[k.replace('data-', '').replace(/-([a-z])/g, (m, c) => c.toUpperCase())] = v;
-  };
-  el.getAttribute = function (k) { return this._attrs[k] != null ? this._attrs[k] : null; };
-  el.hasAttribute = function (k) { return k in this._attrs; };
-  el.addEventListener = function (t, cb) { (this._listeners[t] = this._listeners[t] || []).push(cb); };
-  el.dispatchEvent = function (evt) {
-    (this._listeners[evt.type] || []).forEach(cb => cb.call(this, evt));
-    return true;
-  };
-  el.fire = function (type, props) {
-    const evt = Object.assign({
-      type, target: this,
-      preventDefault() { this.defaultPrevented = true; },
-      stopPropagation() { this.stopped = true; },
-    }, props || {});
-    let node = this;
-    while (node) {
-      if (evt.stopped) break;
-      node.dispatchEvent(evt);
-      node = node._parent || null;
-    }
-    return evt;
-  };
-  el.focus = function () { document.activeElement = this; };
-  el.appendChild = function (c) { c._parent = this; this.children.push(c); return c; };
-  el.querySelector = function (sel) { return qsel(this, sel, true); };
-  el.querySelectorAll = function (sel) { return qsel(this, sel, false); };
-  el.closest = function (sel) {
-    let node = this;
-    while (node) { if (matches(node, sel)) return node; node = node._parent || null; }
-    return null;
-  };
-  Object.defineProperty(el, 'value', {
-    get() { return el._value != null ? el._value : ''; },
-    set(v) { el._value = v; },
-    configurable: true,
-  });
-  Object.defineProperty(el, 'innerHTML', {
-    get() { return el._inner || ''; },
-    set(v) { el._inner = v; el.children = []; },
-    configurable: true,
-  });
-  return el;
-}
-
-function matches(el, sel) {
-  sel = sel.trim();
-  if (!sel) return false;
-  if (sel.includes(',')) return sel.split(',').some(s => matches(el, s));
-  if (sel.startsWith('.')) {
-    return sel.slice(1).split(/\s+/).every(c => c && el.classList.contains(c));
-  }
-  if (sel.startsWith('#')) return el.id === sel.slice(1);
-  if (sel.startsWith('[')) {
-    const mv = sel.match(/^\[([a-z-]+)="([^"]*)"\]$/);
-    if (mv) return el._attrs[mv[1]] === mv[2];
-    const mb = sel.match(/^\[([a-z-]+)\]$/);
-    if (mb) return el._attrs[mb[1]] != null;
-    return false;
-  }
-  // combined tag.class[.class...] (e.g. "tr.data-row")
-  if (/^[a-z]+(\.[a-z0-9-]+)+$/i.test(sel)) {
-    const parts = sel.split('.');
-    if (el.tagName.toLowerCase() !== parts[0]) return false;
-    return parts.slice(1).every(c => el.classList.contains(c));
-  }
-  return el.tagName.toLowerCase() === sel;
-}
-
-function qsel(root, sel, first) {
-  // Descendant-aware: "tbody tr" matches <tr> nodes that have a <tbody>
-  // ancestor within the root. Single-part selectors match anywhere.
-  const parts = sel.trim().split(/\s+/);
-  const out = [];
-  (function walk(node, depth) {
-    node.children.forEach(c => {
-      if (depth < parts.length && matches(c, parts[depth])) {
-        if (depth === parts.length - 1) out.push(c);
-        walk(c, depth + 1);
-      } else {
-        walk(c, depth);
-      }
-    });
-  })(root, 0);
-  return first ? (out[0] || null) : out;
-}
+const { makeEl, qsel } = require('./domshim');
 
 // --- parse the real matrix.html for the island -------------------------------
 const pageHtml = fs.readFileSync(path.join(ROOT, 'matrix.html'), 'utf-8');
@@ -321,6 +188,7 @@ global.document = {
   addEventListener(t, cb) { (this._listeners[t] = this._listeners[t] || []).push(cb); },
 };
 
+global.__document = global.document;
 let pass = true;
 const check = (name, cond, detail) => {
   console.log((cond ? 'PASS' : 'FAIL') + '  ' + name + (detail ? '  [' + detail + ']' : ''));
