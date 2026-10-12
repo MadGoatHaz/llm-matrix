@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Matrix — The Local AI Stack</title>
+    <meta name="description" content="All community submissions, filterable and sortable: VRAM tier, hardware, vendor, backend, model, quant, use case, speed, context, KV cache, power, engine mode.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="matrix.html">Matrix</a></li>
+        <li><a href="community.html">Community</a></li>
+        <li><a href="guides.html">Guides</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
+
+  <div class="page-header">
+    <h1>The Matrix</h1>
+    <p class="subtitle">All community submissions, filterable and sortable</p>
+    <p class="meta">12 submissions · 5 contributors · 2 vendors · 5 backends · updated 2026-10-12</p>
+  </div>
+
+  <div class="filter-bar">
+    <input type="text" id="filter-search" placeholder="Search models, hardware, backends...">
+    <select class="filter-select" data-filter="tier">
+      <option value="">All Tiers</option>
+      <option value="t1">≤16GB</option><option value="t2">16-24GB</option><option value="t3">24-32GB</option><option value="t4">48-64GB</option><option value="t5">96-128GB</option><option value="t6">196-256GB+</option>
+    </select>
+    <select class="filter-select" data-filter="vendor">
+      <option value="">All Vendors</option>
+      <option value="AMD">AMD</option><option value="NVIDIA">NVIDIA</option>
+    </select>
+    <select class="filter-select" data-filter="backend">
+      <option value="">All Backends</option>
+      <option value="Ollama">Ollama</option><option value="Strata">Strata</option><option value="llama-swap">llama-swap</option><option value="llama.cpp">llama.cpp</option><option value="vLLM">vLLM</option>
+    </select>
+    <button id="filter-reset" class="btn">Reset</button>
+  </div>
+
+  <div class="table-wrapper">
+    <table id="data-table">
+      <thead>
+        <tr><th>Contributor</th><th>Hardware</th><th>Vendor</th><th>Backend</th><th>Model</th><th>Quant</th><th>Use Case</th><th>Speed</th><th>Context</th><th>KV</th><th>Power</th><th>Mode</th></tr>
+      </thead>
+      <tbody>
+        <tr class="tier-header" data-tier="t1"><td colspan="12">≤16GB</td></tr>
+        <tr class="t1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap">
+          <td title="MadGoat">MadGoat</td>
+          <td title="1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM">1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM</td>
+          <td title="AMD">AMD</td>
+          <td title="llama-swap (llama.cpp subprocess, ROCm)">llama-swap (llama.cpp subprocess, ROCm)</td>
+          <td title="samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B">samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B</td>
+          <td title="GGUF I-Nano">GGUF I-Nano</td>
+          <td title="LLM-assisted coding / technical documentation">LLM-assisted coding / technical documentation</td>
+          <td title="54.4 decode">54.4 decode</td>
+          <td title="65536 tokens (NIAH hit YES at 65k)">65536 tokens (NIAH hit YES at 65k)</td>
+          <td title="Q8_0 (quantized)">Q8_0 (quantized)</td>
+          <td title="150W peak">150W peak</td>
+          <td title=""></td>
+        </tr>
+        <tr class="t1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap">
+          <td title="s1ugh34d">s1ugh34d</td>
+          <td title="Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM">Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM</td>
+          <td title="AMD">AMD</td>
+          <td title="llama-swap (llama.cpp subprocess, ROCm/ROCm backends)">llama-swap (llama.cpp subprocess, ROCm/ROCm backends)</td>
+          <td title="samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B (I-Nano)">samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B (I-Nano)</td>
+          <td title="GGUF I-Nano">GGUF I-Nano</td>
+          <td title="LLM assited coding / technical documentation">LLM assited coding / technical documentation</td>
+          <td title="54.4 tps decode / 215 tok/s prefill (short ctx)">54.4 tps decode / 215 tok/s prefill (short ctx)</td>
+          <td title="65536 tokens native (NIAH hit YES at 65k)">65536 tokens native (NIAH hit YES at 65k)</td>
+          <td title="quantized KV (observed near-flat VRAM growth w/ context)">quantized KV (observed near-flat VRAM growth w/ context)</td>
+          <td title="~150 W peak, 99% GPU util">~150 W peak, 99% GPU util</td>
+          <td title=""></td>
+        </tr>
+        <tr class="t1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap">
+          <td title="s1ugh34d">s1ugh34d</td>
+          <td title="Radeon VII 16GB HBM2 (gfx906)">Radeon VII 16GB HBM2 (gfx906)</td>
+          <td title="AMD">AMD</td>
+          <td title="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</td>
+          <td title="deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF">deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF</td>
+          <td title="GGUF Q4_K_M">GGUF Q4_K_M</td>
+          <td title="LLM assited coding / technical documentation / large repo generation">LLM assited coding / technical documentation / large repo generation</td>
+          <td title="86.7 tps decode / 408 tok/s prefill">86.7 tps decode / 408 tok/s prefill</td>
+          <td title="49152 tokens (NIAH hit YES at 49k; 65k not probed)">49152 tokens (NIAH hit YES at 49k; 65k not probed)</td>
+          <td title="quantized KV (VRAM ~flat: 4618MB @49k vs 4619MB @4k)">quantized KV (VRAM ~flat: 4618MB @49k vs 4619MB @4k)</td>
+          <td title="~214 W peak, 99% GPU util">~214 W peak, 99% GPU util</td>
+          <td title=""></td>
+        </tr>
+        <tr class="t1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap">
+          <td title="s1ugh34d">s1ugh34d</td>
+          <td title="Radeon VII 16GB HBM2 (gfx906)">Radeon VII 16GB HBM2 (gfx906)</td>
+          <td title="AMD">AMD</td>
+          <td title="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</td>
+          <td title="unsloth/Qwen3.8-27B-GGUF (UD-Q2_K_XL)">unsloth/Qwen3.8-27B-GGUF (UD-Q2_K_XL)</td>
+          <td title="GGUF UD-Q2_K_XL">GGUF UD-Q2_K_XL</td>
+          <td title="LLM assited coding / technical documentation">LLM assited coding / technical documentation</td>
+          <td title="13.9 tps decode / 79 tok/s prefill">13.9 tps decode / 79 tok/s prefill</td>
+          <td title="49152 tokens (NIAH hit YES at 49k)">49152 tokens (NIAH hit YES at 49k)</td>
+          <td title="quantized KV (VRAM 13770→13798MB across 8k→32k, +28MB)">quantized KV (VRAM 13770→13798MB across 8k→32k, +28MB)</td>
+          <td title="~233 W peak, 100% GPU util">~233 W peak, 100% GPU util</td>
+          <td title=""></td>
+        </tr>
+        <tr class="t1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap">
+          <td title="s1ugh34d">s1ugh34d</td>
+          <td title="Radeon VII 16GB HBM2 (gfx906)">Radeon VII 16GB HBM2 (gfx906)</td>
+          <td title="AMD">AMD</td>
+          <td title="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</td>
+          <td title="MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF">MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF</td>
+          <td title="GGUF Q4_K_M">GGUF Q4_K_M</td>
+          <td title="LLM assited coding / technical documentation">LLM assited coding / technical documentation</td>
+          <td title="84.4 tps decode / 490 tok/s prefill">84.4 tps decode / 490 tok/s prefill</td>
+          <td title="16384 tokens (native server cap)">16384 tokens (native server cap)</td>
+          <td title="quantized KV (7327→7299 MB, flat)">quantized KV (7327→7299 MB, flat)</td>
+          <td title="~268 W peak, 93% GPU util">~268 W peak, 93% GPU util</td>
+          <td title=""></td>
+        </tr>
+        <tr class="t1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap">
+          <td title="s1ugh34d">s1ugh34d</td>
+          <td title="Radeon VII 16GB HBM2 (gfx906)">Radeon VII 16GB HBM2 (gfx906)</td>
+          <td title="AMD">AMD</td>
+          <td title="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</td>
+          <td title="bartowski/Qwen_Qwen3.5-4B-GGUF">bartowski/Qwen_Qwen3.5-4B-GGUF</td>
+          <td title="GGUF Q4_K_M">GGUF Q4_K_M</td>
+          <td title="LLM assited coding / technical documentation">LLM assited coding / technical documentation</td>
+          <td title="96.4 tps decode / 468 tok/s prefill">96.4 tps decode / 468 tok/s prefill</td>
+          <td title="65536 tokens (native cap; NIAH hit YES; 96k rejected, n_ctx=65536 enforced)">65536 tokens (native cap; NIAH hit YES; 96k rejected, n_ctx=65536 enforced)</td>
+          <td title="quantized KV (VRAM 5312MB @4k → 5312MB @65k, +0)">quantized KV (VRAM 5312MB @4k → 5312MB @65k, +0)</td>
+          <td title="~225 W peak, 99% GPU util">~225 W peak, 99% GPU util</td>
+          <td title=""></td>
+        </tr>
+        <tr class="tier-header" data-tier="t2"><td colspan="12">16-24GB</td></tr>
+        <tr class="t2" data-tier="t2" data-vendor="NVIDIA" data-backend="Ollama">
+          <td title="Burhan">Burhan</td>
+          <td title="1x RTX-4000 Ada SFF (20 GB)">1x RTX-4000 Ada SFF (20 GB)</td>
+          <td title="NVIDIA">NVIDIA</td>
+          <td title="Ollama">Ollama</td>
+          <td title="Qwen3.6-27b-q4_KM, lfm2.5-thinking:1.2b-q8_0, gemma4:26b-a4b-it-mtp-q4_K_M, qwen3.5:9b-q8_0, quant_package: [e.g., AutoRound W4A16, GGUF Q4_K_M, EXL2 4.0bpw, FP8], download_url: sourced via Ollama, primary_use_case: Document Q&amp;A, Deep Research, Creative Writing, Brainstorming, Planning, stable_context_tested:, 52k Qwen3.6-27b, 64k lfm2.5-thinking:1.2b (probably could do more), 64k gemma4:26b, 128k qwen3.5:9b, kv_cache_setting: q8_0, throughput_tps: ~20-30 t/s, setup_notes: [Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]">Qwen3.6-27b-q4_KM, lfm2.5-thinking:1.2b-q8_0, gemma4:26b-a4b-it-mtp-q4_K_M, qwen3.5:9b-q8_0, quant_package: [e.g., AutoRound W4A16, GGUF Q4_K_M, EXL2 4.0bpw, FP8], download_url: sourced via Ollama, primary_use_case: Document Q&amp;A, Deep Research, Creative Writing, Brainstorming, Planning, stable_context_tested:, 52k Qwen3.6-27b, 64k lfm2.5-thinking:1.2b (probably could do more), 64k gemma4:26b, 128k qwen3.5:9b, kv_cache_setting: q8_0, throughput_tps: ~20-30 t/s, setup_notes: [Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]</td>
+          <td title=""></td>
+          <td title=""></td>
+          <td title=""></td>
+          <td title=""></td>
+          <td title=""></td>
+          <td title=""></td>
+          <td title=""></td>
+        </tr>
+        <tr class="tier-header" data-tier="t3"><td colspan="12">24-32GB</td></tr>
+        <tr class="t3" data-tier="t3" data-vendor="NVIDIA" data-backend="Strata">
+          <td title="MadGoat">MadGoat</td>
+          <td title="1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe">1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe</td>
+          <td title="NVIDIA">NVIDIA</td>
+          <td title="Strata 0.1.42">Strata 0.1.42</td>
+          <td title="Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)">Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)</td>
+          <td title="GGUF IQ3_S (ISTA-DASLab GSQ-RCO)">GGUF IQ3_S (ISTA-DASLab GSQ-RCO)</td>
+          <td title="Agentic coding via OpenAI-compatible API">Agentic coding via OpenAI-compatible API</td>
+          <td title="99-128 decode (median 108)">99-128 decode (median 108)</td>
+          <td title="131072 configured; &gt;=106,493 observed in live sessions">131072 configured; &gt;=106,493 observed in live sessions</td>
+          <td title="int8 (engine-native)">int8 (engine-native)</td>
+          <td title="450W stock cap">450W stock cap</td>
+          <td title="Hybrid (VRAM+RAM+SSD)">Hybrid (VRAM+RAM+SSD)</td>
+        </tr>
+        <tr class="tier-header" data-tier="t4"><td colspan="12">48-64GB</td></tr>
+        <tr class="t4" data-tier="t4" data-vendor="AMD" data-backend="vLLM">
+          <td title="MadGoat">MadGoat</td>
+          <td title="2x AMD R9700 (48GB total)">2x AMD R9700 (48GB total)</td>
+          <td title="AMD">AMD</td>
+          <td title="vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)">vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)</td>
+          <td title="d0xin/Swift-Qwen3.8-27B-Uncensored-FP8">d0xin/Swift-Qwen3.8-27B-Uncensored-FP8</td>
+          <td title="FP8">FP8</td>
+          <td title="Coding, Security Research (DoS attack tracking)">Coding, Security Research (DoS attack tracking)</td>
+          <td title="120 (code) / 70 (chat)">120 (code) / 70 (chat)</td>
+          <td title="~240k tokens">~240k tokens</td>
+          <td title="FP16 (unquantized)">FP16 (unquantized)</td>
+          <td title="N/A">N/A</td>
+          <td title=""></td>
+        </tr>
+        <tr class="t4" data-tier="t4" data-vendor="AMD" data-backend="vLLM">
+          <td title="digitalscream">digitalscream</td>
+          <td title="2 x R9700">2 x R9700</td>
+          <td title="AMD">AMD</td>
+          <td title="vLLM">vLLM</td>
+          <td title="d0xin/Swift-Qwen3.8-27B-Uncensored-FP8">d0xin/Swift-Qwen3.8-27B-Uncensored-FP8</td>
+          <td title="FP8">FP8</td>
+          <td title="Coding, Research (OpenCode)">Coding, Research (OpenCode)</td>
+          <td title="120t/s code, 70t/s chat">120t/s code, 70t/s chat</td>
+          <td title="~240k">~240k</td>
+          <td title="FP16">FP16</td>
+          <td title=""></td>
+          <td title=""></td>
+        </tr>
+        <tr class="t4" data-tier="t4" data-vendor="AMD" data-backend="llama.cpp">
+          <td title="PawingUnplug">PawingUnplug</td>
+          <td title="2 x R9700">2 x R9700</td>
+          <td title="AMD">AMD</td>
+          <td title="llamacpp">llamacpp</td>
+          <td title="bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf, Qwen3-Embedding-8B-Q8_0.gguf, Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-MTP-Q8_0.gguf">bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf, Qwen3-Embedding-8B-Q8_0.gguf, Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-MTP-Q8_0.gguf</td>
+          <td title=""></td>
+          <td title="Coding Judge, Research (OpenCode and own harness), Embeddings">Coding Judge, Research (OpenCode and own harness), Embeddings</td>
+          <td title="~50t/s chat">~50t/s chat</td>
+          <td title="~262k">~262k</td>
+          <td title="FP16">FP16</td>
+          <td title="~600w">~600w</td>
+          <td title=""></td>
+        </tr>
+        <tr class="t4" data-tier="t4" data-vendor="AMD" data-backend="llama.cpp">
+          <td title="PawingUnplug">PawingUnplug</td>
+          <td title="2 x w7900">2 x w7900</td>
+          <td title="AMD">AMD</td>
+          <td title="llamacpp">llamacpp</td>
+          <td title="Qwen3.8-Flash-Next-Q4_K_M">Qwen3.8-Flash-Next-Q4_K_M</td>
+          <td title=""></td>
+          <td title="Coding">Coding</td>
+          <td title="~35t/s chat">~35t/s chat</td>
+          <td title="~262k">~262k</td>
+          <td title="FP16">FP16</td>
+          <td title="~750w">~750w</td>
+          <td title=""></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <h3>ℹ️ Reading the matrix</h3>
+    <p>Click any column header to sort (within each tier). Cells show the full value on hover.
+       <strong>Speed</strong> is community-reported decode throughput; <strong>Context</strong> is the
+       stable context tested; <strong>KV</strong> is the KV-cache precision; <strong>Mode</strong> is how the
+       engine splits weights across VRAM/RAM/SSD. All data is community-reported — treat numbers as
+       user-experienced, not lab-tested. <a href="https://forum.level1techs.com/t/256443">Discussion lives in the forum thread →</a></p>
+  </div>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="js/main.js"></script>
+</body>
+</html>

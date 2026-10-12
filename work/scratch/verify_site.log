@@ -1,0 +1,162 @@
+PASS  exists: index.html
+PASS  exists: matrix.html
+PASS  exists: community.html
+PASS  exists: guides.html
+PASS  exists: about.html
+PASS  exists: css/style.css
+PASS  exists: js/main.js
+PASS  exists: data.json
+PASS  index.html: doctype
+PASS  index.html: nav present
+PASS  index.html: footer present
+PASS  index.html: css linked
+PASS  index.html: js linked
+PASS  index.html: viewport meta
+PASS  index.html: all 5 nav links
+PASS  index.html: OG tags (5)
+PASS  index.html: no { leaks
+PASS  index.html: no unrendered python
+PASS  matrix.html: doctype
+PASS  matrix.html: nav present
+PASS  matrix.html: footer present
+PASS  matrix.html: css linked
+PASS  matrix.html: js linked
+PASS  matrix.html: viewport meta
+PASS  matrix.html: all 5 nav links
+PASS  matrix.html: OG tags (5)
+PASS  matrix.html: no { leaks
+PASS  matrix.html: no unrendered python
+PASS  community.html: doctype
+PASS  community.html: nav present
+PASS  community.html: footer present
+PASS  community.html: css linked
+PASS  community.html: js linked
+PASS  community.html: viewport meta
+PASS  community.html: all 5 nav links
+PASS  community.html: OG tags (5)
+PASS  community.html: no { leaks
+PASS  community.html: no unrendered python
+PASS  guides.html: doctype
+PASS  guides.html: nav present
+PASS  guides.html: footer present
+PASS  guides.html: css linked
+PASS  guides.html: js linked
+PASS  guides.html: viewport meta
+PASS  guides.html: all 5 nav links
+PASS  guides.html: OG tags (5)
+PASS  guides.html: no { leaks
+PASS  guides.html: no unrendered python
+PASS  about.html: doctype
+PASS  about.html: nav present
+PASS  about.html: footer present
+PASS  about.html: css linked
+PASS  about.html: js linked
+PASS  about.html: viewport meta
+PASS  about.html: all 5 nav links
+PASS  about.html: OG tags (5)
+PASS  about.html: no { leaks
+PASS  about.html: no unrendered python
+PASS  index: hero title
+PASS  index: hero tagline
+PASS  index: CTA matrix
+PASS  index: CTA guides
+PASS  index: stats row (4 cards)
+PASS  index: find-your-setup section
+PASS  index: gpu table 6 tier rows
+PASS  index: use-case table 6 rows
+PASS  index: community highlights section
+PASS  index: highlight cards 3-4
+PASS  index: how it works 3 cards
+PASS  index: forum credit + CTA
+PASS  matrix: header
+PASS  matrix: subtitle
+PASS  matrix: search input
+PASS  matrix: tier select
+PASS  matrix: vendor select
+PASS  matrix: backend select
+PASS  matrix: reset button
+PASS  matrix: table id
+PASS  matrix: 12 data rows
+PASS  matrix: tier headers (t1,t2,t3,t4)
+PASS  matrix: 12 columns in header
+PASS  matrix: column names
+PASS  matrix: rows have data-vendor
+PASS  matrix: rows have data-backend
+PASS  matrix: normalized backends in attrs
+PASS  matrix: colspan 12 on tier headers
+PASS  matrix: all cells have title attr
+PASS  community: header
+PASS  community: 5 contributor cards
+PASS  community: has MadGoat
+PASS  community: has digitalscream
+PASS  community: has Burhan
+PASS  community: has s1ugh34d
+PASS  community: has PawingUnplug
+PASS  community: avatars (5)
+PASS  community: submissions count labels
+PASS  community: want-to-be-here CTA
+PASS  guides: header
+PASS  guides: 8 guide cards
+PASS  guides: has Quantization Basics
+PASS  guides: has File Formats
+PASS  guides: has Quantization Methods
+PASS  guides: has Model Architectures
+PASS  guides: has KV Cache
+PASS  guides: has Context Extension
+PASS  guides: has Backends Deep Dive
+PASS  guides: has Multi-GPU &amp; Hybrid
+PASS  guides: 8 coming-soon badges
+PASS  guides: forum note
+PASS  about: header
+PASS  about: has What It Is
+PASS  about: has How It Works
+PASS  about: has Connection to L1Techs
+PASS  about: has How to Contribute
+PASS  about: has Credits
+PASS  about: L1Techs category link
+PASS  about: MadGoat credit
+PASS  about: github link
+PASS  data.json: valid json w/ submissions
+PASS  index.html: tags balanced
+PASS  matrix.html: tags balanced
+PASS  community.html: tags balanced
+PASS  guides.html: tags balanced
+PASS  about.html: tags balanced
+PASS  css: design tokens (:root)
+PASS  css: --bg: #0a0e17;
+PASS  css: --surface: #131a2b;
+PASS  css: --border: #1e2d3f;
+PASS  css: --text: #e2e8f0;
+PASS  css: --success: #10b981;
+PASS  css: --warning: #f59e0b;
+PASS  css: --danger: #ef4444;
+PASS  css: --purple: #8b5cf6;
+PASS  css: --cyan: #06b6d4;
+PASS  css: --radius: 8px;
+PASS  css: --nav-height: 60px;
+PASS  css: .nav {
+PASS  css: .container {
+PASS  css: .card {
+PASS  css: .stats-row {
+PASS  css: .table-wrapper {
+PASS  css: .filter-bar {
+PASS  css: .badge {
+PASS  css: .hero {
+PASS  css: .footer {
+PASS  css: .guide-card {
+PASS  css: .contributor-card {
+PASS  css: .avatar {
+PASS  css: @media (max-width: 768px) {
+PASS  css: braces balanced
+PASS  js: has initSorting
+PASS  js: has sortTable
+PASS  js: has initFilters
+PASS  js: has nav-toggle
+PASS  js: has filter-search
+PASS  js: has filter-reset
+PASS  js: braces balanced
+PASS  js: parens balanced
+
+==================================================
+TOTAL: 158 checks, 158 pass, 0 fail
+ALL CHECKS PASS

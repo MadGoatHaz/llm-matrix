@@ -1,577 +1,215 @@
 <!DOCTYPE html>
-<html lang="en" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Local LLM Matrix — Dashboard</title>
-    <meta name="description" content="Interactive dashboard of community-submitted local LLM setups, organized by VRAM tier, hardware, backend, and use case.">
-    <style>
-        :root {
-            --bg: #0f1117;
-            --surface: #1a1d2e;
-            --border: #2a2d3e;
-            --text: #e2e8f0;
-            --text-muted: #94a3b8;
-            --accent: #3b82f6;
-            --highlight: #f59e0b;
-            --green: #10b981;
-            --red: #ef4444;
-        }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            line-height: 1.6;
-            padding: 2rem;
-        }
-        .container { max-width: 1400px; margin: 0 auto; }
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
-            padding-bottom: 1.5rem;
-            border-bottom: 1px solid var(--border);
-        }
-        header h1 { font-size: 1.8rem; margin-bottom: 0.5rem; }
-        header p { color: var(--text-muted); font-size: 0.9rem; }
-        .branding { text-align: center; margin-bottom: 1rem; }
-        .tagline { color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem; }
-        .forum-credit {
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-top: 0.75rem;
-            padding-top: 0.75rem;
-            border-top: 1px solid var(--border);
-        }
-        .forum-link {
-            color: var(--accent);
-            text-decoration: none;
-            border-bottom: 1px dotted var(--accent);
-        }
-        .forum-link:hover { border-bottom-style: solid; }
-        .stats {
-            display: flex;
-            gap: 1.5rem;
-            justify-content: center;
-            margin: 1rem 0;
-            flex-wrap: wrap;
-        }
-        .stat {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0.75rem 1.25rem;
-            text-align: center;
-        }
-        .stat .num { font-size: 1.5rem; font-weight: 700; color: var(--accent); }
-        .stat .label { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; }
-        .filters {
-            display: flex;
-            gap: 0.75rem;
-            margin-bottom: 1.5rem;
-            flex-wrap: wrap;
-        }
-        .filters select, .filters input {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            font-size: 0.85rem;
-        }
-        .filters input { flex: 1; min-width: 200px; }
-        .btn-reset {
-            background: var(--surface);
-            border: 1px solid var(--border);
-            color: var(--text-muted);
-            padding: 0.5rem 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.85rem;
-        }
-        .btn-reset:hover { color: var(--text); border-color: var(--accent); }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.85rem;
-        }
-        th {
-            text-align: left;
-            padding: 0.75rem;
-            border-bottom: 2px solid var(--border);
-            color: var(--text-muted);
-            font-weight: 600;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            cursor: pointer;
-        }
-        th:hover { color: var(--accent); }
-        th.sort-asc::after { content: ' ↑'; color: var(--accent); }
-        th.sort-desc::after { content: ' ↓'; color: var(--accent); }
-        td {
-            padding: 0.6rem 0.75rem;
-            border-bottom: 1px solid var(--border);
-            max-width: 200px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-        }
-        td[title]:hover {
-            white-space: normal;
-            overflow: visible;
-            position: relative;
-            z-index: 10;
-            background: var(--surface);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        td:first-child { font-weight: 600; color: var(--text); }
-        tr.tier-header td {
-            background: var(--surface);
-            font-weight: 700;
-            color: var(--accent);
-            padding: 0.5rem 0.75rem;
-            font-size: 0.8rem;
-            max-width: none;
-            overflow: visible;
-            white-space: normal;
-        }
-        tr.highlighted { border-left: 3px solid var(--highlight); }
-        tr:hover { background: rgba(59, 130, 246, 0.05); }
-        .how-it-works {
-            max-width: 800px;
-            margin: 0 auto 1.5rem;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            padding: 0;
-        }
-        .how-it-works summary {
-            padding: 0.75rem 1rem;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--text-muted);
-        }
-        .how-it-works[open] summary {
-            border-bottom: 1px solid var(--border);
-        }
-        .how-content {
-            padding: 1rem;
-            font-size: 0.9rem;
-            line-height: 1.7;
-        }
-        .how-content a { color: var(--accent); }
-        .how-content p { margin-bottom: 0.5rem; }
-        .footer {
-            margin-top: 3rem;
-            padding-top: 1.5rem;
-            border-top: 1px solid var(--border);
-            text-align: center;
-            color: var(--text-muted);
-            font-size: 0.8rem;
-        }
-        .footer a { color: var(--accent); text-decoration: none; }
-        .footer-main { margin-bottom: 1rem; font-size: 0.85rem; }
-        .footer-cta { margin-bottom: 1rem; }
-        .btn-forum {
-            display: inline-block;
-            background: var(--accent);
-            color: white;
-            padding: 0.6rem 1.5rem;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: opacity 0.2s;
-        }
-        .btn-forum:hover { opacity: 0.85; }
-        .footer-meta { font-size: 0.75rem; opacity: 0.7; }
-        .footer-meta a { color: var(--text-muted); }
-        @media (max-width: 768px) {
-            body { padding: 1rem; }
-            .filters { flex-direction: column; }
-            table { font-size: 0.75rem; }
-            td, th { padding: 0.4rem; }
-            .hide-mobile { display: none; }
-        }
-    </style>
+    <title>The Local AI Stack — Community-Driven Local LLM Reference</title>
+    <meta name="description" content="Your community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="branding">
-                <h1>📊 The Local LLM Matrix</h1>
-                <p class="tagline">A community-driven reference for running local AI models on real silicon</p>
-                <p class="forum-credit">
-                    From the <a href="https://forum.level1techs.com/t/256443" class="forum-link">Machine Learning, LLMs &amp; AI</a> community at
-                    <a href="https://forum.level1techs.com" class="forum-link"><strong>Level1Techs</strong></a>
-                </p>
-            </div>
-            <div class="stats">
-                <div class="stat"><div class="num">12</div><div class="label">Submissions</div></div>
-                <div class="stat"><div class="num">2</div><div class="label">Vendors</div></div>
-                <div class="stat"><div class="num">8</div><div class="label">Backends</div></div>
-                <div class="stat"><div class="num">4</div><div class="label">Tiers</div></div>
-            </div>
-        </header>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="matrix.html">Matrix</a></li>
+        <li><a href="community.html">Community</a></li>
+        <li><a href="guides.html">Guides</a></li>
+        <li><a href="about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
 
-        <details class="how-it-works">
-        <summary>ℹ️ How This Dashboard Works</summary>
-        <div class="how-content">
-            <p>This is a <strong>read-only view</strong> of community submissions from the
-            <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread on Level1Techs</a>.</p>
-            <p><strong>How to contribute:</strong> Head to the
-            <a href="https://forum.level1techs.com/t/256443/2">forum thread</a> and use the submission template in Post #2.
-            Your data will appear here within the next weekly update.</p>
-            <p><strong>Data is community-reported.</strong> We don't independently verify benchmarks.
-            Treat numbers as user-experienced, not lab-tested. Hardware, drivers, and setup all affect results.</p>
-            <p><strong>Respect the contributors.</strong> The data here is people sharing their time and experience.
-            Link back to the forum, credit usernames, and keep the discussion constructive.</p>
-        </div>
-        </details>
+  <section class="hero">
+    <h1>The <span>Local AI Stack</span></h1>
+    <p class="tagline">Your community-driven guide to running AI models on your own hardware</p>
+    <div class="actions">
+      <a href="matrix.html" class="btn-large btn-large-primary">Browse the Matrix →</a>
+      <a href="guides.html" class="btn-large btn-large-secondary">Explore Guides →</a>
+    </div>
+  </section>
 
-        <div class="filters">
-            <input type="text" id="search" placeholder="Search models, hardware, notes...">
-            <select id="filter-tier">
-                <option value="">All Tiers</option>
-                <option value="t1">≤16GB</option><option value="t2">16-24GB</option><option value="t3">24-32GB</option><option value="t4">48-64GB</option><option value="t5">96-128GB</option><option value="t6">196-256GB+</option>
-            </select>
-            <select id="filter-vendor">
-                <option value="">All Vendors</option>
-                <option value="AMD">AMD</option><option value="NVIDIA">NVIDIA</option>
-            </select>
-            <select id="filter-backend">
-                <option value="">All Backends</option>
-                <option value="Ollama">Ollama</option><option value="Strata 0.1.42">Strata 0.1.42</option><option value="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</option><option value="llama-swap (llama.cpp subprocess, ROCm)">llama-swap (llama.cpp subprocess, ROCm)</option><option value="llama-swap (llama.cpp subprocess, ROCm/ROCm backends)">llama-swap (llama.cpp subprocess, ROCm/ROCm backends)</option><option value="llamacpp">llamacpp</option><option value="vLLM">vLLM</option><option value="vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)">vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)</option>
-            </select>
-            <button onclick="resetFilters()" class="btn-reset">Reset</button>
-        </div>
 
-        <table id="main-table">
-            <thead>
-                <tr>
-                    <th onclick="sortTable(0)">Contributor</th>
-                    <th onclick="sortTable(1)">Hardware</th>
-                    <th onclick="sortTable(2)">Vendor</th>
-                    <th onclick="sortTable(3)">Backend</th>
-                    <th onclick="sortTable(4)">Model</th>
-                    <th onclick="sortTable(5)">Quant</th>
-                    <th class="hide-mobile" onclick="sortTable(6)">Use Case</th>
-                    <th onclick="sortTable(7)">Speed</th>
-                    <th onclick="sortTable(8)">Context</th>
-                    <th class="hide-mobile" onclick="sortTable(9)">KV</th>
-                    <th class="hide-mobile" onclick="sortTable(10)">Power</th>
-                    <th class="hide-mobile" onclick="sortTable(11)">Mode</th>
-                </tr>
-            </thead>
-            <tbody>
-                
-      <tr class="tier-header" data-tier="t1"><td colspan="12">≤16GB</td></tr>
+  <div class="stats-row">
+    <div class="stat-card"><div class="value">12</div><div class="label">Submissions</div></div>
+    <div class="stat-card"><div class="value">5</div><div class="label">Contributors</div></div>
+    <div class="stat-card"><div class="value">2</div><div class="label">Hardware Vendors</div></div>
+    <div class="stat-card"><div class="value">5</div><div class="label">Backends</div></div>
+  </div>
 
-      <tr data-tier="t1">
-        <td title="MadGoat">MadGoat</td>
-        <td title="1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM">1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM</td>
-        <td title="AMD">AMD</td>
-        <td title="llama-swap (llama.cpp subprocess, ROCm)">llama-swap (llama.cpp subprocess, ROCm)</td>
-        <td title="samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B">samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B</td>
-        <td title="GGUF I-Nano">GGUF I-Nano</td>
-        <td class="hide-mobile" title="LLM-assisted coding / technical documentation">LLM-assisted coding / technical documentation</td>
-        <td title="54.4 decode">54.4 decode</td>
-        <td title="65536 tokens (NIAH hit YES at 65k)">65536 tokens (NIAH hit YES at 65k)</td>
-        <td class="hide-mobile" title="Q8_0 (quantized)">Q8_0 (quantized)</td>
-        <td class="hide-mobile" title="150W peak">150W peak</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr data-tier="t1">
-        <td title="s1ugh34d">s1ugh34d</td>
-        <td title="Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM">Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM</td>
-        <td title="AMD">AMD</td>
-        <td title="llama-swap (llama.cpp subprocess, ROCm/ROCm backends)">llama-swap (llama.cpp subprocess, ROCm/ROCm backends)</td>
-        <td title="samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B (I-Nano)">samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B (I-Nano)</td>
-        <td title="GGUF I-Nano">GGUF I-Nano</td>
-        <td class="hide-mobile" title="LLM assited coding / technical documentation">LLM assited coding / technical documentation</td>
-        <td title="54.4 tps decode / 215 tok/s prefill (short ctx)">54.4 tps decode / 215 tok/s prefill (short ctx)</td>
-        <td title="65536 tokens native (NIAH hit YES at 65k)">65536 tokens native (NIAH hit YES at 65k)</td>
-        <td class="hide-mobile" title="quantized KV (observed near-flat VRAM growth w/ context)">quantized KV (observed near-flat VRAM growth w/ context)</td>
-        <td class="hide-mobile" title="~150 W peak, 99% GPU util">~150 W peak, 99% GPU util</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr data-tier="t1">
-        <td title="s1ugh34d">s1ugh34d</td>
-        <td title="Radeon VII 16GB HBM2 (gfx906)">Radeon VII 16GB HBM2 (gfx906)</td>
-        <td title="AMD">AMD</td>
-        <td title="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</td>
-        <td title="deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF">deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF</td>
-        <td title="GGUF Q4_K_M">GGUF Q4_K_M</td>
-        <td class="hide-mobile" title="LLM assited coding / technical documentation / large repo generation">LLM assited coding / technical documentation / large repo generation</td>
-        <td title="86.7 tps decode / 408 tok/s prefill">86.7 tps decode / 408 tok/s prefill</td>
-        <td title="49152 tokens (NIAH hit YES at 49k; 65k not probed)">49152 tokens (NIAH hit YES at 49k; 65k not probed)</td>
-        <td class="hide-mobile" title="quantized KV (VRAM ~flat: 4618MB @49k vs 4619MB @4k)">quantized KV (VRAM ~flat: 4618MB @49k vs 4619MB @4k)</td>
-        <td class="hide-mobile" title="~214 W peak, 99% GPU util">~214 W peak, 99% GPU util</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr data-tier="t1">
-        <td title="s1ugh34d">s1ugh34d</td>
-        <td title="Radeon VII 16GB HBM2 (gfx906)">Radeon VII 16GB HBM2 (gfx906)</td>
-        <td title="AMD">AMD</td>
-        <td title="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</td>
-        <td title="unsloth/Qwen3.8-27B-GGUF (UD-Q2_K_XL)">unsloth/Qwen3.8-27B-GGUF (UD-Q2_K_XL)</td>
-        <td title="GGUF UD-Q2_K_XL">GGUF UD-Q2_K_XL</td>
-        <td class="hide-mobile" title="LLM assited coding / technical documentation">LLM assited coding / technical documentation</td>
-        <td title="13.9 tps decode / 79 tok/s prefill">13.9 tps decode / 79 tok/s prefill</td>
-        <td title="49152 tokens (NIAH hit YES at 49k)">49152 tokens (NIAH hit YES at 49k)</td>
-        <td class="hide-mobile" title="quantized KV (VRAM 13770→13798MB across 8k→32k, +28MB)">quantized KV (VRAM 13770→13798MB across 8k→32k, +28MB)</td>
-        <td class="hide-mobile" title="~233 W peak, 100% GPU util">~233 W peak, 100% GPU util</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr data-tier="t1">
-        <td title="s1ugh34d">s1ugh34d</td>
-        <td title="Radeon VII 16GB HBM2 (gfx906)">Radeon VII 16GB HBM2 (gfx906)</td>
-        <td title="AMD">AMD</td>
-        <td title="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</td>
-        <td title="MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF">MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF</td>
-        <td title="GGUF Q4_K_M">GGUF Q4_K_M</td>
-        <td class="hide-mobile" title="LLM assited coding / technical documentation">LLM assited coding / technical documentation</td>
-        <td title="84.4 tps decode / 490 tok/s prefill">84.4 tps decode / 490 tok/s prefill</td>
-        <td title="16384 tokens (native server cap)">16384 tokens (native server cap)</td>
-        <td class="hide-mobile" title="quantized KV (7327→7299 MB, flat)">quantized KV (7327→7299 MB, flat)</td>
-        <td class="hide-mobile" title="~268 W peak, 93% GPU util">~268 W peak, 93% GPU util</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr data-tier="t1">
-        <td title="s1ugh34d">s1ugh34d</td>
-        <td title="Radeon VII 16GB HBM2 (gfx906)">Radeon VII 16GB HBM2 (gfx906)</td>
-        <td title="AMD">AMD</td>
-        <td title="llama-swap (llama.cpp subprocess)">llama-swap (llama.cpp subprocess)</td>
-        <td title="bartowski/Qwen_Qwen3.5-4B-GGUF">bartowski/Qwen_Qwen3.5-4B-GGUF</td>
-        <td title="GGUF Q4_K_M">GGUF Q4_K_M</td>
-        <td class="hide-mobile" title="LLM assited coding / technical documentation">LLM assited coding / technical documentation</td>
-        <td title="96.4 tps decode / 468 tok/s prefill">96.4 tps decode / 468 tok/s prefill</td>
-        <td title="65536 tokens (native cap; NIAH hit YES; 96k rejected, n_ctx=65536 enforced)">65536 tokens (native cap; NIAH hit YES; 96k rejected, n_ctx=65536 enforced)</td>
-        <td class="hide-mobile" title="quantized KV (VRAM 5312MB @4k → 5312MB @65k, +0)">quantized KV (VRAM 5312MB @4k → 5312MB @65k, +0)</td>
-        <td class="hide-mobile" title="~225 W peak, 99% GPU util">~225 W peak, 99% GPU util</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr class="tier-header" data-tier="t2"><td colspan="12">16-24GB</td></tr>
+  <h2 class="section-title">🧭 Find Your Setup</h2>
+  <div class="card-grid">
 
-      <tr data-tier="t2">
-        <td title="Burhan">Burhan</td>
-        <td title="1x RTX-4000 Ada SFF (20 GB)">1x RTX-4000 Ada SFF (20 GB)</td>
-        <td title="NVIDIA">NVIDIA</td>
-        <td title="Ollama">Ollama</td>
-        <td title="Qwen3.6-27b-q4_KM, lfm2.5-thinking:1.2b-q8_0, gemma4:26b-a4b-it-mtp-q4_K_M, qwen3.5:9b-q8_0, quant_package: [e.g., AutoRound W4A16, GGUF Q4_K_M, EXL2 4.0bpw, FP8], download_url: sourced via Ollama, primary_use_case: Document Q&amp;A, Deep Research, Creative Writing, Brainstorming, Planning, stable_context_tested:, 52k Qwen3.6-27b, 64k lfm2.5-thinking:1.2b (probably could do more), 64k gemma4:26b, 128k qwen3.5:9b, kv_cache_setting: q8_0, throughput_tps: ~20-30 t/s, setup_notes: [Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]">Qwen3.6-27b-q4_KM, lfm2.5-thinking:1.2b-q8_0, gemma4:26b-a4b-it-mtp-q4_K_M, qwen3.5:9b-q8_0, quant_package: [e.g., AutoRound W4A16, GGUF Q4_K_M, EXL2 4.0bpw, FP8], download_url: sourced via Ollama, primary_use_case: Document Q&amp;A, Deep Research, Creative Writing, Brainstorming, Planning, stable_context_tested:, 52k Qwen3.6-27b, 64k lfm2.5-thinking:1.2b (probably could do more), 64k gemma4:26b, 128k qwen3.5:9b, kv_cache_setting: q8_0, throughput_tps: ~20-30 t/s, setup_notes: [Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]</td>
-        <td title=""></td>
-        <td class="hide-mobile" title=""></td>
-        <td title=""></td>
-        <td title=""></td>
-        <td class="hide-mobile" title=""></td>
-        <td class="hide-mobile" title=""></td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr class="tier-header" data-tier="t3"><td colspan="12">24-32GB</td></tr>
+  <div class="card">
+    <h3>🎮 By GPU / VRAM Tier</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Tier</th><th>Example Hardware</th><th>What Runs</th><th>Speed</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td><span class="badge badge-blue">≤16GB</span></td>
+          <td title="1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM">1x Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM</td>
+          <td title="samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B">Carnice-Qwen3.6-MoE-35B-A3B</td>
+          <td>54.4 decode</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">16-24GB</span></td>
+          <td title="1x RTX-4000 Ada SFF (20 GB)">1x RTX-4000 Ada SFF (20 GB)</td>
+          <td title="Qwen3.6-27b-q4_KM, lfm2.5-thinking:1.2b-q8_0, gemma4:26b-a4b-it-mtp-q4_K_M, qwen3.5:9b-q8_0, quant_package: [e.g., AutoRound W4A16, GGUF Q4_K_M, EXL2 4.0bpw, FP8], download_url: sourced via Ollama, primary_use_case: Document Q&amp;A, Deep Research, Creative Writing, Brainstorming, Planning, stable_context_tested:, 52k Qwen3.6-27b, 64k lfm2.5-thinking:1.2b (probably could do more), 64k gemma4:26b, 128k qwen3.5:9b, kv_cache_setting: q8_0, throughput_tps: ~20-30 t/s, setup_notes: [Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]">Qwen3.6-27b-q4_KM</td>
+          <td></td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">24-32GB</span></td>
+          <td title="1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe">1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe</td>
+          <td title="Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)">Qwen3.8-Flash-Next</td>
+          <td>99-128 decode (median 108)</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">48-64GB</span></td>
+          <td title="2x AMD R9700 (48GB total)">2x AMD R9700 (48GB total)</td>
+          <td title="d0xin/Swift-Qwen3.8-27B-Uncensored-FP8">Swift-Qwen3.8-27B-Uncensored-FP8</td>
+          <td>120 (code) / 70 (chat)</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">96-128GB</span></td>
+          <td title="">—</td>
+          <td title="">—</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span class="badge badge-blue">196-256GB+</span></td>
+          <td title="">—</td>
+          <td title="">—</td>
+          <td>—</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
 
-      <tr data-tier="t3">
-        <td title="MadGoat">MadGoat</td>
-        <td title="1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe">1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe</td>
-        <td title="NVIDIA">NVIDIA</td>
-        <td title="Strata 0.1.42">Strata 0.1.42</td>
-        <td title="Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)">Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)</td>
-        <td title="GGUF IQ3_S (ISTA-DASLab GSQ-RCO)">GGUF IQ3_S (ISTA-DASLab GSQ-RCO)</td>
-        <td class="hide-mobile" title="Agentic coding via OpenAI-compatible API">Agentic coding via OpenAI-compatible API</td>
-        <td title="99-128 decode (median 108)">99-128 decode (median 108)</td>
-        <td title="131072 configured; &gt;=106,493 observed in live sessions">131072 configured; &gt;=106,493 observed in live sessions</td>
-        <td class="hide-mobile" title="int8 (engine-native)">int8 (engine-native)</td>
-        <td class="hide-mobile" title="450W stock cap">450W stock cap</td>
-        <td class="hide-mobile" title="Hybrid (VRAM+RAM+SSD)">Hybrid (VRAM+RAM+SSD)</td>
-      </tr>
-      <tr class="tier-header" data-tier="t4"><td colspan="12">48-64GB</td></tr>
+  <div class="card">
+    <h3>🎯 By Use Case</h3>
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Use Case</th><th>Target Tier</th><th>What to Look For</th></tr>
+        </thead>
+        <tbody>
+        <tr>
+          <td>Agentic Coding</td>
+          <td><span class="badge badge-cyan">16-24GB+</span></td>
+          <td title="Fast MoE (A3B) or dense 27B; 100+ tps decode keeps agents responsive">Fast MoE (A3B) or dense 27B; 100+ tps decode keeps agents responsive</td>
+        </tr>
+        <tr>
+          <td>Deep Reasoning</td>
+          <td><span class="badge badge-cyan">24GB+</span></td>
+          <td title="Thinking models burn context — budget max_tokens, use quantized KV">Thinking models burn context — budget max_tokens, use quantized KV</td>
+        </tr>
+        <tr>
+          <td>RAG / Document Ingestion</td>
+          <td><span class="badge badge-cyan">16GB+</span></td>
+          <td title="48k+ stable context with flat VRAM growth (quantized KV cache)">48k+ stable context with flat VRAM growth (quantized KV cache)</td>
+        </tr>
+        <tr>
+          <td>Creative Writing / Roleplay</td>
+          <td><span class="badge badge-cyan">16GB+</span></td>
+          <td title="Q4_K_M quality sweet spot; 8-30B dense models fit comfortably">Q4_K_M quality sweet spot; 8-30B dense models fit comfortably</td>
+        </tr>
+        <tr>
+          <td>General Chat</td>
+          <td><span class="badge badge-cyan">≤16GB</span></td>
+          <td title="Small fast model (4-9B) that stays resident with massive KV headroom">Small fast model (4-9B) that stays resident with massive KV headroom</td>
+        </tr>
+        <tr>
+          <td>Production Serving</td>
+          <td><span class="badge badge-cyan">48-64GB+</span></td>
+          <td title="vLLM / TensorRT-LLM with FP8 or NVFP4 weights; multi-GPU for scale">vLLM / TensorRT-LLM with FP8 or NVFP4 weights; multi-GPU for scale</td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  </div>
 
-      <tr data-tier="t4">
-        <td title="MadGoat">MadGoat</td>
-        <td title="2x AMD R9700 (48GB total)">2x AMD R9700 (48GB total)</td>
-        <td title="AMD">AMD</td>
-        <td title="vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)">vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)</td>
-        <td title="d0xin/Swift-Qwen3.8-27B-Uncensored-FP8">d0xin/Swift-Qwen3.8-27B-Uncensored-FP8</td>
-        <td title="FP8">FP8</td>
-        <td class="hide-mobile" title="Coding, Security Research (DoS attack tracking)">Coding, Security Research (DoS attack tracking)</td>
-        <td title="120 (code) / 70 (chat)">120 (code) / 70 (chat)</td>
-        <td title="~240k tokens">~240k tokens</td>
-        <td class="hide-mobile" title="FP16 (unquantized)">FP16 (unquantized)</td>
-        <td class="hide-mobile" title="N/A">N/A</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr data-tier="t4">
-        <td title="digitalscream">digitalscream</td>
-        <td title="2 x R9700">2 x R9700</td>
-        <td title="AMD">AMD</td>
-        <td title="vLLM">vLLM</td>
-        <td title="d0xin/Swift-Qwen3.8-27B-Uncensored-FP8">d0xin/Swift-Qwen3.8-27B-Uncensored-FP8</td>
-        <td title="FP8">FP8</td>
-        <td class="hide-mobile" title="Coding, Research (OpenCode)">Coding, Research (OpenCode)</td>
-        <td title="120t/s code, 70t/s chat">120t/s code, 70t/s chat</td>
-        <td title="~240k">~240k</td>
-        <td class="hide-mobile" title="FP16">FP16</td>
-        <td class="hide-mobile" title=""></td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr data-tier="t4">
-        <td title="PawingUnplug">PawingUnplug</td>
-        <td title="2 x R9700">2 x R9700</td>
-        <td title="AMD">AMD</td>
-        <td title="llamacpp">llamacpp</td>
-        <td title="bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf, Qwen3-Embedding-8B-Q8_0.gguf, Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-MTP-Q8_0.gguf">bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf, Qwen3-Embedding-8B-Q8_0.gguf, Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-MTP-Q8_0.gguf</td>
-        <td title=""></td>
-        <td class="hide-mobile" title="Coding Judge, Research (OpenCode and own harness), Embeddings">Coding Judge, Research (OpenCode and own harness), Embeddings</td>
-        <td title="~50t/s chat">~50t/s chat</td>
-        <td title="~262k">~262k</td>
-        <td class="hide-mobile" title="FP16">FP16</td>
-        <td class="hide-mobile" title="~600w">~600w</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-      <tr data-tier="t4">
-        <td title="PawingUnplug">PawingUnplug</td>
-        <td title="2 x w7900">2 x w7900</td>
-        <td title="AMD">AMD</td>
-        <td title="llamacpp">llamacpp</td>
-        <td title="Qwen3.8-Flash-Next-Q4_K_M">Qwen3.8-Flash-Next-Q4_K_M</td>
-        <td title=""></td>
-        <td class="hide-mobile" title="Coding">Coding</td>
-        <td title="~35t/s chat">~35t/s chat</td>
-        <td title="~262k">~262k</td>
-        <td class="hide-mobile" title="FP16">FP16</td>
-        <td class="hide-mobile" title="~750w">~750w</td>
-        <td class="hide-mobile" title=""></td>
-      </tr>
-            </tbody>
-        </table>
+  <h2 class="section-title">🏆 Community Highlights</h2>
+  <div class="card-grid">
 
-        <div class="footer">
-            <p class="footer-main">
-                <strong>The Local LLM Matrix</strong> is a community project originating from
-                <a href="https://forum.level1techs.com/t/256443">Level1Techs</a>.
-                All data is community-submitted and user-reported.
-            </p>
-            <p class="footer-cta">
-                <a href="https://forum.level1techs.com/t/256443" class="btn-forum">
-                    💬 Join the Discussion / Submit Your Setup
-                </a>
-            </p>
-            <p class="footer-meta">
-                Last updated: 2026-10-12 |
-                <a href="https://forum.level1techs.com">forum.level1techs.com</a> |
-                Not an official Level1Techs product — a community resource built by forum members.
-            </p>
-        </div>
+    <div class="card">
+      <h3>⚡ Swift-Qwen3.8-27B-Uncensored-FP8</h3>
+      <p>2x AMD R9700 (48GB total)</p>
+      <p class="mono">120 (code) / 70 (chat) · ~240k tokens</p>
+      <p><span class="badge badge-blue">48-64GB</span>
+         <span class="badge badge-purple">vLLM</span></p>
+      <p>by <strong>MadGoat</strong> · <a href="matrix.html">See in the matrix →</a></p>
     </div>
 
-    <script>
-        // Client-side filtering
-        const search = document.getElementById('search');
-        const tierFilter = document.getElementById('filter-tier');
-        const vendorFilter = document.getElementById('filter-vendor');
-        const backendFilter = document.getElementById('filter-backend');
-        const rows = document.querySelectorAll('#main-table tbody tr');
+    <div class="card">
+      <h3>⚡ Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf</h3>
+      <p>2 x R9700</p>
+      <p class="mono">~50t/s chat · ~262k</p>
+      <p><span class="badge badge-blue">48-64GB</span>
+         <span class="badge badge-purple">llama.cpp</span></p>
+      <p>by <strong>PawingUnplug</strong> · <a href="matrix.html">See in the matrix →</a></p>
+    </div>
 
-        function applyFilters() {
-            const q = search.value.toLowerCase();
-            const tier = tierFilter.value;
-            const vendor = vendorFilter.value;
-            const backend = backendFilter.value;
+    <div class="card">
+      <h3>⚡ Qwen3.8-Flash-Next-Q4_K_M</h3>
+      <p>2 x w7900</p>
+      <p class="mono">~35t/s chat · ~262k</p>
+      <p><span class="badge badge-blue">48-64GB</span>
+         <span class="badge badge-purple">llama.cpp</span></p>
+      <p>by <strong>PawingUnplug</strong> · <a href="matrix.html">See in the matrix →</a></p>
+    </div>
 
-            rows.forEach(row => {
-                if (row.classList.contains('tier-header')) {
-                    // Show tier header only if it has visible children
-                    row.style.display = '';
-                    return;
-                }
-                const text = row.textContent.toLowerCase();
-                const cells = row.cells;
-                let show = true;
-                if (q && !text.includes(q)) show = false;
-                if (tier && row.dataset.tier !== tier) show = false;
-                if (vendor && cells[2] && cells[2].textContent !== vendor) show = false;
-                if (backend && cells[3] && cells[3].textContent !== backend) show = false;
-                row.style.display = show ? '' : 'none';
-            });
+    <div class="card">
+      <h3>⚡ Qwen3.8-Flash-Next</h3>
+      <p>1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600, Samsung 990 Pro NVMe</p>
+      <p class="mono">99-128 decode (median 108) · 131072 configured; &gt;=106,493 observed in live sessions</p>
+      <p><span class="badge badge-blue">24-32GB</span>
+         <span class="badge badge-purple">Strata</span></p>
+      <p>by <strong>MadGoat</strong> · <a href="matrix.html">See in the matrix →</a></p>
+    </div>
+  </div>
 
-            // Hide tier headers that have no visible rows
-            document.querySelectorAll('.tier-header').forEach(header => {
-                let next = header.nextElementSibling;
-                let hasVisible = false;
-                while (next && !next.classList.contains('tier-header')) {
-                    if (next.style.display !== 'none') hasVisible = true;
-                    next = next.nextElementSibling;
-                }
-                header.style.display = hasVisible ? '' : 'none';
-            });
-        }
+  <h2 class="section-title">🔄 How It Works</h2>
+  <div class="card-grid">
+    <div class="card">
+      <h3>1. 📝 Submit</h3>
+      <p>Head to the <a href="https://forum.level1techs.com/t/256443">forum thread</a> and use the Quick Submit template in Post #2. 30 seconds: tier, hardware, model, speed.</p>
+    </div>
+    <div class="card">
+      <h3>2. ⚙️ We Parse</h3>
+      <p>The pipeline pulls the thread, parses every submission, and organizes it by VRAM tier, hardware vendor, backend, and model.</p>
+    </div>
+    <div class="card">
+      <h3>3. 📊 You Browse</h3>
+      <p>Filter the matrix by your hardware. See exactly what the community runs, at what speed, in what context.</p>
+    </div>
+  </div>
 
-        search.addEventListener('input', applyFilters);
-        tierFilter.addEventListener('change', applyFilters);
-        vendorFilter.addEventListener('change', applyFilters);
-        backendFilter.addEventListener('change', applyFilters);
-
-        // Sorting WITHIN tier groups (grouping is preserved)
-        let sortState = {}; // col -> direction
-
-        function sortTable(col) {
-            sortState[col] = -(sortState[col] || -1); // toggle direction, default asc
-
-            // Get all tier groups
-            const tbody = document.querySelector('#main-table tbody');
-            const groups = [];
-            let currentGroup = { header: null, rows: [] };
-
-            tbody.querySelectorAll('tr').forEach(row => {
-                if (row.classList.contains('tier-header')) {
-                    if (currentGroup.header || currentGroup.rows.length) {
-                        groups.push(currentGroup);
-                    }
-                    currentGroup = { header: row, rows: [] };
-                } else {
-                    currentGroup.rows.push(row);
-                }
-            });
-            if (currentGroup.header || currentGroup.rows.length) groups.push(currentGroup);
-
-            // Sort rows within each group
-            groups.forEach(group => {
-                group.rows.sort((a, b) => {
-                    const av = a.cells[col]?.textContent || '';
-                    const bv = b.cells[col]?.textContent || '';
-                    // Try numeric sort
-                    const an = parseFloat(av.replace(/[^\d.-]/g, ''));
-                    const bn = parseFloat(bv.replace(/[^\d.-]/g, ''));
-                    if (!isNaN(an) && !isNaN(bn)) return (an - bn) * sortState[col];
-                    return av.localeCompare(bv, undefined, {numeric: true}) * sortState[col];
-                });
-            });
-
-            // Rebuild tbody
-            tbody.innerHTML = '';
-            groups.forEach(group => {
-                if (group.header) tbody.appendChild(group.header);
-                group.rows.forEach(r => tbody.appendChild(r));
-            });
-
-            // Update sort indicators
-            document.querySelectorAll('#main-table th').forEach((th, i) => {
-                th.classList.remove('sort-asc', 'sort-desc');
-                if (sortState[i]) {
-                    th.classList.add(sortState[i] === 1 ? 'sort-asc' : 'sort-desc');
-                }
-            });
-        }
-
-        function resetFilters() {
-            search.value = '';
-            tierFilter.value = '';
-            vendorFilter.value = '';
-            backendFilter.value = '';
-            applyFilters();
-            // Reset sort
-            sortState = {};
-            location.reload(); // simplest reset
-        }
-    </script>
+  <div class="card">
+    <h3>💬 From the Community</h3>
+    <p>Built from submissions in the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> in the
+       <a href="https://forum.level1techs.com/c/high-performance-computing/deep-machine-learning-ai/155">Machine Learning, LLMs &amp; AI category</a> at
+       <a href="https://forum.level1techs.com">Level1Techs</a>. The data is community-reported —
+       real hardware, real numbers, real quirks.</p>
+    <p><a href="https://forum.level1techs.com/t/256443" class="btn btn-primary">Join the discussion →</a></p>
+  </div>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="js/main.js"></script>
 </body>
 </html>
