@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quantization Methods</title>
+    <meta name="description" content="How quants are actually made and why one 4-bit beats another — RTN, GPTQ, AWQ, AutoRound, SmoothQuant, NVFP4/MXFP4, and the GGUF K/I/UD family, with a master comparison table.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="../../index.html">Home</a></li>
+        <li><a href="../../matrix.html">Matrix</a></li>
+        <li><a href="../../community.html">Community</a></li>
+        <li><a href="../../guides.html">Guides</a></li>
+        <li><a href="../../about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
+
+<div class="guide">
+<h1 id="quantization-methods-how-quants-are-made">Quantization Methods: How Quants Are Made</h1>
+<div class="callout"><p><b>The 30-second version:</b> Two 4-bit files of the same model can feel very different, because *how* the bits were chosen is a real decision. The spectrum runs from **RTN** (round each weight — fast, coarse) through **GPTQ** and **AWQ** (use calibration data to protect the weights that matter), to **AutoRound** (optimize the rounding itself) and **SmoothQuant** (make the activations 8-bit, too). The GGUF world that llama.cpp, Ollama, and Strata read has its own consumer-tuned branch — the **K-quants**, **I-quants**, and **UD** dynamic quants. And the new generation, **NVFP4 / MXFP4**, does 4-bit *floating point* with per-block scaling on native hardware. The working rule: <b>the method matters more at 4 bits than at 8</b> — a well-made 4-bit usually beats a lazy 4-bit by a wide margin.</p></div>
+
+<h2 id="why-two-4-bits-arent-the-same">Why two 4-bits aren't the same</h2>
+<p>The bit count is your <em>budget</em>; the method is how you <em>spend</em> it. A model's weights are not equally important — a small fraction of them carry most of the signal, and the rest is texture. The naive approach treats every weight the same and just rounds it. The smarter approaches look at real data, figure out which weights hurt the most when they lose precision, and spend the extra bits (or the scaling) there.</p>
+<p>Every method is an answer to the same question — <em>where do the bits go?</em> — with a different amount of effort. The more work at <em>quantization time</em> (calibration, optimization, hardware-aware scaling), the more quality survives at <em>inference time</em>. That is why the flat "Q4 ≈ a small loss" line in <a href="quantization/">Quantization Basics</a> is only true on average: at 4 bits, the spread between methods is large enough to change your experience.</p>
+<div class="diagram diagram--flow">
+  <div class="diagram-cell">RTN<br><b>No calibration</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">GPTQ<br><b>Hessian + ~128 samples</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">AWQ<br><b>activation-aware</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">AutoRound<br><b>gradient-optimized</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">NVFP4 / MXFP4<br><b>hardware-native FP4</b></div>
+</div>
+
+<p><em>Each step spends more work at quantization time to keep more quality at inference time. The GGUF K/I/UD family is a parallel, VRAM-tuned branch of the same idea — covered at the end.</em></p>
+<h2 id="the-methods">The methods</h2>
+<h3 id="rtn-round-to-nearest">RTN — Round-To-Nearest</h3>
+<div class="callout callout--info"><p><b>The baseline.</b> Round each weight to the nearest value on the target grid, with a per-group scale. No calibration, no optimization, no thought — the cheapest compression that exists.</p></div>
+
+<p>RTN is what "just quantize it" means: take a 16-bit weight, pick the closest 4-bit (or 8-bit) value, store that. It runs in minutes and needs no data. The cost is that it is <em>blind</em> — it has no idea which weights are load-bearing, so it makes the same relative error everywhere, including on the few that matter most.</p>
+<p>That makes RTN the quality floor — perfectly acceptable when the task is forgiving (casual chat, summarization, a prototype) or you just need the model to <em>fit</em>. In the GGUF world, plain <code>Q4_0</code> and <code>Q8_0</code> are essentially RTN with group scales, which is why <code>Q8_0</code> (a forgiving target) looks great while a raw 4-bit RTN shows edges. If a file is just "the model, rounded," it is RTN.</p>
+<h3 id="gptq">GPTQ</h3>
+<div class="callout callout--info"><p><b>Hessian-based, calibration-driven.</b> Feeds ~128 short samples of real text through the model, measures which weights hurt the most when rounded (via the loss's curvature), and compensates the neighbors. A clear step up from RTN, at a real time cost.</p></div>
+
+<p>GPTQ upgrades RTN from "round and hope" to "round and fix." The core idea is the <strong>Hessian</strong> — a measure of how sensitive the model's output is to each weight. Weights that sit in a steep part of the loss landscape (a small change there causes a big change in output) are the dangerous ones to round. GPTQ estimates this curvature from a small <strong>calibration set</strong> and then quantizes weights one at a time, shifting the unquantized neighbors to absorb the error it just introduced.</p>
+<p>"What does 128 calibration samples mean?" 128 short pieces of representative text (a few hundred tokens each) that the model reads while the algorithm fits. The samples never change the weights permanently — they only mark <em>where the cliffs are</em>. The calibration data should match your use case: serve code, calibrate on code. GPTQ's output is the <code>W4A16</code>/<code>W3A16</code>/<code>W5A16</code> family — 4-bit (or 3-bit) weights with 16-bit activations — a standard format in the vLLM/PyTorch serving world. The trade is time: a GPTQ run takes hours, not minutes.</p>
+<h3 id="awq-activation-aware-quantization">AWQ — Activation-Aware Quantization</h3>
+<div class="callout callout--info"><p><b>Protect the 1% that matters.</b> Measures which weights are multiplied by large *activations* and keeps those at higher effective precision, quantizing the rest harder. Often the best 4-bit quality among the classics — and the default pick for vLLM.</p></div>
+
+<p>AWQ starts from an observation GPTQ only hints at: not all weights matter equally, and you can <em>see</em> which ones by watching the activations. A weight that always multiplies a big activation is a load-bearer; one that multiplies near-zero activations barely registers. AWQ runs the model on a few hundred calibration samples, finds that small set of sensitive channels (typically ~1%), and <strong>scales them up</strong> before quantization so their relative error shrinks. The scaling is absorbed back into the layer, so at inference time nothing changes except that the sensitive weights survived better.</p>
+<p>The result is often the best quality-per-bit at 4-bit among the "classic" methods, and it is popular for vLLM deployments for a practical reason: AWQ produces <code>W4A16</code> checkpoints where only the <em>weights</em> are 4-bit and the activations stay 16-bit. That means the inference path needs no exotic activation kernels — just fast 4-bit weight loading and standard matmuls — so it is easy to deploy and fast to run. If you want a single "best 4-bit for serving" answer, this is usually it.</p>
+<h3 id="autoround">AutoRound</h3>
+<div class="callout callout--info"><p><b>Optimize the rounding itself.</b> Treats "which side of the grid does each weight land on?" as a trainable problem, solves it iteratively with gradients, and supports *mixed precision* (different bits for different tensors). The engine behind many `W4A16-AutoRound` checkpoints on Hugging Face.</p></div>
+
+<p>AutoRound sits in the same family as GPTQ and AWQ but attacks the problem from a third angle. GPTQ uses second-order (Hessian) information and fixes errors sequentially; AWQ uses activation statistics and rescales channels; AutoRound frames the decision — round each weight <em>up</em> or <em>down</em>? — as an optimization, refining it with <strong>gradient descent</strong> over many iterations so neighboring weights inform each other.</p>
+<p>Its distinguishing power is <strong>mixed precision</strong>. Instead of forcing the whole model to 4-bit, AutoRound can assign more bits to the layers that need them and fewer to the ones that don't, hitting a target file size with the best overall quality. That is why it tends to edge out GPTQ at the aggressive end (3-bit and below), where a uniform bit budget hurts most. The cost, again, is quantization time — this is an optimizer running, not a rounding loop.</p>
+<h3 id="smoothquant">SmoothQuant</h3>
+<div class="callout callout--info"><p><b>Makes the activations 8-bit, too (W8A8).</b> The hard part of low-bit inference is not the weights — it is the *activations*, which have wild outliers. SmoothQuant mathematically "smooths" those outliers into the weights, so both sides can live in INT8 and run on fast integer kernels.</p></div>
+
+<p>Every method above is about the <em>weights</em>. SmoothQuant targets a different bottleneck: <strong>activations</strong> — the intermediate values the model computes, not its stored parameters. They have a notorious problem: a few channels spike to huge values while the rest stay small, which makes 8-bit quantization lossy. You can't round activations the way you round weights; the outliers wreck the scale.</p>
+<p>SmoothQuant's trick is a <strong>per-channel smoothing factor</strong>: it divides the spiky activation channels down and multiplies the corresponding weight channels up by the same amount. Mathematically the product is identical — no information is lost — but now the activations are tame enough to quantize to INT8. The result is <strong>W8A8</strong> (8-bit weights <em>and</em> 8-bit activations), which unlocks fast INT8 matrix kernels in vLLM and TensorRT-LLM. It is the answer to "I want speed more than I want the absolute smallest file": near-lossless quality at 2× the memory of 4-bit, but with integer-math throughput.</p>
+<h3 id="nvfp4-mxfp4-microscaling">NVFP4 / MXFP4 (Microscaling)</h3>
+<div class="callout callout--warning"><p><b>The new generation — early adoption, still evolving.</b> 4-bit *floating point* with a shared exponent per small block ("microscaling"). Near-FP8 quality at half the memory of FP8, and native hardware speed on Blackwell (RTX 50xx) with AMD following. Not settled in 2026 — verify model coverage before you bet on it.</p></div>
+
+<p>The classic methods are all <strong>integer</strong> quantization: snap each weight to a point on a fixed grid. The new generation returns to <strong>floating point</strong> at 4 bits, with a twist that fixes the old problem with tiny floats. Plain 4-bit floats have almost no dynamic range — a handful of values, and they blow up on anything large. <strong>Microscaling</strong> fixes that by giving each small block of weights (e.g. 32) its own shared scale, so a block can be centered and stretched to fit its actual range.</p>
+<p>There are two flavors in play in 2026:
+- <strong>NVFP4</strong> — NVIDIA's FP4 format, with hardware-native support on Blackwell (the RTX 50xx series). Dedicated FP4 tensor cores make it both small and fast.
+- <strong>MXFP4</strong> — the OCP <strong>Microscaling</strong> standard, the industry-wide spec that NVIDIA, AMD, and others are converging on, so a MXFP4 checkpoint is meant to be portable across vendors.</p>
+<p>Why "the golden ticket"? It aims for <strong>FP8-level quality at FP4-level memory</strong> — half the footprint of FP8 with near-FP8 accuracy, on hardware that computes it natively. The honest caveat, and why it is flagged: it is <strong>new and evolving</strong>. As of late 2026, tooling is landing but model coverage is patchy — not every model has a well-made release, and the quality of one depends on how carefully the per-block scales were fit. Treat it as the frontier: excellent where it exists, absent where it doesn't.</p>
+<h3 id="the-gguf-family-k-quants-i-quants-and-ud">The GGUF family: K-quants, I-quants, and UD</h3>
+<div class="callout callout--info"><p><b>The consumer branch.</b> A separate, VRAM-obsessed quantization system that llama.cpp, Ollama, LM Studio, and Strata all read. It has its own naming, its own hierarchy, and it is where 10 of the Matrix's 12 submissions live.</p></div>
+
+<p>The GGUF ecosystem did not adopt GPTQ/AWQ — it built its own methods around a single constraint: <em>fit a big model into as little VRAM as possible.</em> Three families matter:</p>
+<p><strong>K-quants</strong> (the <code>_K</code> in <code>Q4_K_M</code>). A k-quant is a <strong>hierarchical, mixed-precision</strong> scheme: weights are grouped into blocks, and a super-structure with shared scales assigns <em>more</em> bits to the tensors that need them and <em>fewer</em> to the rest — the same "spend the budget where it matters" idea as AWQ, baked into the file format. The K ladder, best to worst, is <code>Q8_0</code> (near-lossless) &gt; <code>Q6_K</code> &gt; <code>Q5_K_M</code> &gt; <code>Q4_K_M</code> &gt; <code>Q3_K_M</code> &gt; <code>Q2_K</code>; the <code>_M</code>/<code>_S</code>/<code>_L</code> suffixes are medium/small/large variants of the same target, with <code>_M</code> the default. <strong><code>Q4_K_M</code> is the workhorse</strong>: the best quality-per-byte for most consumer cards.</p>
+<p><strong>I-quants</strong> (the <code>I</code> in <code>IQ4_XS</code>, <code>IQ3_S</code>). These push lower than the K-quants using an <strong>importance matrix</strong> ("imatrix") — a per-weight score from calibration data that tells the quantizer which weights to protect. That lets <code>IQ3_S</code> hold up better than a plain 3-bit, and <strong><code>I-Nano</code></strong> (~2.5 bits per weight) is the extreme end: it only works well where a few active parts carry the whole load — exactly what MoE models are (see <a href="model-architectures/">Model Architectures</a>).</p>
+<p><strong>UD — Unsloth Dynamic.</strong> Unsloth's "dynamic" GGUFs assign bits <em>per tensor</em> to hit a target file size, giving the best quality at a specific budget (e.g. <code>UD-Q4_K_XL</code>, <code>UD-Q2_K_XL</code>). The Matrix's 27B-on-16GB submission is one of these — a deliberately mixed-precision quant built to squeeze a dense 27B into a single consumer card.</p>
+<p>The thread through all three: the GGUF family optimizes for <strong>size and single-GPU fit</strong>, while the GPTQ/AWQ/AutoRound/SmoothQuant family optimizes for <strong>serving quality and speed</strong>. They are parallel solutions to the same question, aimed at two different machines.</p>
+<h2 id="the-master-comparison">The master comparison</h2>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Typical precision</th>
+<th>Quality vs FP16</th>
+<th>Speed impact</th>
+<th>VRAM vs FP16</th>
+<th>Backends</th>
+<th>When to use</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>RTN</td>
+<td>INT4 / INT8</td>
+<td>Low–mid (degrades first)</td>
+<td>Neutral</td>
+<td>2×–4×</td>
+<td>Everywhere (GGUF base)</td>
+<td>Quick fit, forgiving tasks</td>
+</tr>
+<tr>
+<td>GPTQ</td>
+<td>W4A16 / W3A16</td>
+<td>Mid–high</td>
+<td>Small loss</td>
+<td>~4×</td>
+<td>vLLM, TGI, AutoGPTQ</td>
+<td>4-bit serving, quality over raw size</td>
+</tr>
+<tr>
+<td>AWQ</td>
+<td>W4A16</td>
+<td>High (best at 4-bit)</td>
+<td>Small loss</td>
+<td>~4×</td>
+<td>vLLM, TensorRT-LLM</td>
+<td>The default 4-bit pick for serving</td>
+</tr>
+<tr>
+<td>AutoRound</td>
+<td>W4A16 / mixed</td>
+<td>High</td>
+<td>Small loss</td>
+<td>~3–4× (mixed lower)</td>
+<td>vLLM, GPTQ tooling</td>
+<td>Lower bits, mixed-precision targets</td>
+</tr>
+<tr>
+<td>SmoothQuant</td>
+<td>W8A8</td>
+<td>High (near-lossless)</td>
+<td>Faster (INT8 kernels)</td>
+<td>2×</td>
+<td>vLLM, TensorRT-LLM</td>
+<td>Max speed at acceptable quality</td>
+</tr>
+<tr>
+<td>NVFP4 / MXFP4</td>
+<td>FP4 (microscaled)</td>
+<td>Very high (near FP8)</td>
+<td>Fast (native FP4 cores)</td>
+<td>~8× vs FP16</td>
+<td>Blackwell, vLLM (emerging)</td>
+<td><strong>New/evolving</strong> — low-bit where supported</td>
+</tr>
+<tr>
+<td>GGUF K-quants (Q4_K_M…)</td>
+<td>~4.5–8 bpw</td>
+<td>High (Q4_K_M the workhorse)</td>
+<td>Neutral</td>
+<td>2.5–4×</td>
+<td>llama.cpp, Ollama, LM Studio, Strata</td>
+<td>Consumer GPU, tight VRAM</td>
+</tr>
+<tr>
+<td>GGUF I-quants (IQ3_S) / I-Nano</td>
+<td>~2.5–3.5 bpw</td>
+<td>Mid (imatrix-tuned) / Low (Nano)</td>
+<td>Neutral</td>
+<td>4–8×</td>
+<td>llama.cpp, Strata</td>
+<td>Extreme fit, MoE models</td>
+</tr>
+<tr>
+<td>UD (Unsloth Dynamic)</td>
+<td>mixed (per-tensor)</td>
+<td>High</td>
+<td>Neutral</td>
+<td>variable</td>
+<td>llama.cpp, Ollama</td>
+<td>Best quality at a target file size</td>
+</tr>
+</tbody>
+</table>
+<p><em>bpw = bits per weight. "VRAM vs FP16" is the approximate memory multiplier. NVFP4/MXFP4 are flagged new/evolving; the rest are production-ready in 2026.</em></p>
+<h2 id="research-vs-production">Research vs production</h2>
+<p>Which can you rely on today, and which are you early to?</p>
+<p><strong>Production-ready (well-supported, stable):</strong>
+- <strong>RTN</strong> — the baseline; everywhere.
+- <strong>GPTQ, AWQ, AutoRound</strong> — the classic post-training trio; the backbone of vLLM's W4A16 ecosystem.
+- <strong>SmoothQuant</strong> — mature W8A8 in vLLM and TensorRT-LLM.
+- <strong>The GGUF family</strong> (K-quants, I-quants, UD) — the consumer standard; the most battle-tested low-bit path in existence.</p>
+<p><strong>New / evolving (verify before you depend on it):</strong>
+- <strong>NVFP4 / MXFP4</strong> — the 2026 frontier. Hardware is landing (Blackwell native, AMD converging on the OCP standard), but model coverage and tooling are still patchy. A well-made release is excellent; the absence of one for your model is the more likely scenario right now.</p>
+<p>The practical read: if your model has a good <strong>AWQ</strong> or <strong>Q4_K_M</strong> release, that is a safe, proven choice today. Reach for <strong>NVFP4/MXFP4</strong> only when a high-quality release exists <em>and</em> your hardware is native to it — otherwise you are paying the early-adopter tax for no gain.</p>
+<h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
+<p>The data is a clean snapshot of the split. <strong>10 of the 12 community submissions run the GGUF family</strong> — K/I/UD quants through llama.cpp, Ollama, and Strata: <code>I-Nano</code> on the 35B-A3B MoE, <code>IQ3_S</code> on the 125B Flash-Next, <code>Q4_K_M</code> on the 27B/4B/8B dense models, <code>Q5_K_M</code> on the coder, <code>Q8_0</code> on the 9B MTP model, and <code>UD-Q2_K_XL</code> squeezing a dense 27B into a 16GB card. The <strong>two vLLM submissions</strong> (27B FP8 on 2× R9700) run <strong>native FP8</strong> safetensors instead — the serving-side answer to the same "fit a big model" problem.</p>
+<p>So the method you see in the Matrix's quant column is not random: <strong>consumer single-GPU runs skew GGUF K/I/UD</strong> (size-first), while <strong>multi-GPU serving skews FP8/AWQ</strong> (quality-and-speed-first). Now that you can read <em>how</em> each was made, the next step is knowing which <em>file</em> to grab for your backend — that is the <a href="file-formats/">File Formats</a> guide, and the backends that consume each family are covered in <a href="backends/">Backends</a>.</p>
+
+  <section class="guide-related">
+    <h2>Related guides</h2>
+    <ul>
+      <li><a href="quantization/">Quantization</a></li>
+      <li><a href="file-formats/">File Formats</a></li>
+      <li><a href="backends/">Backends</a></li>
+    </ul>
+  </section>
+</div>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="../../js/main.js"></script>
+</body>
+</html>

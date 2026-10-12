@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Architectures</title>
+    <meta name="description" content="Dense vs Mixture-of-Experts, what &quot;A3B&quot; means, why a 125B model can decode at 3B speed, and how MTP + speculative decoding make big models feel fast — with real Matrix examples.">
+    <meta property="og:title" content="The Local AI Stack — Models, Hardware, Backends &amp; Community Data">
+    <meta property="og:description" content="A community-driven guide to running AI models on your own hardware. Browse the matrix, explore guides, and see what the community is running.">
+    <meta property="og:url" content="https://madgoathaz.github.io/llm-matrix/">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://madgoathaz.github.io/llm-matrix/og-image.png">
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+  <nav class="nav">
+    <div class="nav-inner">
+      <a href="../../index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
+      <ul class="nav-links">
+        <li><a href="../../index.html">Home</a></li>
+        <li><a href="../../matrix.html">Matrix</a></li>
+        <li><a href="../../community.html">Community</a></li>
+        <li><a href="../../guides.html">Guides</a></li>
+        <li><a href="../../about.html">About</a></li>
+      </ul>
+    </div>
+  </nav>
+<main class="container">
+
+<div class="guide">
+<h1 id="model-architectures-dense-moe-and-why-125b-runs-at-3b-speed">Model Architectures: Dense, MoE, and Why 125B Runs at 3B Speed</h1>
+<div class="callout"><p><b>The 30-second version:</b> A model's *architecture* decides how much of it the GPU touches for each token. **Dense** models use every parameter every step — straightforward, but expensive. **Mixture-of-Experts (MoE)** models are huge in total (125B) but light per token (only a few B active), which is why a 125B model can decode at the speed of a 3B one. The <b>"A3B"</b> in a name means *3B active* out of the total. The catch: MoE needs <i>more</i> memory (all experts must be loaded) but <i>less</i> compute — exactly why hybrid offload engines like Strata shine on it. And <b>MTP + speculative decoding</b> is how some of these get even faster without losing quality.</p></div>
+
+<h2 id="dense-every-parameter-every-token">Dense: every parameter, every token</h2>
+<p>A <strong>dense</strong> model is the classic design: one continuous stack of layers, and <em>all</em> of its parameters participate in computing every single token. A 27B dense model reads all 27B of its weights to produce each character. There is nothing to route around, nothing to skip — the compute cost is simply proportional to the total parameter count.</p>
+<p>The Matrix is full of dense models, and they are the "predictable" end of the spectrum:</p>
+<ul>
+<li><strong>Qwen3.8-27B</strong> — a 27B dense model. Run as FP8 on 2× R9700 it hits <strong>120 t/s</strong> (MadGoat); squeezed to <code>UD-Q2_K_XL</code> on a single 16GB Radeon VII it drops to <strong>13.9 t/s</strong> (s1ugh34d). Same architecture, same 27B of work per token — the only thing that changed was the hardware and the precision.</li>
+<li><strong>Qwen3.5-4B</strong> — a small dense model at <strong>96.4 t/s</strong>, the "leave it always loaded" generalist in the data.</li>
+<li><strong>DeepSeek-R1-0528-Qwen3-8B</strong> — an 8B dense reasoning distill at <strong>84.4 t/s</strong>.</li>
+</ul>
+<p>The rule for dense is easy to remember and hard to beat on small cards: <strong>speed scales with total size</strong>. A 27B dense model will always be slower than a 4B dense model on the same hardware, because it does 6.75× the work per token. That is the cost of dense intelligence — and the reason the next section exists.</p>
+<h2 id="moe-a-model-that-only-uses-what-it-needs">MoE: a model that only uses what it needs</h2>
+<p>A <strong>Mixture-of-Experts</strong> model replaces most of those dense feed-forward layers with a bank of smaller sub-networks called <strong>experts</strong>, plus a lightweight <strong>router</strong>. For each token, the router picks a small subset of experts (often 2 out of dozens or thousands) and only those run. The rest sit idle for that token — and a <em>different</em> subset runs for the next one.</p>
+<div class="diagram diagram--flow">
+  <div class="diagram-cell">Token<br><b>"the cat"</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">Router<br><b>picks 2 of 6,892</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">Expert 1<br><b>active</b></div>
+  <div class="diagram-cell">Expert 2<br><b>active</b></div>
+  <div class="diagram-cell">Experts 3–N<br><b>idle</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">Combine<br><b>one output</b></div>
+</div>
+
+<p><em>Per token, the router lights up a handful of experts and leaves the rest dark. The model is enormous in total, but each character costs the compute of a small model.</em></p>
+<p>The genius is in the asymmetry. Because experts are specialized, a model can have <strong>far more total parameters</strong> than a dense model of the same "active" size — storing much more knowledge — while paying the per-token compute of the small active set. You get the <em>recall</em> of a big model at the <em>speed</em> of a small one.</p>
+<h2 id="a3b-decoded">"A3B" decoded</h2>
+<p>You will see names like <code>Qwen3.6-MoE-35B-A3B</code> or <code>gemma4:26b-a4b</code> in the Matrix. The convention is <strong>[Total]B-A[Active]B</strong>:</p>
+<ul>
+<li><strong>35B-A3B</strong> = 35 billion parameters total, <strong>3 billion active</strong> per token.</li>
+<li><strong>26B-A4B</strong> = 26 billion total, <strong>4 billion active</strong> per token.</li>
+</ul>
+<p>The <strong>total</strong> number is what must be loaded into memory (every expert has to exist somewhere, even the idle ones). The <strong>active</strong> number is what your GPU actually computes for each token — and it is the number that determines your decode speed. A 35B-A3B model feels like a 3B model at the keyboard, while drawing on 35B of stored knowledge.</p>
+<p>One honesty note: active-parameter counts in community submissions are <em>estimates</em> that sometimes differ from the name. The Matrix's 35B-A3B submission is named "A3B" but its notes describe the compute as "≈ 9B" (a rougher figure that likely bundles the shared expert in with the routed ones). The <em>name</em> is the convention to read; treat a submitter's prose number as a ballpark, not a spec.</p>
+<h2 id="why-moe-is-revolutionary-for-local">Why MoE is revolutionary for local</h2>
+<p>This is the single most important idea for people running models on consumer hardware. Look at the ratio:</p>
+<div class="diagram diagram--kv">
+  <div class="diagram-row"><span class="diagram-label">Total params</span><div class="diagram-bar" style="width:100%"></div></div>
+  <div class="diagram-row"><span class="diagram-label">Active / token</span><div class="diagram-bar" style="width:2.4%"></div></div>
+</div>
+
+<p><em>A 125B-total MoE activates ~3B per token — about 2.4% of the model does the work for each generated character. The other 97.6% is loaded but idle, waiting for the tokens that need it.</em></p>
+<p>That ratio is what makes the Matrix's headline submission possible. <strong>Qwen3.8-Flash-Next</strong> is a <strong>125B</strong> MoE model with 6,892 experts. On a <em>single</em> RTX 4090 (24GB) running the Strata hybrid engine, it keeps <strong>13.4GB of the hot experts in VRAM</strong> and parks the rest in RAM and on NVMe — and it still decodes at <strong>99–128 t/s</strong> (median 108). A dense 125B model would need ~230GB of VRAM and would not fit on any consumer box; a 125B <em>MoE</em> fits on one 24GB card because only a sliver is active at a time. That is "125B of intelligence at 3B of speed," and it is the reason MoE changed what is feasible at home.</p>
+<h2 id="the-tradeoff-more-memory-less-compute">The tradeoff: more memory, less compute</h2>
+<p>The flip side is the constraint that shapes every MoE deployment: <strong>all experts must be resident in memory</strong>, even the ones that are idle. So an MoE model needs <em>more</em> total memory than a dense model of the same active size, while needing <em>less</em> compute per token.</p>
+<ul>
+<li><strong>Memory is the bottleneck.</strong> The 125B Flash-Next is a ~50GB object at 3-bit; you cannot avoid loading it all.</li>
+<li><strong>Compute is cheap.</strong> Only ~3B active per token, so the GPU is rarely the limit.</li>
+</ul>
+<p>This is exactly why <strong>hybrid offload works so well for MoE</strong> (the <a href="multi-gpu/">Multi-GPU &amp; Hybrid</a> guide covers the mechanics): because the idle experts are not being read every token, they can live in slow RAM or on an NVMe SSD with little speed penalty. Only the active experts need fast VRAM. A dense model can't do this — every one of its parameters is hot on every token, so offloading a dense model to RAM collapses its speed (see the 27B <code>UD-Q2_K_XL</code> at 13.9 t/s when it nearly fills a 16GB card). MoE turns "doesn't fit" into "fits, and stays fast."</p>
+<h2 id="mtp-speculative-decoding">MTP + speculative decoding</h2>
+<p>Some models in the Matrix get a second speed boost from <strong>MTP (Multi-Token Prediction)</strong> and the <strong>speculative decoding</strong> it enables.</p>
+<p>MTP is a special head, trained alongside the model, that predicts <em>several</em> future tokens at once. On its own that is just a faster draft. The power comes from pairing it with <strong>speculative decoding</strong>:</p>
+<div class="diagram diagram--flow">
+  <div class="diagram-cell">Draft<br><b>MTP head proposes k tokens</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">Verify<br><b>target checks all k in one pass</b></div>
+  <div class="diagram-arrow">→</div>
+  <div class="diagram-cell">Accept<br><b>keep the valid prefix</b></div>
+  <div class="diagram-arrow">↺</div>
+</div>
+
+<p><em>The small/draft side proposes a handful of tokens; the target model verifies all of them in a single parallel forward pass and keeps the longest correct prefix. Repeat. Several tokens per step, at no quality loss.</em></p>
+<p>The key insight is that verification is <em>parallel</em>: the target model checks k candidate tokens in the same cost as it would one, because a transformer processes a whole sequence in a single pass. So you get k tokens for roughly the price of 1, and the quality is guaranteed by the target model being the one that accepts. No approximation, no degradation — just more tokens per second.</p>
+<p>The Matrix shows this in the wild:
+- MadGoat's <strong>Qwen3.8-27B FP8</strong> on vLLM runs with <strong>adaptive MTP=8</strong> — a dense 27B model that speculatively drafts up to 8 tokens and verifies them, landing at <strong>120 t/s</strong>.
+- PawingUnplug's list includes a <strong>9B MTP</strong> model (<code>Qwen3.5-9B-…-MTP-Q8_0</code>).
+- Burhan's Ollama setup runs <strong><code>gemma4:26b-a4b-it-mtp</code></strong> — a MoE <em>and</em> MTP model in one.</p>
+<p>MTP is most valuable when your model has one (it is a training-time feature, not something you add later), and it compounds beautifully with MoE: a big-but-light model that also drafts ahead.</p>
+<h2 id="which-architecture-should-i-pick">Which architecture should I pick?</h2>
+<p>Walk it from your constraint, not from the parameter count:</p>
+<div class="diagram diagram--stack">
+  <div class="diagram-cell">Maximum <b>speed on a small card</b> → a small dense (4B/8B) or a MoE at low bits. The 4B dense at 96 t/s and the 35B-A3B at 54 t/s are the archetypes.</div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell">Maximum <b>quality in limited VRAM</b> → a large MoE. This is the 125B-at-3B-speed trick: big knowledge, small per-token cost, hybrid-offload friendly.</div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell">Long <b>context</b> → pick a model with a large *native* window first (see [Context Extension](context-extension/)); architecture matters less than the trained limit here.</div>
+  <div class="diagram-arrow">↓</div>
+  <div class="diagram-cell"><b>Agentic / coding throughput</b> → favor MTP models; speculative decoding is a free speed multiplier for high-volume work.</div>
+</div>
+
+<p>The honest summary: <strong>MoE wins on quality-per-VRAM</strong> — it is how you get flagship-level intelligence onto consumer hardware. <strong>Dense wins on predictability</strong> — its speed is a clean function of its size, with no routing to reason about. If your card is small and your ambition is big, MoE is the lever. If you want simple, always-fast, low-memory behavior, a small dense model is the calm choice.</p>
+<h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
+<p>The data splits into the two architectures in plain sight, and now you can read each row:</p>
+<p><strong>Dense</strong> — Qwen3.8-27B (two runs: 120 t/s FP8 on 2× R9700, 13.9 t/s <code>UD-Q2_K_XL</code> on 16GB), Qwen3.5-4B (96.4 t/s), DeepSeek-R1-8B (84.4 t/s), and the 9B coder/MTP models. Speed tracks total size, exactly as the dense rule predicts.</p>
+<p><strong>MoE</strong> — Qwen3.6-MoE-35B-A3B (<code>I-Nano</code>, 12.7GB, <strong>54.4 t/s</strong>) and Qwen3.8-Flash-Next, the 125B model (<strong>13.4GB VRAM</strong> hybrid at <strong>99–128 t/s</strong>; also a <code>Q4_K_M</code> run on 2× w7900 at ~35 t/s). Note the inversion that is the whole point: the <em>biggest</em> model in the data (125B) decodes <em>faster</em> than the mid-size dense 27B, because only a few billion of its parameters are active per token.</p>
+<p><strong>MTP</strong> — appears on the 27B (vLLM <code>MTP=8</code>), the 9B model, and <code>gemma4:26b-a4b-it-mtp</code>, the speculative-decoding boost layered on top of both architectures.</p>
+<p>When you submit your own setup, name the architecture the way the data does — total <em>and</em> active params for MoE (<code>35B-A3B</code>, <code>125B</code>), plus an MTP note where present — and the next reader can see at a glance why your speeds are the way they are. The memory side of the story (why context length eats VRAM regardless of architecture) is the <a href="kv-cache/">KV Cache</a> guide, and the engines that make all of this run are in <a href="backends/">Backends</a>.</p>
+
+  <section class="guide-related">
+    <h2>Related guides</h2>
+    <ul>
+      <li><a href="kv-cache/">Kv Cache</a></li>
+      <li><a href="backends/">Backends</a></li>
+    </ul>
+  </section>
+</div>
+</main>
+  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
+  </footer>
+<script src="../../js/main.js"></script>
+</body>
+</html>
