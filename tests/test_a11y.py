@@ -52,7 +52,7 @@ from tests.test_generate import TagChecker
 ALL_PAGES = (
     "index.html", "matrix.html", "community.html", "guides.html",
     "about.html", "compare/index.html", "recommend/index.html",
-    "submit/index.html",
+    "submit/index.html", "api/index.html",
     "guides/index.html",
     "guides/quantization/index.html", "guides/file-formats/index.html",
     "guides/quantization-methods/index.html",
@@ -68,6 +68,7 @@ REQUIRED_INPUTS = (
     "js/main.js",
     "content/recommend.md",
     "content/submit.md",
+    "content/api.md",
 )
 
 

@@ -13,21 +13,22 @@ monolith. The package splits the work into focused modules:
 
 :func:`main` is the single orchestration point: it loads the data, builds the
 guides nav dropdown, renders the five core pages + the guides index, writes
-``data.json``, and renders the individual guides. Run it directly
-(``python -m tools.site``) or via the thin ``tools/generate_site.py`` entry
-point.
+the versioned data API (``data.json`` + ``data/api/v1/*.json``) and the
+``/api/`` documentation page, and renders the individual guides. Run it
+directly (``python -m tools.site``) or via the thin
+``tools/generate_site.py`` entry point.
 """
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 
+from . import api
 from . import guides
 from . import utils
-from .pages import (about, community, compare, guides_index, homepage, matrix,
-                   recommend, submit)
+from .pages import (about, api as api_page, community, compare, guides_index,
+                    homepage, matrix, recommend, submit)
 
 __all__ = ["main"]
 
@@ -144,11 +145,21 @@ def main(workspace: str | Path | None = None,
     except (FileNotFoundError, ImportError) as e:
         print(f"WARNING: submit page skipped: {e}", file=sys.stderr)
 
-    # --- data.json (raw dataset for client-side use) ---
-    data_json = ws / "data.json"
-    with open(data_json, "w", encoding="utf-8") as f:
-        json.dump(data, f, indent=2)
-    print(f"  wrote data.json ({data_json.stat().st_size} bytes)")
+    # --- Versioned data API (P4-4): data.json + data/api/v1/*.json ---
+    # data.json gains the API `version` field; v1/submissions.json is the
+    # same payload at its stable versioned path; the secondary datasets get
+    # versioned copies when present. The authored v1/schema.json is untouched.
+    api.write_api(ws, data)
+
+    # --- API documentation page (api/index.html, depth 1; P4-4) ---
+    try:
+        api_html = api_page.render(content_dir, guides_menu)
+        api_page_path = ws / "api" / "index.html"
+        api_page_path.parent.mkdir(parents=True, exist_ok=True)
+        api_page_path.write_text(api_html, encoding="utf-8")
+        print(f"  wrote api/index.html ({len(api_html)} bytes)")
+    except (FileNotFoundError, ImportError) as e:
+        print(f"WARNING: api page skipped: {e}", file=sys.stderr)
 
     # --- Guides index (guides/index.html, depth 1) ---
     content_guides = ws / "content" / "guides"

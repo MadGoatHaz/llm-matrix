@@ -1,0 +1,162 @@
+name: 📥 Submit a Setup
+description: Share your local LLM setup with the community matrix — hardware, model, quant, and performance numbers.
+title: "[Submission] "
+labels:
+  - submission
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for contributing! The **required** fields are your VRAM tier, hardware, backend, model, quant, use case, and notes. Everything else is optional — but the more you share, the more useful your entry is.
+
+        Your submission is reviewed on the **weekly cycle** and appears in the [Matrix](https://madgoathaz.github.io/llm-matrix/matrix.html) credited to you. Prefer the browser? The same fields live on the [/submit page](https://madgoathaz.github.io/llm-matrix/submit/).
+  - type: input
+    id: name
+    attributes:
+      label: Name to credit
+      description: Your GitHub username or forum handle — this is what appears on your entry.
+      placeholder: e.g. MadGoat
+    validations:
+      required: true
+  - type: dropdown
+    id: tier
+    attributes:
+      label: VRAM tier
+      description: Total video memory across all your GPUs.
+      options:
+        - "≤16GB"
+        - "16-24GB"
+        - "24-32GB"
+        - "48-64GB"
+        - "96-128GB"
+        - "196-256GB+"
+    validations:
+      required: true
+  - type: dropdown
+    id: vendor
+    attributes:
+      label: GPU vendor
+      options:
+        - NVIDIA
+        - AMD
+        - Apple
+        - Intel
+        - Mixed
+  - type: input
+    id: hardware
+    attributes:
+      label: Hardware
+      description: GPUs, VRAM, CPU, RAM — e.g. "2x RX 7900 XTX 24GB, 128GB RAM".
+      placeholder: 1x RTX 4090 24GB, 64GB DDR5
+    validations:
+      required: true
+  - type: dropdown
+    id: backend
+    attributes:
+      label: Inference backend
+      options:
+        - llama.cpp
+        - llama-swap
+        - Ollama
+        - LM Studio
+        - Unsloth Desktop
+        - vLLM
+        - TensorRT-LLM
+        - Strata
+        - Radiance
+        - MLX
+        - Colibri
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: os
+    attributes:
+      label: OS / driver
+      description: e.g. Linux/ROCm, Windows/CUDA, macOS/Metal.
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      description: The model name as you run it.
+      placeholder: e.g. d0xin/Swift-Qwen3.8-27B-Uncensored-FP8
+    validations:
+      required: true
+  - type: input
+    id: model_url
+    attributes:
+      label: Download link
+      description: Where the model file lives (HuggingFace, …).
+      placeholder: https://huggingface.co/…
+  - type: input
+    id: quant
+    attributes:
+      label: Quant / precision
+      description: e.g. "GGUF Q4_K_M", "FP8 (native)", "I-Nano (~2.5bpw)".
+      placeholder: GGUF Q4_K_M
+    validations:
+      required: true
+  - type: input
+    id: use_case
+    attributes:
+      label: Primary use case
+      description: What do you use it for?
+      placeholder: e.g. LLM-assisted coding, long-form creative writing
+    validations:
+      required: true
+  - type: input
+    id: context
+    attributes:
+      label: Stable context tested
+      description: How far you pushed the context before it degraded.
+      placeholder: e.g. 32768 tokens (NIAH hit)
+  - type: input
+    id: kv
+    attributes:
+      label: KV cache setting
+      description: e.g. "Q8_0 (quantized)", "FP8", "default".
+  - type: dropdown
+    id: engine_mode
+    attributes:
+      label: Engine mode
+      description: Where the model lives in memory. Leave blank if you're not sure — VRAM-only is the default.
+      options:
+        - VRAM-only
+        - Hybrid (VRAM+RAM)
+        - Hybrid (VRAM+RAM+SSD)
+        - CPU+GPU
+        - CPU-only
+  - type: input
+    id: decode
+    attributes:
+      label: Decode speed
+      description: tokens/s.
+      placeholder: e.g. 54.4
+  - type: input
+    id: prefill
+    attributes:
+      label: Prefill speed
+      description: tokens/s.
+      placeholder: e.g. 215
+  - type: input
+    id: ttft
+    attributes:
+      label: TTFT (cold)
+      description: Time to first token on a cold start.
+      placeholder: e.g. 19.3s
+  - type: input
+    id: power
+    attributes:
+      label: Power draw
+      description: What the setup pulls from the wall.
+      placeholder: e.g. 150W peak
+  - type: textarea
+    id: notes
+    attributes:
+      label: Setup notes
+      description: Launch flags, quirks, what worked, what didn't. The more specific, the better — this is the field people quote.
+      placeholder: |
+        e.g. `llama-server -m model.gguf -ngl 99 -c 32768` — fits 22GB incl. KV,
+        cold load ~90s, MTP not enabled, …
+    validations:
+      required: true

@@ -23,7 +23,7 @@ python tools/parse.py
 # 5. Parse the secondary threads → benchmarks / hardware / category lists
 python tools/parse_thread.py
 
-# 6. Regenerate the site (all 5 pages + data.json)
+# 6. Regenerate the site (all pages + data.json + the versioned data API)
 python tools/generate_site.py
 
 # 7. Deploy
@@ -39,7 +39,9 @@ git add . && git commit -m "Weekly rollup $(date +%Y-%m-%d)" && git push
 | `tools/diff.py` | Show new/edited/removed posts vs `data/last_seen.json`; updates the baseline |
 | `tools/parse.py` | Extract + normalize main-thread submissions → `data/submissions.json` (tier normalization, template filtering, backend normalization, tag overrides) |
 | `tools/parse_thread.py` | Parse secondary monitored threads → `data/benchmarks.json`, `data/hardware.json`, `data/category_threads.json` |
-| `tools/generate_site.py` | Generate the 5-page site (`index.html`, `matrix.html`, `community.html`, `guides.html`, `about.html`) + `data.json` |
+| `tools/generate_site.py` | Thin entry point for the site generator — delegates to the `tools/site/` package (see below) |
+| `tools/site/` | **The site generator package** (P1-0): `template.py` (shared page shell — OG tags, nav, footer), `utils.py` (data loading, normalization, aggregation), `markdown.py` (the single `markdown` dep + front-matter), `guides.py` (guide renderer), `api.py` (the versioned data API writer), `pages/` (one pure renderer per page: homepage, matrix, community, guides index, about, recommend, compare, submit, api) |
+| `tools/validate.py` | Data-quality gate: checks `submissions.json` against `schema.json` (required fields, enum conformance, known gaps) — runs in CI, exits non-zero on hard errors |
 | `tools/generate.py` | **Legacy** — the original single-page dashboard + Post #3 viewport generator. Superseded by `generate_site.py`; kept for reference only, do not use |
 | `tools/schema.json` | **You edit this.** Valid tiers, vendors, backends, quants, use cases, engine modes, monitored threads (v2.1) |
 | `tools/tags.json` | **You edit this.** Manual curation: highlights, confidence overrides, forum feedback |
@@ -64,9 +66,13 @@ pull.py ──► data/raw/{main,crucible,rigs,category}_latest.json
 submissions.json + schema.json
     │
     ▼
-generate_site.py ──► index.html, matrix.html, community.html,
-                     guides.html, about.html, data.json
-                     (committed at repo root → GitHub Pages)
+generate_site.py (tools/site/) ──► all site pages (root + recommend/ +
+                      compare/ + submit/ + api/ + guides/),
+                      data.json,
+                      data/api/v1/{submissions,benchmarks,hardware}.json
+                      (the versioned data API — the authored
+                      data/api/v1/schema.json is never overwritten)
+                      (all committed at repo root → GitHub Pages)
 ```
 
 ## Monitored Threads
@@ -93,9 +99,10 @@ generate_site.py ──► index.html, matrix.html, community.html,
 
 **When you want a new site feature:**
 
-1. Edit `tools/generate_site.py` (page templates are inline in the generator)
-2. Re-run `generate_site.py`
-3. The generator is the single writer of HTML — never hand-edit the generated `*.html` files; content changes go through the tools and `data/`.
+1. Add a renderer module in `tools/site/pages/` (one pure function per page) and wire it into `tools/site/__init__.py::main()`; page copy lives in `content/*.md`
+2. Re-run `python tools/generate_site.py`
+3. If the change intentionally alters generated output, re-baseline with `make golden` and include the golden diff in your PR
+4. The generator is the single writer of HTML — never hand-edit the generated `*.html` files; content changes go through `content/` and `tools/site/`.
 
 ## Tests
 
@@ -103,4 +110,4 @@ generate_site.py ──► index.html, matrix.html, community.html,
 python -m unittest discover -s tests -v
 ```
 
-The suite in [`tests/`](../tests/) validates `schema.json` structure, `submissions.json` invariants, and the generator output (all pages, tag balance, no template leaks) using stdlib `unittest` — no test dependencies.
+The suite in [`tests/`](../tests/) validates `schema.json` structure, `submissions.json` invariants, the data-quality gate, the versioned data API (including `data.json` conformance to `data/api/v1/schema.json` via a stdlib validator), and the generator output (all pages, golden-file regression, tag balance, no template leaks, WCAG 2.1 AA + performance budgets) using stdlib `unittest` — no test dependencies.

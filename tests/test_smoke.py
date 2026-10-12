@@ -89,6 +89,30 @@ class TestDataFilesValid(unittest.TestCase):
                 self.assertIn(key, data)
                 self.assertEqual(data["count"], len(data[key]))
 
+    def test_published_api_files_are_versioned(self):
+        # P4-4: the versioned data API is published (and committed) at
+        # data/api/v1/. Every payload carries the version stamp; the schema
+        # is the authored JSON Schema document.
+        for relpath in (
+            "data/api/v1/submissions.json",
+            "data/api/v1/benchmarks.json",
+            "data/api/v1/hardware.json",
+        ):
+            with self.subTest(file=relpath):
+                data = load_json(relpath)
+                self.assertIn("version", data, f"{relpath} missing version")
+        schema = load_json("data/api/v1/schema.json")
+        self.assertEqual(
+            schema.get("$schema"),
+            "https://json-schema.org/draft/2020-12/schema")
+        self.assertEqual(schema.get("type"), "object")
+        # The root data.json (what clients fetch) is the same payload as
+        # the versioned copy, version included.
+        root = load_json("data.json")
+        self.assertEqual(
+            root, load_json("data/api/v1/submissions.json"),
+            "data.json and data/api/v1/submissions.json diverged")
+
 
 if __name__ == "__main__":
     unittest.main()

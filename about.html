@@ -26,6 +26,7 @@
         <li><a href="recommend/">Recommend</a></li>
         <li><a href="community.html">Community</a></li>
         <li><a href="submit/">Submit</a></li>
+        <li><a href="https://github.com/MadGoatHaz/llm-matrix/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></li>
         <li class="nav-dropdown">
           <a href="guides/" class="nav-dropdown-toggle" aria-expanded="false" aria-controls="guides-menu">Guides <span class="icon" aria-hidden="true">▾</span></a>
           <ul class="nav-dropdown-menu" id="guides-menu">
@@ -71,8 +72,18 @@
 
   <div class="card">
     <h2><span class="icon" aria-hidden="true">✍️</span> How to Contribute</h2>
-    <p>Head to the <a href="https://forum.level1techs.com/t/256443">forum thread</a> and use the submission template in
-       Post #2. Quick Submit takes 30 seconds.</p>
+    <p>Three free paths: the <a href="submit/">submission form</a> (30 seconds, no account),
+       a <a href="https://github.com/MadGoatHaz/llm-matrix/issues/new?template=submission.yml" target="_blank" rel="noopener">GitHub issue</a>,
+       or the <a href="https://forum.level1techs.com/t/256443">forum thread</a>. What makes a great entry, how to run the
+       pipeline, and the PR process are all written down in
+       <a href="https://github.com/MadGoatHaz/llm-matrix/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md</a>.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="icon" aria-hidden="true">🔌</span> The Data API</h2>
+    <p>Every dataset the site shows is published as <a href="api/">stable, versioned JSON</a> —
+       fetch <code>data.json</code> from your own scripts or sites, validate it against the
+       <a href="api/v1/schema.json">JSON Schema</a>, and build your own tools on the community's data.</p>
   </div>
 
   <div class="card">
@@ -83,7 +94,7 @@
   </div>
 </main>
   <footer class="footer">
-    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a> · <a href="api/">Data API</a> · <a href="https://github.com/MadGoatHaz/llm-matrix/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></div>
     <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
   </footer>
 <script src="js/main.js" defer></script>

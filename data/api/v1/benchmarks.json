@@ -1,0 +1,49 @@
+{
+  "version": "1.0",
+  "source": "Crucible: LLM Bench",
+  "thread_id": "crucible",
+  "url": "https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531",
+  "count": 5,
+  "items": [
+    {
+      "post_number": 1,
+      "username": "MadGoat",
+      "date": "2026-10-01",
+      "title": "",
+      "preview": "I built Crucible LLM \u2014 a terminal-based benchmarking suite that stress-tests any OpenAI-compatible inference server and measures what a real user actually experiences. One static Rust binary. No Python. No venv. No dependencies. Why it exists Most benchmarks shout \u201cxx.x tokens/sec!\u201d and stop. But wh",
+      "has_benchmark_data": true
+    },
+    {
+      "post_number": 2,
+      "username": "thr3e",
+      "date": "2026-10-01",
+      "title": "",
+      "preview": "You might pull some ideas from GitHub - local-inference-lab/llm-inference-bench: LLM inference decode throughput benchmark with Rich TUI dashboard. Measures token generation speed across concurrency levels and context lengths. Supports SGLang and vLLM engines. \u00b7 GitHub this is the blackwell performa",
+      "has_benchmark_data": true
+    },
+    {
+      "post_number": 6,
+      "username": "robertcarter",
+      "date": "2026-10-02",
+      "title": "",
+      "preview": "The idea of measuring per-user performance instead of only aggregate tokens/sec is really useful. I especially like the \u201cpractical sweet spot\u201d concept, because a server can look great in a benchmark while individual users are already getting poor response times. The TUI and CI/JSON output also make ",
+      "has_benchmark_data": true
+    },
+    {
+      "post_number": 12,
+      "username": "Strawberry",
+      "date": "2026-10-05",
+      "title": "",
+      "preview": "It reports only the first card? This feature is very new. I can say, what it\u2019s reporting is definitely correct. The 9700 spikes over 400 watts on NIAH test because it\u2019s pure prefill. I was monitoring with LACT and running the benchmarks from my dedicated Linux desktop remotely. It only sees one card",
+      "has_benchmark_data": true
+    },
+    {
+      "post_number": 16,
+      "username": "mini-pouce",
+      "date": "2026-10-06",
+      "title": "",
+      "preview": "Thank you for sharing your tool. MadGoat: The \u201cpractical sweet spot\u201d \u2014 not just where aggregate throughput plateaus, but the maximum number of users where each one still gets a comfortable \u2265 30 tokens/sec. May you consider for this aspect a dispersion behaviour, either in tk/s or more praticaly in l",
+      "has_benchmark_data": true
+    }
+  ]
+}

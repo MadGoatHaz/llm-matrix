@@ -1,0 +1,40 @@
+name: ✨ Feature Request
+description: Suggest an improvement — a new tool, a new data field, a better guide.
+title: "[Feature] "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for the idea! The project's north star is one question — **"what should I run, on what I have, for what I need?"** Suggestions that help answer it (or keep the data honest) are the most likely to be built.
+  - type: textarea
+    id: what
+    attributes:
+      label: The feature
+      description: What would you like to see?
+      placeholder: e.g. A filter for KV-cache precision…
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: The problem it solves
+      description: What's hard or missing today, and who does it help?
+      placeholder: e.g. I can't tell which 24GB setups are running quantized KV…
+    validations:
+      required: true
+  - type: textarea
+    id: how
+    attributes:
+      label: Proposed solution
+      description: Optional — how should it work? Links, sketches, examples.
+  - type: dropdown
+    id: size
+    attributes:
+      label: Size (your guess)
+      description: Helps with prioritization — a rough sense is fine.
+      options:
+        - Small (an hour or so)
+        - Medium (a session)
+        - Large (a phase)
