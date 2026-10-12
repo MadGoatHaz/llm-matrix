@@ -106,11 +106,14 @@ class TestGeneratorOutput(unittest.TestCase):
                 self.assertGreater(path.stat().st_size, 0, f"{name} is empty")
 
     def test_data_json_round_trips_input(self):
+        # P4-4: data.json is the dataset plus the API `version` field,
+        # placed first (the contract generation is visible up front).
+        from tools.site import api
         with open(self.tmp / "data.json", encoding="utf-8") as f:
             out = json.load(f)
         with open(self.tmp / "data" / "submissions.json", encoding="utf-8") as f:
             src = json.load(f)
-        self.assertEqual(out, src)
+        self.assertEqual(out, {"version": api.API_VERSION, **src})
 
     def test_tags_balanced_on_every_page(self):
         for name in PAGES:
@@ -155,6 +158,10 @@ class TestGoldenRegression(unittest.TestCase):
     change, a missing escape — fails here.
     """
 
+    #: The canonical golden set: the 5 core pages + data.json + the /api/
+    #: documentation page (P4-4).
+    GOLDEN = (*PAGES, "data.json", "api/index.html")
+
     @classmethod
     def setUpClass(cls):
         if str(ROOT) not in sys.path:
@@ -165,6 +172,10 @@ class TestGoldenRegression(unittest.TestCase):
             dst = cls.tmp / rel
             dst.parent.mkdir(parents=True, exist_ok=True)
             shutil.copy2(src, dst)
+        # The /api/ page renders from content/api.md (markdown layer), so the
+        # golden workspace carries the authored content dir.
+        shutil.copytree(ROOT / "content", cls.tmp / "content",
+                        dirs_exist_ok=True)
 
     @classmethod
     def tearDownClass(cls):
@@ -172,7 +183,7 @@ class TestGoldenRegression(unittest.TestCase):
 
     def test_golden_baselines_exist(self):
         golden = ROOT / "tests" / "golden"
-        for name in (*PAGES, "data.json"):
+        for name in self.GOLDEN:
             with self.subTest(page=name):
                 self.assertTrue(
                     (golden / name).exists(),
@@ -189,7 +200,7 @@ class TestGoldenRegression(unittest.TestCase):
             schema=self.tmp / "tools" / "schema.json",
         )
         golden = ROOT / "tests" / "golden"
-        for name in (*PAGES, "data.json"):
+        for name in self.GOLDEN:
             with self.subTest(page=name):
                 new_bytes = (self.tmp / name).read_bytes()
                 gold_bytes = (golden / name).read_bytes()

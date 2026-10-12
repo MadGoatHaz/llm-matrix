@@ -43,8 +43,8 @@ test:
 lint:
 	@echo "==> Byte-compiling all Python files (tools/ + tests/)"
 	$(PYTHON) -m compileall -q tools tests
-	@echo "==> Validating JSON files (data/*.json, tools/*.json)"
-	@for f in data/*.json tools/*.json; do $(PYTHON) -m json.tool "$$f" >/dev/null || { echo "INVALID JSON: $$f"; exit 1; }; done
+	@echo "==> Validating JSON files (data/**/*.json, tools/*.json)"
+	@for f in data/*.json data/api/v1/*.json tools/*.json; do $(PYTHON) -m json.tool "$$f" >/dev/null || { echo "INVALID JSON: $$f"; exit 1; }; done
 	@echo "OK: all JSON files valid"
 
 # Data-quality gate (mirrors the CI lint job): the committed data must conform

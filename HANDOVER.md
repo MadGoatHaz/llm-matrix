@@ -1,5 +1,13 @@
 # The Local AI Stack — Project Handover
 
+> **Currency note:** this document is a point-in-time snapshot. The project
+> has since completed Phases 1–4 of
+> [`work/plans/PLAN.md`](work/plans/PLAN.md) (all 8 guides live, the
+> recommend/compare/submit/API pages, CI + the weekly automated pull, and
+> the versioned data API). For the current state, read
+> [`README.md`](README.md), [`work/plans/PLAN.md`](work/plans/PLAN.md), and
+> the history in [`work/DEV_LOG.md`](work/DEV_LOG.md) — not this file.
+
 ## What This Is
 
 The Local AI Stack is a community-driven resource for running AI/LLM models on personal hardware. It originated as a forum thread on Level1Techs (a high-end hardware/tech community) and has grown into a multi-component project:

@@ -32,6 +32,10 @@ DATA_FILES = (
     "data/hardware.json",
     "data/category_threads.json",
     "data/last_seen.json",
+    "data/api/v1/submissions.json",
+    "data/api/v1/schema.json",
+    "data/api/v1/benchmarks.json",
+    "data/api/v1/hardware.json",
     "tools/schema.json",
     "tools/tags.json",
 )

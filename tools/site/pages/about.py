@@ -43,8 +43,18 @@ def render(guides_menu: list[tuple[str, str]] | None = None) -> str:
 
   <div class="card">
     <h2>{utils.icon("✍️")} How to Contribute</h2>
-    <p>Head to the <a href="{utils.FORUM_THREAD}">forum thread</a> and use the submission template in
-       Post #2. Quick Submit takes 30 seconds.</p>
+    <p>Three free paths: the <a href="submit/">submission form</a> (30 seconds, no account),
+       a <a href="{utils.GITHUB_REPO}/issues/new?template=submission.yml" target="_blank" rel="noopener">GitHub issue</a>,
+       or the <a href="{utils.FORUM_THREAD}">forum thread</a>. What makes a great entry, how to run the
+       pipeline, and the PR process are all written down in
+       <a href="{utils.GITHUB_REPO}/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">CONTRIBUTING.md</a>.</p>
+  </div>
+
+  <div class="card">
+    <h2>{utils.icon("🔌")} The Data API</h2>
+    <p>Every dataset the site shows is published as <a href="api/">stable, versioned JSON</a> —
+       fetch <code>data.json</code> from your own scripts or sites, validate it against the
+       <a href="api/v1/schema.json">JSON Schema</a>, and build your own tools on the community's data.</p>
   </div>
 
   <div class="card">

@@ -16,8 +16,8 @@ the committed golden files — review the resulting diff before committing:
 
 The capture mirrors the test's setup: it copies the generator's required
 inputs into a throwaway workspace, runs ``tools.site.main()`` there, and
-copies the six canonical outputs back into ``tests/golden/``. The committed
-site is never touched.
+copies the canonical outputs (5 core pages + data.json + the /api/ docs
+page) back into ``tests/golden/``. The committed site is never touched.
 """
 
 from __future__ import annotations
@@ -44,7 +44,8 @@ REQUIRED_FILES = (
 )
 REQUIRED_DIRS = ("content",)
 
-# The canonical outputs captured as golden baselines.
+# The canonical outputs captured as golden baselines (the /api/ page is
+# included from P4-4).
 GOLDEN_FILES = (
     "index.html",
     "matrix.html",
@@ -52,6 +53,7 @@ GOLDEN_FILES = (
     "guides.html",
     "about.html",
     "data.json",
+    "api/index.html",
 )
 
 
@@ -82,7 +84,9 @@ def main() -> None:
         golden_dir = ROOT / "tests" / "golden"
         golden_dir.mkdir(parents=True, exist_ok=True)
         for rel in GOLDEN_FILES:
-            shutil.copy2(tmp / rel, golden_dir / rel)
+            dst = golden_dir / rel
+            dst.parent.mkdir(parents=True, exist_ok=True)  # e.g. golden/api/
+            shutil.copy2(tmp / rel, dst)
             print(f"  updated tests/golden/{rel}")
     finally:
         shutil.rmtree(tmp, ignore_errors=True)

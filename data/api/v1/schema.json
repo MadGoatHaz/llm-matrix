@@ -1,0 +1,229 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/MadGoatHaz/llm-matrix/data/api/v1/schema.json",
+  "title": "The Local AI Stack — Data API v1 (submissions)",
+  "description": "Formal JSON Schema (draft 2020-12) for the canonical dataset published at /data.json and /data/api/v1/submissions.json: community-sourced local-LLM hardware/model/performance reports, pulled weekly from the Level1Techs matrix thread. The 'version' field identifies the API generation. See /data/api/README.md for the full contract, versioning policy, and changelog.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "version",
+    "generated_at",
+    "schema_version",
+    "source_thread",
+    "total_submissions",
+    "skipped_templates",
+    "submissions"
+  ],
+  "properties": {
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+$",
+      "description": "Data API version (major.minor). A breaking change to this shape bumps the major version and moves the published files to data/api/vN/; additive changes bump the minor in place."
+    },
+    "generated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of the pipeline run that produced this dataset (the weekly automated pull)."
+    },
+    "schema_version": {
+      "type": "string",
+      "description": "Version of tools/schema.json — the curation vocabulary (tiers, vendors, backends, quants, use cases) — that this dataset was parsed against."
+    },
+    "source_thread": {
+      "type": "string",
+      "format": "uri",
+      "description": "The source forum thread the submissions were pulled from."
+    },
+    "total_submissions": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of records in 'submissions'. Must equal len(submissions)."
+    },
+    "skipped_templates": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Unfilled template posts seen in the thread and excluded from 'submissions'."
+    },
+    "submissions": {
+      "type": "array",
+      "description": "The community submissions — one record per reported setup.",
+      "items": {
+        "$ref": "#/$defs/submission"
+      }
+    }
+  },
+  "$defs": {
+    "submission": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source",
+        "type",
+        "tier",
+        "hardware",
+        "backend",
+        "model",
+        "quant",
+        "context",
+        "performance"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Stable unique identifier: post_<post-number>_<username>_<n>, where <n> disambiguates multiple submissions in one post."
+        },
+        "source": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["username"],
+          "properties": {
+            "post_number": {
+              "type": "integer",
+              "description": "1-based post number in the source thread."
+            },
+            "post_id": {
+              "type": "integer",
+              "description": "Forum post ID (deep-linkable: /t/<topic>/#post-<id>)."
+            },
+            "username": {
+              "type": "string",
+              "description": "The submitter's forum handle (credited on the site)."
+            },
+            "submitted_at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "ISO 8601 timestamp the post was created."
+            }
+          }
+        },
+        "type": {
+          "enum": ["full", "quick"],
+          "description": "'full' = the complete submission template; 'quick' = a minimal report."
+        },
+        "raw": {
+          "type": "object",
+          "description": "The original [COMMUNITY-SUBMISSION] block fields, verbatim. The key set varies by submission type (quick reports carry fewer). Preserved for provenance — consumers should use the normalized fields."
+        },
+        "tier": {
+          "enum": ["t1", "t2", "t3", "t4", "t5", "t6"],
+          "description": "VRAM tier: t1 = ≤16GB, t2 = 16-24GB, t3 = 24-32GB, t4 = 48-64GB, t5 = 96-128GB, t6 = 196-256GB+."
+        },
+        "hardware": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["description"],
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Free-text hardware description (GPUs, VRAM, CPU, RAM)."
+            },
+            "vendor": {
+              "type": "string",
+              "enum": ["NVIDIA", "AMD", "Apple", "Intel", "Mixed"],
+              "description": "Primary GPU vendor."
+            }
+          }
+        },
+        "backend": {
+          "type": "string",
+          "description": "Inference engine as reported. May carry a version or qualifier in parentheses (e.g. 'vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)'); the canonical name is the leading token."
+        },
+        "model": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["name"],
+          "properties": {
+            "name": {
+              "type": "string",
+              "description": "Model name as reported (repo/model, quant, etc.)."
+            },
+            "url": {
+              "type": "string",
+              "format": "uri",
+              "description": "Where the model file is downloaded from (HuggingFace, …)."
+            }
+          }
+        },
+        "quant": {
+          "type": "string",
+          "description": "Quantization / file format, e.g. 'GGUF Q4_K_M', 'FP8', 'I-Nano'."
+        },
+        "weight_precision": {
+          "type": "string",
+          "description": "Effective weight precision, e.g. 'I-Nano (~2.5bpw)'."
+        },
+        "use_cases": {
+          "type": "string",
+          "description": "Free-text use cases as reported. The site's client tools normalize these against the schema's use-case categories."
+        },
+        "context": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "stable": {
+              "type": "string",
+              "description": "Context length tested stable, e.g. '65536 tokens (NIAH hit YES at 65k)'."
+            },
+            "kv_cache": {
+              "type": "string",
+              "description": "KV-cache precision / setting, e.g. 'Q8_0 (quantized)', 'FP16'."
+            }
+          }
+        },
+        "performance": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "decode_tps": {
+              "type": "string",
+              "description": "Decode throughput in tokens/s, e.g. '54.4' or '54.4 decode'."
+            },
+            "prefill_tps": {
+              "type": "string",
+              "description": "Prefill throughput in tokens/s."
+            },
+            "ttft_cold": {
+              "type": "string",
+              "description": "Time to first token on a cold start, e.g. '19.3s'."
+            },
+            "power_w": {
+              "type": "string",
+              "description": "Observed power draw, e.g. '150W peak'."
+            }
+          }
+        },
+        "engine_mode": {
+          "type": "string",
+          "enum": ["", "VRAM-only", "Hybrid (VRAM+RAM)", "Hybrid (VRAM+RAM+SSD)", "CPU+GPU", "CPU-only"],
+          "description": "Where the model lives in memory. Empty string = not reported (the common case in v1)."
+        },
+        "notes": {
+          "type": "string",
+          "description": "The submitter's setup notes: launch flags, quirks, what worked, what didn't."
+        },
+        "confidence": {
+          "type": "string",
+          "enum": ["op-verified", "community-verified", "community-reported", "unverified"],
+          "description": "How well-corroborated the report is."
+        },
+        "lifecycle": {
+          "type": "string",
+          "enum": ["current", "watch", "superseded", "discontinued"],
+          "description": "Curation lifecycle state of the entry."
+        },
+        "highlight": {
+          "type": "boolean",
+          "description": "Curator flag: feature this entry on the homepage."
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Free-form curator tags."
+        }
+      }
+    }
+  }
+}

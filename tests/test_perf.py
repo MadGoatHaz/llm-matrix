@@ -43,7 +43,7 @@ OG_IMAGE_BUDGET = 100 * 1024
 ALL_PAGES = (
     "index.html", "matrix.html", "community.html", "guides.html",
     "about.html", "compare/index.html", "recommend/index.html",
-    "submit/index.html",
+    "submit/index.html", "api/index.html",
     "guides/index.html",
     "guides/quantization/index.html", "guides/file-formats/index.html",
     "guides/quantization-methods/index.html",
@@ -59,6 +59,7 @@ REQUIRED_INPUTS = (
     "js/main.js",
     "content/recommend.md",
     "content/submit.md",
+    "content/api.md",
 )
 
 
@@ -173,7 +174,10 @@ class TestPerformanceBudget(unittest.TestCase):
                         f"data.json is {gz_size(out)}B gzip "
                         f"(expected far under the half-budget on 4G)")
         parsed = json.loads(out)
-        self.assertEqual(parsed, src, "data.json must round-trip the dataset")
+        # P4-4: data.json is the dataset plus the API `version` field.
+        from tools.site import api
+        self.assertEqual(parsed, {"version": api.API_VERSION, **src},
+                         "data.json must round-trip the dataset")
 
     def test_og_image_within_budget_and_exact_dimensions(self):
         png = ROOT / "og-image.png"

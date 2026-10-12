@@ -1,0 +1,527 @@
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+test_all_pages_balanced_and_leak_free (test_a11y.TestA11yHygiene.test_all_pages_balanced_and_leak_free) ... ok
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+test_accent_and_badge_tokens_meet_45_to_1 (test_a11y.TestAccessibility.test_accent_and_badge_tokens_meet_45_to_1) ... ok
+test_decorative_icons_are_aria_hidden (test_a11y.TestAccessibility.test_decorative_icons_are_aria_hidden) ... ok
+test_dialogs_are_labelled_and_modal (test_a11y.TestAccessibility.test_dialogs_are_labelled_and_modal) ... ok
+test_dynamic_regions_are_live (test_a11y.TestAccessibility.test_dynamic_regions_are_live) ... ok
+test_every_page_has_lang_skip_link_and_landmarks (test_a11y.TestAccessibility.test_every_page_has_lang_skip_link_and_landmarks) ... ok
+test_every_page_has_one_h1_and_no_heading_skips (test_a11y.TestAccessibility.test_every_page_has_one_h1_and_no_heading_skips) ... ok
+test_every_table_header_has_scope (test_a11y.TestAccessibility.test_every_table_header_has_scope) ... ok
+test_icon_and_close_targets_are_at_least_44px (test_a11y.TestAccessibility.test_icon_and_close_targets_are_at_least_44px) ... ok
+test_nav_toggle_and_dropdown_expose_expanded_state (test_a11y.TestAccessibility.test_nav_toggle_and_dropdown_expose_expanded_state) ... ok
+test_recommend_form_controls_have_programmatic_names (test_a11y.TestAccessibility.test_recommend_form_controls_have_programmatic_names) ... ok
+test_reduced_motion_and_focus_visible_are_handled (test_a11y.TestAccessibility.test_reduced_motion_and_focus_visible_are_handled) ... ok
+test_sortable_headers_are_real_buttons_with_aria_sort (test_a11y.TestAccessibility.test_sortable_headers_are_real_buttons_with_aria_sort) ... ok
+test_submit_form_controls_have_programmatic_names (test_a11y.TestAccessibility.test_submit_form_controls_have_programmatic_names) ... ok
+test_text_tokens_meet_45_to_1_on_every_surface (test_a11y.TestAccessibility.test_text_tokens_meet_45_to_1_on_every_surface) ... ok
+test_white_on_primary_button_fill_meets_45_to_1 (test_a11y.TestAccessibility.test_white_on_primary_button_fill_meets_45_to_1) ... ok
+test_api_page_links_to_contract (test_api.TestDataApi.test_api_page_links_to_contract) ... ok
+test_api_page_renders (test_api.TestDataApi.test_api_page_renders) ... ok
+test_data_json_carries_api_version (test_api.TestDataApi.test_data_json_carries_api_version) ... ok
+test_data_json_conforms_to_schema (test_api.TestDataApi.test_data_json_conforms_to_schema) ... ok
+test_schema_is_authored_not_generated (test_api.TestDataApi.test_schema_is_authored_not_generated) ... ok
+test_schema_is_well_formed (test_api.TestDataApi.test_schema_is_well_formed) ... ok
+test_secondary_datasets_are_versioned (test_api.TestDataApi.test_secondary_datasets_are_versioned) ... ok
+test_v1_submissions_matches_data_json (test_api.TestDataApi.test_v1_submissions_matches_data_json) ... ok
+test_version_is_major_minor (test_api.TestDataApi.test_version_is_major_minor) ... ok
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_charts_hwuq79s5/content/api.md'
+test_bar_chart_counts_match_dataset (test_charts.TestChartDataDriven.test_bar_chart_counts_match_dataset) ... ok
+test_bar_chart_is_synthetic_data_sensitive (test_charts.TestChartDataDriven.test_bar_chart_is_synthetic_data_sensitive) ... ok
+test_bar_chart_renders_empty_dataset (test_charts.TestChartDataDriven.test_bar_chart_renders_empty_dataset) ... ok
+test_donut_has_one_segment_per_backend (test_charts.TestChartDataDriven.test_donut_has_one_segment_per_backend) ... ok
+test_donut_segments_respect_palette_cycle (test_charts.TestChartDataDriven.test_donut_segments_respect_palette_cycle) ... ok
+test_donut_single_backend_uses_ring_fallback (test_charts.TestChartDataDriven.test_donut_single_backend_uses_ring_fallback) ... ok
+test_estimate_vram_gb_precedence (test_charts.TestChartDataDriven.test_estimate_vram_gb_precedence) ... ok
+test_parse_model_size (test_charts.TestChartDataDriven.test_parse_model_size) ... ok
+test_scatter_empty_dataset (test_charts.TestChartDataDriven.test_scatter_empty_dataset) ... ok
+test_scatter_point_count_matches_parseable_sizes (test_charts.TestChartDataDriven.test_scatter_point_count_matches_parseable_sizes) ... ok
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_charts_ucptxfny/content/api.md'
+test_matrix_section_and_homepage_section_present (test_charts.TestChartPlacementInRealPages.test_matrix_section_and_homepage_section_present) ... ok
+test_real_dataset_values_appear_in_generated_charts (test_charts.TestChartPlacementInRealPages.test_real_dataset_values_appear_in_generated_charts) ... ok
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_charts_txu5f2jz/content/api.md'
+test_every_svg_is_accessible_and_self_contained (test_charts.TestChartStructure.test_every_svg_is_accessible_and_self_contained) ... ok
+test_figures_carry_container_aria_label (test_charts.TestChartStructure.test_figures_carry_container_aria_label) ... ok
+test_matrix_has_three_charts_and_homepage_two (test_charts.TestChartStructure.test_matrix_has_three_charts_and_homepage_two) ... ok
+test_pages_stay_balanced_and_leak_free (test_charts.TestChartStructure.test_pages_stay_balanced_and_leak_free) ... ok
+WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_commands_bxshc6s3/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_commands_bxshc6s3/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_commands_bxshc6s3/content/guides/index.md
+test_backends_guide_has_widget_island_and_script (test_commands.TestCommands.test_backends_guide_has_widget_island_and_script) ... ok
+test_commands_js_covers_the_backend_map (test_commands.TestCommands.test_commands_js_covers_the_backend_map) ... ok
+test_commands_js_has_copy_and_accessible_dialog (test_commands.TestCommands.test_commands_js_has_copy_and_accessible_dialog) ... ok
+test_island_on_matrix_recommend_compare (test_commands.TestCommands.test_island_on_matrix_recommend_compare) ... ok
+test_matrix_has_a_launch_button_per_row (test_commands.TestCommands.test_matrix_has_a_launch_button_per_row) ... ok
+test_recommend_loads_commands_after_recommend_js (test_commands.TestCommands.test_recommend_loads_commands_after_recommend_js) ... ok
+WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_compare_l0u3wcba/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_compare_l0u3wcba/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_compare_l0u3wcba/content/guides/index.md
+test_extra_scripts_load_after_main_at_depth1 (test_compare.TestComparePage.test_extra_scripts_load_after_main_at_depth1) ... ok
+test_island_matches_schema_and_submissions (test_compare.TestComparePage.test_island_matches_schema_and_submissions) ... ok
+test_island_submissions_are_trimmed (test_compare.TestComparePage.test_island_submissions_are_trimmed) ... ok
+test_matrix_has_checkboxes_launch_buttons_and_bar (test_compare.TestComparePage.test_matrix_has_checkboxes_launch_buttons_and_bar) ... ok
+test_nav_footer_og_and_landmarks (test_compare.TestComparePage.test_nav_footer_og_and_landmarks) ... ok
+test_nav_includes_compare_on_every_page (test_compare.TestComparePage.test_nav_includes_compare_on_every_page) ... ok
+test_page_written_nonempty (test_compare.TestComparePage.test_page_written_nonempty) ... ok
+test_picker_has_four_labeled_selects (test_compare.TestComparePage.test_picker_has_four_labeled_selects) ... ok
+test_table_wrapper_and_live_takeaway (test_compare.TestComparePage.test_table_wrapper_and_live_takeaway) ... ok
+test_tags_balanced_no_brace_leaks (test_compare.TestComparePage.test_tags_balanced_no_brace_leaks) ... ok
+test_backends_normalize_to_schema_values (test_data.TestSubmissionsInvariants.test_backends_normalize_to_schema_values) ... ok
+test_every_row_has_required_keys (test_data.TestSubmissionsInvariants.test_every_row_has_required_keys) ... ok
+test_no_template_rows_leaked (test_data.TestSubmissionsInvariants.test_no_template_rows_leaked) ... ok
+test_row_count_matches_header (test_data.TestSubmissionsInvariants.test_row_count_matches_header) ... ok
+test_source_fields_present (test_data.TestSubmissionsInvariants.test_source_fields_present) ... ok
+test_tiers_within_schema (test_data.TestSubmissionsInvariants.test_tiers_within_schema) ... ok
+test_vendors_within_schema (test_data.TestSubmissionsInvariants.test_vendors_within_schema) ... ok
+WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_detail_gyi02bu_/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_detail_gyi02bu_/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_detail_gyi02bu_/content/guides/index.md
+test_css_detail_panel_and_reduced_motion (test_detail.TestDetailPanel.test_css_detail_panel_and_reduced_motion) ... ok
+test_every_row_is_clickable_and_focusable (test_detail.TestDetailPanel.test_every_row_is_clickable_and_focusable) ... ok
+test_island_carries_source_for_forum_link (test_detail.TestDetailPanel.test_island_carries_source_for_forum_link) ... ok
+test_main_js_panel_behavior (test_detail.TestDetailPanel.test_main_js_panel_behavior) ... ok
+test_matrix_still_balanced_and_leak_free (test_detail.TestDetailPanel.test_matrix_still_balanced_and_leak_free) ... ok
+test_panel_shell_is_an_accessible_dialog (test_detail.TestDetailPanel.test_panel_shell_is_an_accessible_dialog) ... ok
+WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_p42_1uvnbfsl/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_p42_1uvnbfsl/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_p42_1uvnbfsl/content/guides/index.md
+test_chips_container_result_count_and_clear_all (test_filters.TestAdvancedFiltering.test_chips_container_result_count_and_clear_all) ... ok
+test_community_keeps_single_selects (test_filters.TestAdvancedFiltering.test_community_keeps_single_selects) ... ok
+test_main_js_extended_url_contract (test_filters.TestAdvancedFiltering.test_main_js_extended_url_contract) ... ok
+test_multiselects_are_disclosure_button_plus_checkbox_menu (test_filters.TestAdvancedFiltering.test_multiselects_are_disclosure_button_plus_checkbox_menu) ... ok
+test_reduced_motion_covers_row_transition (test_filters.TestAdvancedFiltering.test_reduced_motion_covers_row_transition) ... ok
+test_rows_carry_search_blob_and_sort_hints (test_filters.TestAdvancedFiltering.test_rows_carry_search_blob_and_sort_hints) ... ok
+test_sort_dropdown_and_direction_toggle (test_filters.TestAdvancedFiltering.test_sort_dropdown_and_direction_toggle) ... ok
+test_sort_hints_match_known_rows (test_filters.TestAdvancedFiltering.test_sort_hints_match_known_rows) ... ok
+WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_filters_v345j6ar/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_filters_v345j6ar/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_filters_v345j6ar/content/guides/index.md
+test_backend_axis_is_multiselect_with_data_backends (test_filters.TestShareableFilters.test_backend_axis_is_multiselect_with_data_backends) ... ok
+test_community_has_same_filter_bar (test_filters.TestShareableFilters.test_community_has_same_filter_bar) ... ok
+test_community_setup_items_carry_filter_attrs (test_filters.TestShareableFilters.test_community_setup_items_carry_filter_attrs) ... ok
+test_empty_state_region_with_clear_button (test_filters.TestShareableFilters.test_empty_state_region_with_clear_button) ... ok
+test_engine_mode_options_match_schema (test_filters.TestShareableFilters.test_engine_mode_options_match_schema) ... ok
+test_every_row_carries_use_case_and_mode_attrs (test_filters.TestShareableFilters.test_every_row_carries_use_case_and_mode_attrs) ... ok
+test_known_free_text_normalizations (test_filters.TestShareableFilters.test_known_free_text_normalizations) ... ok
+test_main_js_url_sync_contract (test_filters.TestShareableFilters.test_main_js_url_sync_contract) ... ok
+test_matrix_has_all_six_filter_axes (test_filters.TestShareableFilters.test_matrix_has_all_six_filter_axes) ... ok
+test_pages_still_balanced_and_leak_free (test_filters.TestShareableFilters.test_pages_still_balanced_and_leak_free) ... ok
+test_use_case_options_match_schema (test_filters.TestShareableFilters.test_use_case_options_match_schema) ... ok
+WARNING: recommend page skipped: [Errno 2] No such file or directory: '/tmp/las_test_pm_o_xsn/content/recommend.md'
+WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_test_pm_o_xsn/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_test_pm_o_xsn/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_test_pm_o_xsn/content/guides/index.md
+test_all_pages_and_data_written (test_generate.TestGeneratorOutput.test_all_pages_and_data_written) ... ok
+test_data_json_round_trips_input (test_generate.TestGeneratorOutput.test_data_json_round_trips_input) ... ok
+test_no_template_brace_leaks (test_generate.TestGeneratorOutput.test_no_template_brace_leaks) ... ok
+test_one_h1_and_main_landmark_per_page (test_generate.TestGeneratorOutput.test_one_h1_and_main_landmark_per_page) ... ok
+test_shared_nav_footer_and_og_tags_on_every_page (test_generate.TestGeneratorOutput.test_shared_nav_footer_and_og_tags_on_every_page) ... ok
+test_tags_balanced_on_every_page (test_generate.TestGeneratorOutput.test_tags_balanced_on_every_page) ... ok
+test_all_outputs_match_golden_baselines (test_generate.TestGoldenRegression.test_all_outputs_match_golden_baselines) ... WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+ok
+test_golden_baselines_exist (test_generate.TestGoldenRegression.test_golden_baselines_exist) ... ok
+test_fenced_code_renders (test_markdown.TestRenderMarkdown.test_fenced_code_renders) ... ok
+test_guide_icon_gets_aria_hidden (test_markdown.TestRenderMarkdown.test_guide_icon_gets_aria_hidden) ... ok
+test_raw_html_diagram_passes_through (test_markdown.TestRenderMarkdown.test_raw_html_diagram_passes_through) ... ok
+test_table_renders (test_markdown.TestRenderMarkdown.test_table_renders) ... ok
+test_th_gets_scope_col_attribute (test_markdown.TestRenderMarkdown.test_th_gets_scope_col_attribute) ... ok
+test_comments_and_blank_lines_ignored (test_markdown.TestSplitFrontMatter.test_comments_and_blank_lines_ignored) ... ok
+test_quoted_values_are_stripped (test_markdown.TestSplitFrontMatter.test_quoted_values_are_stripped) ... ok
+test_related_list_kept_as_raw_string (test_markdown.TestSplitFrontMatter.test_related_list_kept_as_raw_string) ... ok
+test_with_front_matter (test_markdown.TestSplitFrontMatter.test_with_front_matter) ... ok
+test_without_front_matter_returns_text_unchanged (test_markdown.TestSplitFrontMatter.test_without_front_matter_returns_text_unchanged) ... ok
+test_alias_renamed_to_canonical (test_parse.TestApplyAliases.test_alias_renamed_to_canonical) ... ok
+test_all_aliases_renamed (test_parse.TestApplyAliases.test_all_aliases_renamed) ... ok
+test_canonical_wins_over_alias (test_parse.TestApplyAliases.test_canonical_wins_over_alias) ... ok
+test_full_submission_extracted (test_parse.TestExtractSubmissionsFromPost.test_full_submission_extracted) ... ok
+test_multi_model_separator_splits_into_two (test_parse.TestExtractSubmissionsFromPost.test_multi_model_separator_splits_into_two) ... ok
+test_multiple_blocks_in_one_post (test_parse.TestExtractSubmissionsFromPost.test_multiple_blocks_in_one_post) ... ok
+test_post_without_blocks_is_empty (test_parse.TestExtractSubmissionsFromPost.test_post_without_blocks_is_empty) ... ok
+test_quick_submit_extracted (test_parse.TestExtractSubmissionsFromPost.test_quick_submit_extracted) ... ok
+test_vendor_mapping (test_parse.TestInferVendor.test_vendor_mapping) ... ok
+test_all_core_fields_empty_detected (test_parse.TestIsTemplateSubmission.test_all_core_fields_empty_detected) ... ok
+test_real_submission_not_template (test_parse.TestIsTemplateSubmission.test_real_submission_not_template) ... ok
+test_unfilled_template_detected (test_parse.TestIsTemplateSubmission.test_unfilled_template_detected) ... ok
+test_empty_and_unknown_return_none (test_parse.TestNormalizeTier.test_empty_and_unknown_return_none) ... ok
+test_longest_first_prevents_false_positive (test_parse.TestNormalizeTier.test_longest_first_prevents_false_positive) ... ok
+test_tier_mapping (test_parse.TestNormalizeTier.test_tier_mapping) ... ok
+test_bullet_list_joined (test_parse.TestParseSubmissionBlock.test_bullet_list_joined) ... ok
+test_empty_value_then_lines_become_comma_list (test_parse.TestParseSubmissionBlock.test_empty_value_then_lines_become_comma_list) ... ok
+test_empty_value_then_single_line (test_parse.TestParseSubmissionBlock.test_empty_value_then_single_line) ... ok
+test_inline_bracket_list_kept_verbatim (test_parse.TestParseSubmissionBlock.test_inline_bracket_list_kept_verbatim) ... ok
+test_nonempty_value_folds_with_space (test_parse.TestParseSubmissionBlock.test_nonempty_value_folds_with_space) ... ok
+test_prose_with_colon_not_misread_as_key (test_parse.TestParseSubmissionBlock.test_prose_with_colon_not_misread_as_key) ... ok
+test_simple_key_value (test_parse.TestParseSubmissionBlock.test_simple_key_value) ... ok
+test_multiple_separators (test_parse.TestSplitOnSeparator.test_multiple_separators) ... ok
+test_no_separator_single_block (test_parse.TestSplitOnSeparator.test_no_separator_single_block) ... ok
+test_one_separator_two_blocks (test_parse.TestSplitOnSeparator.test_one_separator_two_blocks) ... ok
+test_short_dashes_are_not_a_separator (test_parse.TestSplitOnSeparator.test_short_dashes_are_not_a_separator) ... ok
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+test_baked_islands_are_compact (test_perf.TestPerformanceBudget.test_baked_islands_are_compact) ... ok
+test_css_within_budget (test_perf.TestPerformanceBudget.test_css_within_budget) ... ok
+test_data_json_within_budget_and_valid (test_perf.TestPerformanceBudget.test_data_json_within_budget_and_valid) ... FAIL
+test_every_page_html_within_budget (test_perf.TestPerformanceBudget.test_every_page_html_within_budget) ... ok
+test_no_render_blocking_resources (test_perf.TestPerformanceBudget.test_no_render_blocking_resources) ... ok
+test_og_image_within_budget_and_exact_dimensions (test_perf.TestPerformanceBudget.test_og_image_within_budget_and_exact_dimensions) ... ok
+test_per_page_js_within_budget (test_perf.TestPerformanceBudget.test_per_page_js_within_budget) ... ok
+WARNING: submit page skipped: [Errno 2] No such file or directory: '/tmp/las_recommend_tmkpe9c8/content/submit.md'
+WARNING: data/benchmarks.json not found — data/api/v1/benchmarks.json not published.
+WARNING: data/hardware.json not found — data/api/v1/hardware.json not published.
+WARNING: api page skipped: [Errno 2] No such file or directory: '/tmp/las_recommend_tmkpe9c8/content/api.md'
+WARNING: guides index skipped: Guides index not found: /tmp/las_recommend_tmkpe9c8/content/guides/index.md
+test_config_island_valid_and_matches_schema (test_recommend.TestRecommendPage.test_config_island_valid_and_matches_schema) ... ok
+test_extra_script_loaded_after_main (test_recommend.TestRecommendPage.test_extra_script_loaded_after_main) ... ok
+test_form_controls_have_labels (test_recommend.TestRecommendPage.test_form_controls_have_labels) ... ok
+test_homepage_has_find_my_model_cta (test_recommend.TestRecommendPage.test_homepage_has_find_my_model_cta) ... ok
+test_matrix_rows_have_id_anchors (test_recommend.TestRecommendPage.test_matrix_rows_have_id_anchors) ... ok
+test_nav_footer_og_and_landmarks (test_recommend.TestRecommendPage.test_nav_footer_og_and_landmarks) ... ok
+test_nav_includes_recommend_on_every_page (test_recommend.TestRecommendPage.test_nav_includes_recommend_on_every_page) ... ok
+test_page_written_nonempty (test_recommend.TestRecommendPage.test_page_written_nonempty) ... ok
+test_results_region_is_live (test_recommend.TestRecommendPage.test_results_region_is_live) ... ok
+test_tags_balanced_no_brace_leaks (test_recommend.TestRecommendPage.test_tags_balanced_no_brace_leaks) ... ok
+test_tier_select_is_the_required_gate (test_recommend.TestRecommendPage.test_tier_select_is_the_required_gate) ... ok
+test_all_enums_non_empty (test_schema.TestSchemaStructure.test_all_enums_non_empty) ... ok
+test_monitored_threads_well_formed (test_schema.TestSchemaStructure.test_monitored_threads_well_formed) ... ok
+test_six_tiers_in_strict_ascending_order (test_schema.TestSchemaStructure.test_six_tiers_in_strict_ascending_order) ... ok
+test_version_present_and_well_formed (test_schema.TestSchemaStructure.test_version_present_and_well_formed) ... ok
+test_all_data_files_parse (test_smoke.TestDataFilesValid.test_all_data_files_parse) ... ok
+test_dataset_schema_version_matches_schema (test_smoke.TestDataFilesValid.test_dataset_schema_version_matches_schema) ... ok
+test_published_api_files_are_versioned (test_smoke.TestDataFilesValid.test_published_api_files_are_versioned) ... ok
+test_secondary_thread_outputs_have_expected_shape (test_smoke.TestDataFilesValid.test_secondary_thread_outputs_have_expected_shape) ... ok
+test_submissions_top_level_shape (test_smoke.TestDataFilesValid.test_submissions_top_level_shape) ... ok
+test_all_scripts_import (test_smoke.TestPipelineImportable.test_all_scripts_import) ... ok
+test_pipeline_scripts_are_pep8_compilable (test_smoke.TestPipelineImportable.test_pipeline_scripts_are_pep8_compilable) ... ok
+test_scripts_are_runnable_entrypoints (test_smoke.TestPipelineImportable.test_scripts_are_runnable_entrypoints) ... ok
+test_invalid_dataset_is_not_valid (test_validate.TestExitCodeContract.test_invalid_dataset_is_not_valid) ... ok
+test_valid_dataset_exits_zero (test_validate.TestExitCodeContract.test_valid_dataset_exits_zero) ... ok
+test_bad_tier_fails (test_validate.TestIndividualChecks.test_bad_tier_fails) ... ok
+test_bad_vendor_fails (test_validate.TestIndividualChecks.test_bad_vendor_fails) ... ok
+test_complete_submission_passes (test_validate.TestIndividualChecks.test_complete_submission_passes) ... ok
+test_data_gaps_are_warnings (test_validate.TestIndividualChecks.test_data_gaps_are_warnings) ... ok
+test_distinct_ids_pass (test_validate.TestIndividualChecks.test_distinct_ids_pass) ... ok
+test_duplicate_id_fails (test_validate.TestIndividualChecks.test_duplicate_id_fails) ... ok
+test_huge_vram_hardware_fails (test_validate.TestIndividualChecks.test_huge_vram_hardware_fails) ... ok
+test_missing_main_thread_fails (test_validate.TestIndividualChecks.test_missing_main_thread_fails) ... ok
+test_missing_required_field_fails (test_validate.TestIndividualChecks.test_missing_required_field_fails) ... ok
+test_non_integer_post_id_fails (test_validate.TestIndividualChecks.test_non_integer_post_id_fails) ... ok
+test_non_url_model_is_not_a_hard_failure (test_validate.TestIndividualChecks.test_non_url_model_is_not_a_hard_failure) ... ok
+test_repeated_post_model_is_warning_not_failure (test_validate.TestIndividualChecks.test_repeated_post_model_is_warning_not_failure) ... ok
+test_sensible_vram_passes (test_validate.TestIndividualChecks.test_sensible_vram_passes) ... ok
+test_t1_zero_floor_is_legit (test_validate.TestIndividualChecks.test_t1_zero_floor_is_legit) ... ok
+test_unknown_backend_fails (test_validate.TestIndividualChecks.test_unknown_backend_fails) ... ok
+test_valid_enums_pass (test_validate.TestIndividualChecks.test_valid_enums_pass) ... ok
+test_zero_vram_hardware_fails (test_validate.TestIndividualChecks.test_zero_vram_hardware_fails) ... ok
+test_current_data_is_valid (test_validate.TestValidatorOnRealData.test_current_data_is_valid) ... ok
+test_main_returns_zero_on_valid_data (test_validate.TestValidatorOnRealData.test_main_returns_zero_on_valid_data) ... ok
+test_no_hard_failures_on_current_data (test_validate.TestValidatorOnRealData.test_no_hard_failures_on_current_data) ... ok
+test_report_is_rendered (test_validate.TestValidatorOnRealData.test_report_is_rendered) ... ok
+
+======================================================================
+FAIL: test_data_json_within_budget_and_valid (test_perf.TestPerformanceBudget.test_data_json_within_budget_and_valid)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/home/madgoat/Documents/Local LLM Matrix/tests/test_perf.py", line 177, in test_data_json_within_budget_and_valid
+    self.assertEqual(parsed, src, "data.json must round-trip the dataset")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'version': '1.0', 'generated_at': '2026-10[22274 chars][]}]} != {'generated_at': '2026-10-12T11:39:46.95296[22256 chars][]}]}
+Diff is 42159 characters long. Set self.maxDiff to None to see it. : data.json must round-trip the dataset
+
+----------------------------------------------------------------------
+Ran 186 tests in 0.793s
+
+FAILED (failures=1)
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote data/api/v1/benchmarks.json (2642 bytes)
+  wrote data/api/v1/hardware.json (2118 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote guides/backends/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote submit/index.html (19596 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+  wrote api/index.html (8829 bytes)
+  wrote guides/index.html (8339 bytes)
+  wrote guides/backends/index.html
+  wrote guides/context-extension/index.html
+  wrote guides/file-formats/index.html
+  wrote guides/kv-cache/index.html
+  wrote guides/model-architectures/index.html
+  wrote guides/multi-gpu/index.html
+  wrote guides/quantization-methods/index.html
+  wrote guides/quantization/index.html
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+  wrote index.html (15796 bytes)
+  wrote matrix.html (64644 bytes)
+  wrote community.html (12120 bytes)
+  wrote guides.html (2937 bytes)
+  wrote about.html (5999 bytes)
+  wrote recommend/index.html (22591 bytes)
+  wrote compare/index.html (17522 bytes)
+  wrote data.json (27132 bytes)
+  wrote data/api/v1/submissions.json (27132 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.
+================================================================
+DATA QUALITY REPORT — The Local AI Stack
+================================================================
+ ✓ [PASS] valid-json: data/submissions.json
+ ✓ [PASS] valid-json: data/benchmarks.json
+ ✓ [PASS] valid-json: data/hardware.json
+ ✓ [PASS] valid-json: data/category_threads.json
+ ✓ [PASS] valid-json: data/last_seen.json
+ ✓ [PASS] valid-json: tools/schema.json
+ ✓ [PASS] valid-json: tools/tags.json
+ ✓ [PASS] required-fields — 12 submissions carry all 19 keys
+ ✓ [PASS] enum-conformance — all enum values are schema-legal
+ ✓ [PASS] duplicates — 12 unique submission ids
+ ✓ [PASS] vram-reasonable — all 12 VRAM values within (0, 1000GB]
+ ✓ [PASS] referential-integrity — post ids and the schema's thread references are sound
+ ⚠ [WARN] data-gaps (info) — 0 Apple/MLX submissions (biggest demographic gap) | 11/12 engine_mode empty | 0 use_cases strings map to no schema category | 5 model urls are not http(s) links
+----------------------------------------------------------------
+SUMMARY: 12 passed, 0 failed, 1 warning(s)
+================================================================
+
+RESULT: VALID — the data passes all hard checks.

@@ -1,0 +1,75 @@
+name: 🐞 Bug Report
+description: Report a problem with the site, the data, or the pipeline.
+title: "[Bug] "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting a bug! If it's about a **data value** (a number that looks wrong), link the Matrix row or the submission `id` — that makes it easy to trace back to the source post in the forum thread.
+  - type: input
+    id: summary
+    attributes:
+      label: Summary
+      description: "One line: what's broken?"
+      placeholder: e.g. Filtering by backend shows no rows
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Area
+      options:
+        - Matrix / filters
+        - Recommend tool
+        - Compare view
+        - Launch commands
+        - Guides
+        - Submit form
+        - Data (a value looks wrong)
+        - Pipeline / CI
+        - Other
+    validations:
+      required: true
+  - type: input
+    id: page
+    attributes:
+      label: Page / URL
+      description: Where did you see it? Include any filter links in the URL.
+      placeholder: https://madgoathaz.github.io/llm-matrix/matrix.html?backend=vLLM
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      placeholder: Describe what you saw…
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect?
+      placeholder: Describe the correct behavior…
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to …
+        2. Click …
+        3. See …
+  - type: dropdown
+    id: browser
+    attributes:
+      label: Browser
+      options:
+        - Chrome
+        - Firefox
+        - Safari
+        - Edge
+        - Other
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Screenshots, console errors, device, OS — whatever helps.

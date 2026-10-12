@@ -29,8 +29,16 @@ OG_TAGS = '''    <meta property="og:title" content="The Local AI Stack — Model
 # Footer (shared by every page)
 # ---------------------------------------------------------------------------
 
-FOOTER = f'''  <footer class="footer">
-    <div>The Local AI Stack — data from the <a href="{FORUM_THREAD}">Local LLM Matrix thread</a> on Level1Techs · <a href="{GITHUB_REPO}">GitHub</a></div>
+def footer(depth: int = 0) -> str:
+    """The shared site footer.
+
+    Depth-aware: the Data API link is relative (``api/``) and needs the
+    page's asset prefix; the forum / GitHub / CONTRIBUTING links are
+    absolute.
+    """
+    p = asset_prefix(depth)
+    return f'''  <footer class="footer">
+    <div>The Local AI Stack — data from the <a href="{FORUM_THREAD}">Local LLM Matrix thread</a> on Level1Techs · <a href="{GITHUB_REPO}">GitHub</a> · <a href="{p}api/">Data API</a> · <a href="{GITHUB_REPO}/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></div>
     <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
   </footer>'''
 
@@ -104,6 +112,7 @@ def nav(depth: int = 0, guides_menu: list[tuple[str, str]] | None = None) -> str
         <li><a href="{p}recommend/">Recommend</a></li>
         <li><a href="{p}community.html">Community</a></li>
         <li><a href="{p}submit/">Submit</a></li>
+        <li><a href="{GITHUB_REPO}/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></li>
 {guides_item}
         <li><a href="{p}about.html">About</a></li>
       </ul>
@@ -157,7 +166,7 @@ def page_shell(title: str, description: str, body: str,
 <main class="container" id="main-content">
 {body}
 </main>
-{FOOTER}
+{footer(depth)}
 {scripts_html}
 </body>
 </html>
