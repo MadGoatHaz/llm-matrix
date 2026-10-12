@@ -1,0 +1,37 @@
+test_backends_normalize_to_schema_values (test_data.TestSubmissionsInvariants.test_backends_normalize_to_schema_values) ... ok
+test_every_row_has_required_keys (test_data.TestSubmissionsInvariants.test_every_row_has_required_keys) ... ok
+test_no_template_rows_leaked (test_data.TestSubmissionsInvariants.test_no_template_rows_leaked) ... ok
+test_row_count_matches_header (test_data.TestSubmissionsInvariants.test_row_count_matches_header) ... ok
+test_source_fields_present (test_data.TestSubmissionsInvariants.test_source_fields_present) ... ok
+test_tiers_within_schema (test_data.TestSubmissionsInvariants.test_tiers_within_schema) ... ok
+test_vendors_within_schema (test_data.TestSubmissionsInvariants.test_vendors_within_schema) ... ok
+test_all_pages_and_data_written (test_generate.TestGeneratorOutput.test_all_pages_and_data_written) ... ok
+test_data_json_round_trips_input (test_generate.TestGeneratorOutput.test_data_json_round_trips_input) ... ok
+test_no_template_brace_leaks (test_generate.TestGeneratorOutput.test_no_template_brace_leaks) ... ok
+test_one_h1_and_main_landmark_per_page (test_generate.TestGeneratorOutput.test_one_h1_and_main_landmark_per_page) ... ok
+test_shared_nav_footer_and_og_tags_on_every_page (test_generate.TestGeneratorOutput.test_shared_nav_footer_and_og_tags_on_every_page) ... ok
+test_tags_balanced_on_every_page (test_generate.TestGeneratorOutput.test_tags_balanced_on_every_page) ... ok
+test_all_enums_non_empty (test_schema.TestSchemaStructure.test_all_enums_non_empty) ... ok
+test_monitored_threads_well_formed (test_schema.TestSchemaStructure.test_monitored_threads_well_formed) ... ok
+test_six_tiers_in_strict_ascending_order (test_schema.TestSchemaStructure.test_six_tiers_in_strict_ascending_order) ... ok
+test_version_present_and_well_formed (test_schema.TestSchemaStructure.test_version_present_and_well_formed) ... ok
+test_all_data_files_parse (test_smoke.TestDataFilesValid.test_all_data_files_parse) ... ok
+test_dataset_schema_version_matches_schema (test_smoke.TestDataFilesValid.test_dataset_schema_version_matches_schema) ... ok
+test_secondary_thread_outputs_have_expected_shape (test_smoke.TestDataFilesValid.test_secondary_thread_outputs_have_expected_shape) ... ok
+test_submissions_top_level_shape (test_smoke.TestDataFilesValid.test_submissions_top_level_shape) ... ok
+test_all_scripts_import (test_smoke.TestPipelineImportable.test_all_scripts_import) ... ok
+test_pipeline_scripts_are_pep8_compilable (test_smoke.TestPipelineImportable.test_pipeline_scripts_are_pep8_compilable) ... ok
+test_scripts_are_runnable_entrypoints (test_smoke.TestPipelineImportable.test_scripts_are_runnable_entrypoints) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.035s
+
+OK
+  wrote index.html (7234 bytes)
+  wrote matrix.html (17166 bytes)
+  wrote community.html (5766 bytes)
+  wrote guides.html (4573 bytes)
+  wrote about.html (3449 bytes)
+  wrote data.json (27112 bytes)
+
+Site generated: 12 submissions, 5 contributors, 2 vendors, 5 backends.

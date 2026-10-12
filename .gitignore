@@ -2,6 +2,7 @@
 __pycache__/
 *.pyc
 .venv/
+*.egg-info/
 
 # Data snapshots (keep structure, ignore raw downloads > 1MB)
 data/raw/thread_*.json

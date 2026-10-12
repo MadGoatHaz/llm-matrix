@@ -1,64 +1,106 @@
 # LLM Matrix Tools
 
-Local tooling for maintaining the [Local LLM Matrix](https://forum.level1techs.com/t/256443) forum thread and its interactive dashboard.
+Local tooling for maintaining the [Local LLM Matrix](https://forum.level1techs.com/t/256443) forum thread and its companion website, [The Local AI Stack](https://madgoathaz.github.io/llm-matrix/).
+
+**Python 3.14, stdlib only** — there is nothing to install to run these tools.
 
 ## Quick Start (Weekly Cycle)
 
 ```bash
-# 1. Pull latest thread data
+# 1. Pull all monitored threads (main + 3 secondary)
 python tools/pull.py
 
-# 2. See what's new since last time
+# 2. See what's new since last pull
 python tools/diff.py
 
 # 3. (Optional) Edit tools/schema.json or tools/tags.json
-#    - Add new backends, quant formats, tiers as the field evolves
+#    - Add new backends, quants, tiers as the field evolves
 #    - Tag highlighted submissions, set confidence levels
 
-# 4. Parse all submissions into canonical data
+# 4. Parse the main thread → canonical submission dataset
 python tools/parse.py
 
-# 5. Generate all outputs
-python tools/generate.py
+# 5. Parse the secondary threads → benchmarks / hardware / category lists
+python tools/parse_thread.py
 
-# 6. Deploy
+# 6. Regenerate the site (all 5 pages + data.json)
+python tools/generate_site.py
+
+# 7. Deploy
 git add . && git commit -m "Weekly rollup $(date +%Y-%m-%d)" && git push
-#    → GitHub Pages auto-deploys dashboard/
-#    → Copy forum/post3_viewport.md into the forum
+#    → GitHub Pages auto-deploys from the repo root
 ```
 
 ## Files
 
 | File | Purpose |
 |------|---------|
-| `tools/pull.py` | Fetch thread JSON from Discourse API |
-| `tools/diff.py` | Show new/changed posts since last pull |
-| `tools/parse.py` | Extract + normalize submissions → `data/submissions.json` |
-| `tools/generate.py` | Produce dashboard HTML + Post #3 viewport |
-| `tools/schema.json` | **You edit this.** Valid tiers, backends, quants, use cases |
-| `tools/tags.json` | **You edit this.** Curation overrides, highlights, confidence |
+| `tools/pull.py` | Fetch monitored thread JSON from the Discourse API (browser User-Agent with curl fallback) |
+| `tools/diff.py` | Show new/edited/removed posts vs `data/last_seen.json`; updates the baseline |
+| `tools/parse.py` | Extract + normalize main-thread submissions → `data/submissions.json` (tier normalization, template filtering, backend normalization, tag overrides) |
+| `tools/parse_thread.py` | Parse secondary monitored threads → `data/benchmarks.json`, `data/hardware.json`, `data/category_threads.json` |
+| `tools/generate_site.py` | Generate the 5-page site (`index.html`, `matrix.html`, `community.html`, `guides.html`, `about.html`) + `data.json` |
+| `tools/generate.py` | **Legacy** — the original single-page dashboard + Post #3 viewport generator. Superseded by `generate_site.py`; kept for reference only, do not use |
+| `tools/schema.json` | **You edit this.** Valid tiers, vendors, backends, quants, use cases, engine modes, monitored threads (v2.1) |
+| `tools/tags.json` | **You edit this.** Manual curation: highlights, confidence overrides, forum feedback |
 
 ## Data Flow
 
 ```
-Discourse API → pull.py → data/raw/latest.json
-                                    ↓
-                              diff.py (shows you what's new)
-                                    ↓
-                              parse.py → data/submissions.json
-                                    ↓
-                              generate.py → dashboard/ + forum/post3_viewport.md
+Discourse API
+    │
+    ▼
+pull.py ──► data/raw/{main,crucible,rigs,category}_latest.json
+    │        (data/raw/latest.json = copy of main, backward compat)
+    │
+    ├──► diff.py          (shows what's new; updates data/last_seen.json)
+    │
+    ├──► parse.py         ──► data/submissions.json      (the main dataset)
+    │
+    └──► parse_thread.py  ──► data/benchmarks.json
+                              data/hardware.json
+                              data/category_threads.json
+
+submissions.json + schema.json
+    │
+    ▼
+generate_site.py ──► index.html, matrix.html, community.html,
+                     guides.html, about.html, data.json
+                     (committed at repo root → GitHub Pages)
 ```
+
+## Monitored Threads
+
+`schema.json → monitored_threads` defines what `pull.py` fetches and which parser owns each thread:
+
+| id | Thread | Parsed by | Output |
+|----|--------|-----------|--------|
+| `main` | The Local LLM Matrix (submissions) | `parse.py` | `data/submissions.json` |
+| `crucible` | Crucible LLM Bench | `parse_thread.py` | `data/benchmarks.json` |
+| `rigs` | Show Off Your AI Rig | `parse_thread.py` | `data/hardware.json` |
+| `category` | ML, LLMs & AI category | `parse_thread.py` | `data/category_threads.json` |
+
+**To add a new thread:** add an entry to `monitored_threads` (`id`, `url`, `name`, `type`, `description`), then add a parser for it in `parse_thread.py` (or `parse.py` if it's a submissions thread). `pull.py` picks up new entries automatically.
 
 ## Extending
 
-When the field changes (new engine, new quant format, new hardware):
-1. Add it to `tools/schema.json` (e.g., new backend name)
+**When the field changes** (new engine, new quant, new hardware):
+
+1. Add it to `tools/schema.json` (e.g., a new backend name)
 2. If it needs special handling, update `parse.py`
 3. Re-run the pipeline
-4. Done. No frontend changes needed for new data values.
+4. Done — no frontend changes needed for new data values.
 
-When you want a new dashboard feature:
-1. Edit `tools/generate.py` (the HTML template is inline)
-2. Or split it into `templates/` Jinja2 files for complex features
-3. Re-run `generate.py`
+**When you want a new site feature:**
+
+1. Edit `tools/generate_site.py` (page templates are inline in the generator)
+2. Re-run `generate_site.py`
+3. The generator is the single writer of HTML — never hand-edit the generated `*.html` files; content changes go through the tools and `data/`.
+
+## Tests
+
+```bash
+python -m unittest discover -s tests -v
+```
+
+The suite in [`tests/`](../tests/) validates `schema.json` structure, `submissions.json` invariants, and the generator output (all pages, tag balance, no template leaks) using stdlib `unittest` — no test dependencies.

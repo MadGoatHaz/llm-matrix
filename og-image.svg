@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-label="The Local AI Stack — Models, Hardware, Backends and Community Data">
+  <defs>
+    <!-- Background: subtle vertical gradient from the site surface to bg token -->
+    <linearGradient id="bg-grad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#10182a"/>
+      <stop offset="1" stop-color="#0a0e17"/>
+    </linearGradient>
+    <!-- Accent bar: accent blue to cyan -->
+    <linearGradient id="accent-grad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3b82f6"/>
+      <stop offset="1" stop-color="#06b6d4"/>
+    </linearGradient>
+    <!-- Faint data-grid pattern -->
+    <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+      <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#3b82f6" stroke-opacity="0.05" stroke-width="1"/>
+    </pattern>
+    <!-- Soft glow behind the stack mark -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="18" result="blur"/>
+    </filter>
+  </defs>
+
+  <!-- ============ BACKGROUND ============ -->
+  <rect width="1200" height="630" fill="url(#bg-grad)"/>
+  <rect width="1200" height="630" fill="url(#grid)"/>
+
+  <!-- Watermark: faint bar chart (the "matrix" of data) in the right field -->
+  <g fill="#3b82f6">
+    <rect x="852"  y="330" width="34" height="150" rx="6" opacity="0.10"/>
+    <rect x="904"  y="270" width="34" height="210" rx="6" opacity="0.14"/>
+    <rect x="956"  y="210" width="34" height="270" rx="6" opacity="0.18"/>
+    <rect x="1008" y="150" width="34" height="330" rx="6" opacity="0.24"/>
+    <rect x="1060" y="90"  width="34" height="390" rx="6" opacity="0.30"/>
+  </g>
+
+  <!-- ============ STACK LOGO MARK (left) ============ -->
+  <!-- Glow halo -->
+  <rect x="78" y="213" width="124" height="154" rx="18" fill="#3b82f6" opacity="0.18" filter="url(#glow)"/>
+  <!-- Four layers: blue / cyan / purple / green (site accent palette) -->
+  <g>
+    <rect x="96" y="231" width="88" height="22" rx="6" fill="#3b82f6"/>
+    <rect x="96" y="263" width="88" height="22" rx="6" fill="#06b6d4"/>
+    <rect x="96" y="295" width="88" height="22" rx="6" fill="#8b5cf6"/>
+    <rect x="96" y="327" width="88" height="22" rx="6" fill="#10b981"/>
+  </g>
+
+  <!-- ============ WORDMARK + TAGLINE ============ -->
+  <text x="216" y="228" font-family="Noto Sans, sans-serif" font-size="20" font-weight="700" letter-spacing="6" fill="#64748b">L1TECHS COMMUNITY PROJECT</text>
+
+  <text x="216" y="302" font-family="Noto Sans, sans-serif" font-size="72" font-weight="700" fill="#e2e8f0">The Local <tspan fill="#3b82f6">AI Stack</tspan></text>
+
+  <text x="216" y="358" font-family="Noto Sans, sans-serif" font-size="28" fill="#94a3b8">Models, Hardware, Backends &amp; Community Data</text>
+
+  <!-- ============ BOTTOM: ACCENT BAR + URL ============ -->
+  <rect x="216" y="428" width="72" height="6" rx="3" fill="url(#accent-grad)"/>
+
+  <text x="216" y="478" font-family="Noto Sans Mono, monospace" font-size="24" fill="#64748b">madgoathaz.github.io/llm-matrix</text>
+</svg>

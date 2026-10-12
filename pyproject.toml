@@ -1,0 +1,77 @@
+# ============================================================================
+# The Local AI Stack — project manifest
+#
+# Declares the project metadata, the Python requirement, and the single
+# content-layer dependency. See work/plans/PLAN.md §5.1 (dependency policy):
+#
+#   - The data pipeline (tools/pull.py, diff.py, parse.py, parse_thread.py)
+#     is stdlib-only on purpose: it must stay dependency-free so the weekly
+#     cycle runs anywhere Python 3.14 runs.
+#   - The content/generator layer uses exactly one third-party package:
+#     `markdown` (pure Python, no build step) for the guide pages.
+#
+# Running the data pipeline requires nothing:  python tools/pull.py  etc.
+# Installing the content dependency:           pip install -e .
+# ============================================================================
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "local-ai-stack"
+version = "0.1.0"
+description = "The Local AI Stack — a community-driven reference for running LLMs on personal hardware: a stdlib-only data pipeline plus a 5-page static site on GitHub Pages."
+readme = "README.md"
+requires-python = ">=3.14"
+# PEP 639 SPDX license expression (see LICENSE).
+license = "MIT"
+authors = [
+    { name = "MadGoat" },
+]
+keywords = [
+    "llm",
+    "local-ai",
+    "inference",
+    "gguf",
+    "vram",
+    "hardware",
+]
+classifiers = [
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Internet :: WWW/HTTP :: Site Management",
+]
+# The single content-layer dependency (PLAN.md §5.1). The data pipeline
+# does not import it and never will.
+dependencies = [
+    "markdown>=3.6,<4",
+]
+
+[project.optional-dependencies]
+# Reserved. The test suite uses stdlib unittest — no test dependency.
+dev = []
+
+[project.urls]
+Homepage = "https://madgoathaz.github.io/llm-matrix/"
+Repository = "https://github.com/MadGoatHaz/llm-matrix"
+"Forum Thread" = "https://forum.level1techs.com/t/256443"
+
+# ---------------------------------------------------------------------------
+# Tool configuration
+# ---------------------------------------------------------------------------
+
+[tool.setuptools]
+# The tools are run in place from the repo (python tools/xxx.py); nothing is
+# packaged as an importable library. The manifest exists for metadata,
+# dependency declaration, and reproducible installs (pip install -e .).
+# `packages = []` disables setuptools auto-discovery, which would otherwise
+# fail on this repo's flat layout (css/, js/, data/, work/ look like
+# packages to it) even though none of them are Python code.
+packages = []
+
+[tool.unittest]
+# The test suite is stdlib unittest (no pytest, no test deps).
+# Run from the repo root:
+#   python -m unittest discover -s tests -v
+# CI runs the same command (see work/plans/PLAN.md P3-1).
