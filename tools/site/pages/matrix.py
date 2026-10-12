@@ -106,8 +106,15 @@ def render(subs: list[dict], schema: dict, stats: dict,
           </td>
         </tr>''')
 
-    header_cells = "".join(f"<th>{c}</th>" for c in MATRIX_COLUMNS)
-    header_cells += f'<th class="no-sort" data-nosort>{ACTIONS_LABEL}</th>'
+    # P2-6: sortable columns carry a real <button> (keyboard focusable,
+    # Enter/Space activates) inside the <th>; the <th> keeps the ARIA state
+    # (aria-sort) and scope="col". The Actions column is non-interactive.
+    header_cells = "".join(
+        f'<th class="th-sort" scope="col" aria-sort="none">'
+        f'<button type="button" class="th-btn">{c}</button></th>'
+        for c in MATRIX_COLUMNS
+    )
+    header_cells += f'<th scope="col" data-nosort>{ACTIONS_LABEL}</th>'
 
     updated = schema.get("last_updated", "")
     body = f'''
@@ -140,22 +147,23 @@ def render(subs: list[dict], schema: dict, stats: dict,
       {mode_opts}
     </select>
     <button id="filter-reset" class="btn" type="button">Reset</button>
-    <button id="filter-share" class="btn" type="button" aria-label="Copy a shareable link to the current filters">🔗 Share</button>
+    <button id="filter-share" class="btn" type="button" aria-label="Copy a shareable link to the current filters"><span class="share-label">{utils.icon("🔗")} Share</span><span class="sr-only" role="status" aria-live="polite"></span></button>
   </div>
 
   <div class="filter-empty" id="filter-empty" role="status" hidden>
-    <p>🔍 No setups match the current filters.</p>
+    <p>{utils.icon("🔍")} No setups match the current filters.</p>
     <button class="btn" id="filter-empty-clear" type="button">Clear all filters</button>
   </div>
 
   <div class="compare-bar" id="compare-bar" role="region" aria-label="Compare selected setups">
-    <span class="compare-bar-label">🔍 <span class="compare-count">0</span> selected — tick 2–4 rows to compare</span>
+    <span class="compare-bar-label">{utils.icon("🔍")} <span class="compare-count">0</span> selected — tick 2–4 rows to compare</span>
     <button class="btn btn-primary compare-go" type="button" disabled>Compare →</button>
     <button class="btn compare-clear" type="button" disabled>Clear</button>
   </div>
 
   <div class="table-wrapper">
     <table id="data-table">
+      <caption class="sr-only">Community submissions grouped by VRAM tier. Each row is one setup; column headers sort the table, and rows open a detail panel.</caption>
       <thead>
         <tr>{header_cells}</tr>
       </thead>
@@ -176,7 +184,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
   </aside>
 
   <div class="card">
-    <h3>ℹ️ Reading the matrix</h3>
+    <h2>{utils.icon("ℹ️")} Reading the matrix</h2>
     <p>Click any column header to sort (within each tier). Cells show the full value on hover.
        <strong>Speed</strong> is community-reported decode throughput; <strong>Context</strong> is the
        stable context tested; <strong>KV</strong> is the KV-cache precision; <strong>Mode</strong> is how the

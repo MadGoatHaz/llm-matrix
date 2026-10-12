@@ -15,8 +15,8 @@ extra_scripts: js/commands.js
 <div class="callout"><p><b>The 30-second version:</b> A *backend* is the program that loads your model file and turns tokens in, tokens out. It decides what formats you can run, what hardware you can use, how fast things go, and how much control you get. There is no single "best" backend — there is a best one *for your situation*. The short version: <b>Ollama or LM Studio</b> if you want it working in five minutes, <b>llama.cpp</b> if you want control on a single GPU, <b>vLLM or Radiance</b> if you are serving production workloads, and <b>Strata</b> if you are running a big MoE model on a consumer card with lots of RAM. The decision matrix at the end of this guide makes it concrete.</p></div>
 
 <div class="cmd-picker" data-cmd-picker>
-  <h3>🚀 Try the launch-command generator</h3>
-  <p>Pick a backend and get a representative command you can copy. It's the same generator that powers the 🚀 buttons on the <a href="../../matrix.html">Matrix</a>, <a href="../../recommend/">Recommend</a>, and <a href="../../compare/">Compare</a> pages — over there it's tailored to a *specific* community submission (its exact model, quant, context, and VRAM); here it shows a generic example for the backend you choose.</p>
+  <h2><span class="icon" aria-hidden="true">🚀</span> Try the launch-command generator</h2>
+  <p>Pick a backend and get a representative command you can copy. It's the same generator that powers the <span class="icon" aria-hidden="true">🚀</span> buttons on the <a href="../../matrix.html">Matrix</a>, <a href="../../recommend/">Recommend</a>, and <a href="../../compare/">Compare</a> pages — over there it's tailored to a *specific* community submission (its exact model, quant, context, and VRAM); here it shows a generic example for the backend you choose.</p>
   <div class="cmd-picker-row">
     <label for="cmd-picker-select">Backend</label>
     <select id="cmd-picker-select" class="cmd-picker-select">

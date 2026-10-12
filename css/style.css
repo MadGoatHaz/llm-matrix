@@ -5,16 +5,24 @@
     --surface-2: #1a2332;
     --border: #1e2d3f;
     --border-light: #2a3a4e;
+    /* P2-6 a11y audit: every text token verified ≥ 4.5:1 against the darkest
+       surface it sits on (WCAG 2.1 AA). --text-muted was #64748b (3.32:1 on
+       --surface-2) → lightened; --accent was #3b82f6 (4.29:1 on --surface-2)
+       → lightened; --purple was #8b5cf6 (3.47:1 on its badge tint) →
+       lightened. --accent-strong is the darker fill used when white text
+       must sit on the accent (white on #3b82f6 was 3.68:1; on #2563eb it is
+       5.17:1). See work/scratch/a11y_audit.md for the full matrix. */
     --text: #e2e8f0;
     --text-secondary: #94a3b8;
-    --text-muted: #64748b;
-    --accent: #3b82f6;
+    --text-muted: #8494ab;
+    --accent: #5b9dff;
     --accent-hover: #2563eb;
-    --accent-glow: rgba(59, 130, 246, 0.15);
+    --accent-strong: #2563eb;
+    --accent-glow: rgba(91, 157, 255, 0.15);
     --success: #10b981;
     --warning: #f59e0b;
     --danger: #ef4444;
-    --purple: #8b5cf6;
+    --purple: #a78bfa;
     --cyan: #06b6d4;
 
     --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
@@ -46,6 +54,52 @@ a { color: var(--accent); text-decoration: none; }
 a:hover { color: var(--accent-hover); }
 code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
 
+/* Visible keyboard focus (WCAG 2.4.7): a single high-contrast ring for every
+   focusable element. Components that define their own :focus-visible ring
+   (buttons, inputs) have higher specificity and keep theirs. */
+:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+}
+
+/* Screen-reader-only text (status announcements, labels). */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+/* Skip link (WCAG 2.4.1 Bypass Blocks): hidden until keyboard-focused. */
+.skip-link {
+    position: absolute;
+    top: -100%;
+    left: 1rem;
+    z-index: 300;
+    display: inline-block;
+    background: var(--accent-strong);
+    color: #fff;
+    padding: 0.75rem 1.25rem;
+    border-radius: 0 0 var(--radius) var(--radius);
+    font-weight: 600;
+    text-decoration: none;
+}
+.skip-link:focus {
+    top: 0;
+    color: #fff;
+}
+
+/* Decorative icon/emoji spans: hidden from the accessibility tree so
+   screen readers read the adjacent text label only. */
+.icon {
+    /* No visual styling — the glyph inherits the surrounding font. */
+}
+
 /* === NAVIGATION === */
 .nav {
     position: sticky;
@@ -74,6 +128,8 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    padding: 0.5rem 0.75rem;   /* ≥ 44px touch target */
+    border-radius: var(--radius);
 }
 .nav-logo span { color: var(--accent); }
 .nav-links {
@@ -83,7 +139,7 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
 }
 .nav-links a {
     color: var(--text-secondary);
-    padding: 0.5rem 1rem;
+    padding: 0.7rem 1rem;     /* ≥ 44px touch target */
     border-radius: var(--radius);
     font-size: 0.9rem;
     font-weight: 500;
@@ -96,7 +152,7 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
 .nav-dropdown { position: relative; }
 .nav-dropdown-toggle {
     color: var(--text-secondary);
-    padding: 0.5rem 1rem;
+    padding: 0.7rem 1rem;     /* ≥ 44px touch target */
     border-radius: var(--radius);
     font-size: 0.9rem;
     font-weight: 500;
@@ -126,10 +182,10 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
 .nav-dropdown.open .nav-dropdown-menu { display: block; }
 .nav-dropdown-menu li a {
     display: block;
-    padding: 0.5rem 0.75rem;
+    padding: 0.7rem 0.75rem;  /* ≥ 44px touch target */
     border-radius: var(--radius);
     color: var(--text-secondary);
-    font-size: 0.85rem;
+    font-size: 0.9rem;
 }
 .nav-dropdown-menu li a:hover { color: var(--text); background: var(--surface-2); }
 .nav-dropdown-menu li a.active { color: var(--accent); background: var(--accent-glow); }
@@ -142,6 +198,10 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
     color: var(--text);
     font-size: 1.5rem;
     cursor: pointer;
+    min-width: 44px;          /* ≥ 44px touch target */
+    min-height: 44px;
+    align-items: center;
+    justify-content: center;
 }
 @media (max-width: 768px) {
     .nav-toggle { display: block; }
@@ -264,16 +324,41 @@ th {
     white-space: nowrap;
 }
 th:hover { color: var(--accent); }
-th.sort-asc::after { content: ' ↑'; color: var(--accent); }
-th.sort-desc::after { content: ' ↓'; color: var(--accent); }
 td {
-    padding: 0.65rem 1rem;
+    padding: 0.7rem 1rem;     /* ≥ 44px row height for the clickable data rows */
     border-bottom: 1px solid var(--border);
     max-width: 250px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
+
+/* Sortable table headers (P2-6): the click target is a real <button> inside
+   the <th>, so keyboard users can focus it and activate it with Enter/Space.
+   The <th> carries the ARIA state (aria-sort); the button carries the
+   visual sort arrow. Non-interactive headers (guide tables, compare, the
+   "Actions" column) keep the plain <th> styling above. */
+th.th-sort { padding: 0; }
+.th-btn {
+    display: block;
+    width: 100%;
+    min-height: 44px;         /* ≥ 44px touch target */
+    padding: 0.75rem 1rem;
+    background: none;
+    border: none;
+    font: inherit;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    text-align: left;
+    cursor: pointer;
+    white-space: nowrap;
+}
+.th-btn:hover { color: var(--accent); }
+.th-btn.sort-asc::after { content: ' ↑'; color: var(--accent); }
+.th-btn.sort-desc::after { content: ' ↓'; color: var(--accent); }
 td[title]:hover {
     white-space: normal;
     overflow: visible;
@@ -307,7 +392,7 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 0.6rem 1rem;
+    padding: 0.7rem 1rem;    /* ≥ 44px touch target */
     border-radius: var(--radius);
     font-size: 0.9rem;
 }
@@ -321,7 +406,7 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     background: var(--surface);
     border: 1px solid var(--border);
     color: var(--text-secondary);
-    padding: 0.6rem 1rem;
+    padding: 0.7rem 1rem;    /* ≥ 44px touch target */
     border-radius: var(--radius);
     cursor: pointer;
     font-size: 0.85rem;
@@ -329,9 +414,11 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     transition: all 0.2s;
 }
 .btn:hover { color: var(--text); border-color: var(--accent); }
+/* Primary buttons use the darker --accent-strong fill: white text on
+   #3b82f6 measured 3.68:1 (fail); on #2563eb it is 5.17:1 (pass). */
 .btn-primary {
-    background: var(--accent);
-    border-color: var(--accent);
+    background: var(--accent-strong);
+    border-color: var(--accent-strong);
     color: white;
 }
 .btn-primary:hover { background: var(--accent-hover); }
@@ -345,8 +432,8 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     font-weight: 600;
 }
 .badge-green { background: rgba(16, 185, 129, 0.15); color: var(--success); }
-.badge-blue { background: rgba(59, 130, 246, 0.15); color: var(--accent); }
-.badge-purple { background: rgba(139, 92, 246, 0.15); color: var(--purple); }
+.badge-blue { background: var(--accent-glow); color: var(--accent); }
+.badge-purple { background: rgba(167, 139, 250, 0.15); color: var(--purple); }
 .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--warning); }
 .badge-cyan { background: rgba(6, 182, 212, 0.15); color: var(--cyan); }
 
@@ -389,7 +476,7 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     display: inline-block;
 }
 .btn-large-primary {
-    background: var(--accent);
+    background: var(--accent-strong);
     color: white;
     border: none;
 }
@@ -410,6 +497,15 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     align-items: center;
     gap: 0.5rem;
 }
+/* Sub-headings inside a section (replaces former inline styles, P2-6). */
+.subheading {
+    margin: 1.5rem 0 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+.subheading--tight { margin-top: 1rem; }
 
 /* === FOOTER === */
 .footer {
@@ -420,7 +516,12 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     color: var(--text-muted);
     font-size: 0.85rem;
 }
-.footer a { color: var(--text-secondary); }
+/* Footer links meet the WCAG 2.1 AA minimum 24px target size (2.5.8);
+   the stricter 44px standard is applied to all primary/functional controls. */
+.footer a {
+    color: var(--text-secondary);
+    padding: 0.35rem 0.5rem;
+}
 .footer .forum-credit {
     margin-top: 0.5rem;
     font-size: 0.8rem;
@@ -546,7 +647,12 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     margin: 1.5rem 0;
 }
 .guide .toc ul { list-style: none; margin-left: 1rem; }
-.guide .toc a { color: var(--text-secondary); font-size: 0.9rem; }
+.guide .toc a {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    display: block;
+    padding: 0.65rem 0.75rem;  /* ≥ 44px touch target */
+}
 .guide .toc a:hover { color: var(--accent); }
 
 /* CSS-only diagrams (no images/SVG) — composed from building blocks */
@@ -639,8 +745,12 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     border-top: 1px solid var(--border);
 }
 .guide-related h2 { font-size: 1.1rem; margin-bottom: 0.75rem; }
-.guide-related ul { list-style: none; display: flex; gap: 1rem; flex-wrap: wrap; }
-.guide-related a { color: var(--accent); }
+.guide-related ul { list-style: none; display: flex; gap: 0.5rem; flex-wrap: wrap; }
+.guide-related a {
+    color: var(--accent);
+    display: inline-block;
+    padding: 0.65rem 0.75rem;  /* ≥ 44px touch target */
+}
 
 /* === COMMUNITY / CONTRIBUTOR CARDS === */
 .contributor-card {
@@ -851,7 +961,12 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     flex-wrap: wrap;
     margin-bottom: 0.5rem;
 }
-.rec-actions a { font-weight: 600; font-size: 0.9rem; }
+.rec-actions a {
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-block;
+    padding: 0.7rem 0.75rem;  /* ≥ 44px touch target */
+}
 .rec-contributor { color: var(--text-muted); font-size: 0.85rem; }
 .rec-count {
     text-align: center;
@@ -875,8 +990,8 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     cursor: pointer;
     font-size: 0.95rem;
     line-height: 1;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;      /* ≥ 44px touch target */
+    min-height: 44px;
     transition: all 0.2s;
 }
 .launch-btn:hover { border-color: var(--accent); background: var(--accent-glow); }
@@ -891,7 +1006,16 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     max-width: none;
     overflow: visible;
 }
-.compare-check-wrap { display: inline-flex; align-items: center; cursor: pointer; }
+/* The checkbox itself is 18px; the negative-margin padding around the label
+   widens the clickable hit area to ≥ 44px without moving the visual layout
+   (WCAG 2.5.x target size). */
+.compare-check-wrap {
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0.85rem;
+    margin: -0.85rem;
+}
 .compare-check-wrap input {
     width: 18px;
     height: 18px;
@@ -900,7 +1024,11 @@ tr.highlighted { border-left: 3px solid var(--warning); }
 }
 
 /* The launch button on a Recommend result card. */
-.launch-card-btn { font-size: 0.85rem; padding: 0.45rem 0.7rem; }
+.launch-card-btn {
+    font-size: 0.85rem;
+    padding: 0.7rem 1rem;   /* ≥ 44px touch target */
+    min-height: 44px;
+}
 
 /* The shared command dialog (one instance, reused by every trigger). */
 .cmd-overlay {
@@ -938,8 +1066,8 @@ body.cmd-open { overflow: hidden; }
     border: 1px solid var(--border);
     color: var(--text-secondary);
     border-radius: var(--radius);
-    width: 40px;
-    height: 40px;
+    width: 44px;       /* ≥ 44px touch target */
+    height: 44px;
     cursor: pointer;
     font-size: 1rem;
     flex: 0 0 auto;
@@ -1008,7 +1136,7 @@ body.cmd-open { overflow: hidden; }
     padding: 1.25rem 1.5rem;
     margin: 1.25rem 0;
 }
-.cmd-picker h3 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text); }
+.cmd-picker h2 { font-size: 1.1rem; margin-bottom: 0.5rem; color: var(--text); }
 .cmd-picker > p { color: var(--text-secondary); font-size: 0.9rem; margin-bottom: 0.75rem; }
 .cmd-picker-row { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
 .cmd-picker-row label { font-weight: 600; font-size: 0.9rem; }
@@ -1016,7 +1144,7 @@ body.cmd-open { overflow: hidden; }
     background: var(--surface-2);
     border: 1px solid var(--border);
     color: var(--text);
-    padding: 0.6rem 1rem;
+    padding: 0.7rem 1rem;   /* ≥ 44px touch target */
     border-radius: var(--radius);
     font-size: 0.9rem;
     min-width: 200px;
@@ -1112,7 +1240,13 @@ body.cmd-open { overflow: hidden; }
 .compare-col-head { display: flex; flex-direction: column; gap: 0.25rem; }
 .compare-model { font-size: 1rem; font-weight: 700; color: var(--text); }
 .compare-col-meta { font-size: 0.8rem; color: var(--text-muted); }
-.compare-matrix-link { font-size: 0.8rem; font-weight: 600; margin-top: 0.25rem; }
+.compare-matrix-link {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-top: 0.25rem;
+    display: inline-block;
+    padding: 0.65rem 0.5rem;  /* ≥ 44px touch target */
+}
 .compare-cell { vertical-align: top; color: var(--text-secondary); font-size: 0.9rem; }
 .compare-diff {
     background: var(--accent-glow);
@@ -1150,8 +1284,8 @@ tr.data-row:focus-visible { outline: 2px solid var(--accent); outline-offset: -2
     cursor: pointer;
     font-size: 0.95rem;
     line-height: 1;
-    min-width: 40px;
-    min-height: 40px;
+    min-width: 44px;     /* ≥ 44px touch target */
+    min-height: 44px;
     transition: all 0.2s;
 }
 .detail-btn:hover { border-color: var(--cyan); background: rgba(6, 182, 212, 0.1); }
@@ -1203,8 +1337,8 @@ body.detail-open { overflow: hidden; }
     border: 1px solid var(--border);
     color: var(--text-secondary);
     border-radius: var(--radius);
-    width: 40px;
-    height: 40px;
+    width: 44px;       /* ≥ 44px touch target */
+    height: 44px;
     cursor: pointer;
     font-size: 1rem;
     flex: 0 0 auto;
@@ -1254,9 +1388,17 @@ body.detail-open { overflow: hidden; }
 .detail-actions { display: flex; flex-direction: column; gap: 0.6rem; }
 .detail-actions .btn { text-align: left; }
 
-/* Respect reduced-motion: the panel appears/disappears without sliding. */
+/* Respect reduced-motion (WCAG 2.3.3): kill every transition/animation
+   site-wide — the detail panel appears without sliding, cards stop
+   lifting on hover, smooth scrolling becomes instant. */
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
     .detail-panel, .detail-scrim { transition: none; }
 }
 

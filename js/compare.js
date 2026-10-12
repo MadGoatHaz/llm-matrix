@@ -162,10 +162,10 @@
     if (!wrap) return;
     var sel = ids.map(function (id) { return byId[id]; });
 
-    var html = '<table class="compare-table"><thead><tr>' +
-      '<th class="compare-attr">Attribute</th>';
+    var html = '<table class="compare-table"><caption class="sr-only">Side-by-side comparison of the selected community setups; rows are attributes, columns are setups</caption><thead><tr>' +
+      '<th class="compare-attr" scope="col">Attribute</th>';
     sel.forEach(function (s) {
-      html += '<th class="compare-col">' +
+      html += '<th class="compare-col" scope="col">' +
         '<div class="compare-col-head">' +
           '<span class="compare-model">' + esc(shortModel(s)) + '</span>' +
           '<span class="compare-col-meta">' + esc(normBackend(s.backend)) + ' · ' + esc(tierLabel[s.tier] || s.tier) + '</span>' +

@@ -34,11 +34,12 @@ def render(subs: list[dict], schema: dict, stats: dict,
     # --- Community Highlights (all data-driven, from submissions.json) ---
 
     # Trending Models: top 3 model families by submission count.
+    # (Decorative emoji wrapped in aria-hidden spans — P2-6 a11y audit.)
     trend_cards = []
     for fam, count, note in utils.trending_models(subs, n=3):
         trend_cards.append(f'''
     <div class="card">
-      <h3>🔥 {utils.html_escape(fam)}</h3>
+      <h3>{utils.icon("🔥")} {utils.html_escape(fam)}</h3>
       <p><span class="badge badge-blue">{count} submission{'s' if count != 1 else ''}</span></p>
       <p class="mono">{utils.html_escape(note)}</p>
     </div>''')
@@ -61,7 +62,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
     for username, model, speed, hardware in utils.fastest_setups(subs, n=3):
         fast_cards.append(f'''
     <div class="card">
-      <h3>⚡ {speed:g} t/s</h3>
+      <h3>{utils.icon("⚡")} {speed:g} t/s</h3>
       <p>{utils.html_escape(utils.short_model(model))}</p>
       <p class="mono">{utils.html_escape(utils.clean_value(hardware))}</p>
       <p>by <strong>{utils.html_escape(username)}</strong> · <a href="matrix.html">See in the matrix →</a></p>
@@ -72,61 +73,61 @@ def render(subs: list[dict], schema: dict, stats: dict,
 
     highlights_html = f'''
   <section>
-    <h2 class="section-title">🏆 Community Highlights</h2>
+    <h2 class="section-title">{utils.icon("🏆")} Community Highlights</h2>
 
-    <h3 style="margin: 1rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase;">Trending Models</h3>
+    <h3 class="subheading subheading--tight">Trending Models</h3>
 {trend_html}
 
-    <h3 style="margin: 1.5rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase;">Popular Backends</h3>
+    <h3 class="subheading">Popular Backends</h3>
 {backend_html}
 
-    <h3 style="margin: 1.5rem 0 0.5rem; color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase;">Fastest Setups</h3>
+    <h3 class="subheading">Fastest Setups</h3>
 {fast_html}
   </section>'''
 
     # --- How It Works (kept as-is) ---
     how_html = '''
-  <h2 class="section-title">🔄 How It Works</h2>
+  <h2 class="section-title">''' + utils.icon("🔄") + ''' How It Works</h2>
   <div class="card-grid">
     <div class="card">
-      <h3>1. 📝 Submit</h3>
+      <h3>1. ''' + utils.icon("📝") + ''' Submit</h3>
       <p>Head to the <a href="''' + utils.FORUM_THREAD + '''">forum thread</a> and use the Quick Submit template in Post #2. 30 seconds: tier, hardware, model, speed.</p>
     </div>
     <div class="card">
-      <h3>2. ⚙️ We Parse</h3>
+      <h3>2. ''' + utils.icon("⚙️") + ''' We Parse</h3>
       <p>The pipeline pulls the thread, parses every submission, and organizes it by VRAM tier, hardware vendor, backend, and model.</p>
     </div>
     <div class="card">
-      <h3>3. 📊 You Browse</h3>
+      <h3>3. ''' + utils.icon("📊") + ''' You Browse</h3>
       <p>Filter the matrix by your hardware. See exactly what the community runs, at what speed, in what context.</p>
     </div>
   </div>'''
 
     # --- Related Resources (curated community links) ---
-    related_html = '''
+    related_html = f'''
   <section>
-    <h2 class="section-title">🔗 Related Resources</h2>
+    <h2 class="section-title">{utils.icon("🔗")} Related Resources</h2>
     <div class="card-grid">
       <a class="guide-card" href="https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531">
-        <div class="guide-icon">⚗️</div>
+        <div class="guide-icon" aria-hidden="true">⚗️</div>
         <h3>Crucible: LLM Bench</h3>
         <p>Benchmark your LLM server. Is it fast enough for everyone? Community-driven performance testing.</p>
         <div class="guide-meta">L1Techs Thread</div>
       </a>
       <a class="guide-card" href="https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709">
-        <div class="guide-icon">🖥️</div>
+        <div class="guide-icon" aria-hidden="true">🖥️</div>
         <h3>Show Off Your AI Rig</h3>
         <p>The community hardware showcase. What are people building? 40+ rigs and counting.</p>
         <div class="guide-meta">L1Techs Thread</div>
       </a>
       <a class="guide-card" href="https://forum.level1techs.com/c/high-performance-computing/deep-machine-learning-ai/155">
-        <div class="guide-icon">🤖</div>
+        <div class="guide-icon" aria-hidden="true">🤖</div>
         <h3>ML, LLMs &amp; AI Category</h3>
         <p>The full L1Techs AI category. Benchmarks, guides, discussions, and results.</p>
         <div class="guide-meta">L1Techs Forum</div>
       </a>
       <a class="guide-card" href="https://forum.level1techs.com/t/256443">
-        <div class="guide-icon">💬</div>
+        <div class="guide-icon" aria-hidden="true">💬</div>
         <h3>This Project's Thread</h3>
         <p>The Local AI Stack — where the community submits data and discusses models.</p>
         <div class="guide-meta">L1Techs Thread</div>
@@ -135,11 +136,11 @@ def render(subs: list[dict], schema: dict, stats: dict,
   </section>'''
 
     # --- Recommendation teaser (the P2-1 core feature, front and center) ---
-    teaser_html = '''
+    teaser_html = f'''
   <section class="recommend-teaser" aria-labelledby="rec-teaser-title">
     <div class="card recommend-teaser-card">
       <div class="recommend-teaser-copy">
-        <h2 id="rec-teaser-title">🎯 Not sure what to run?</h2>
+        <h2 id="rec-teaser-title">{utils.icon("🎯")} Not sure what to run?</h2>
         <p>Tell us your VRAM and what you need — we'll rank the community's real, working setups that fit your hardware, with honest tradeoffs. No guesswork, no server.</p>
       </div>
       <a href="recommend/" class="btn-large btn-large-primary recommend-teaser-cta">Find My Model →</a>
@@ -151,7 +152,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
     <h1>The <span>Local AI Stack</span></h1>
     <p class="tagline">Your community-driven guide to running AI models on your own hardware</p>
     <div class="actions">
-      <a href="recommend/" class="btn-large btn-large-primary">🎯 Find My Model</a>
+      <a href="recommend/" class="btn-large btn-large-primary">{utils.icon("🎯")} Find My Model</a>
       <a href="matrix.html" class="btn-large btn-large-secondary">Browse the Matrix →</a>
       <a href="guides/" class="btn-large btn-large-secondary">Explore Guides →</a>
     </div>

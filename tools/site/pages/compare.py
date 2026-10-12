@@ -51,10 +51,10 @@ def _picker() -> str:
 
 def _table_area() -> str:
     """The takeaway line + (empty) diff-table wrapper + edit control."""
-    return '''
+    return f'''
   <p class="compare-takeaway" id="compare-takeaway" role="status" aria-live="polite">Select at least 2 setups to compare them side by side.</p>
   <div class="table-wrapper compare-table-wrap is-hidden" id="compare-table-wrap"></div>
-  <div class="compare-edit-row"><button class="btn" id="compare-edit" type="button" hidden>✎ Edit selection</button></div>'''
+  <div class="compare-edit-row"><button class="btn" id="compare-edit" type="button" hidden>{utils.icon("✎")} Edit selection</button></div>'''
 
 
 def render(subs: list[dict], schema: dict,
@@ -69,13 +69,13 @@ def render(subs: list[dict], schema: dict,
     Returns:
         The full ``compare/index.html`` document (depth 1).
     """
-    intro = '''
+    intro = f'''
   <div class="page-header">
     <h1>Compare Setups</h1>
     <p class="subtitle">Line up 2–4 community submissions side by side — and see exactly where they differ.</p>
   </div>
 
-  <div class="callout callout--info"><p><b>How it works:</b> each column is a real community submission. Values that <em>agree</em> stay plain; values that <em>differ</em> are tinted so the contrast jumps out. Every column has a one-click <strong>launch command</strong> (P2-3) so you can try the setup on your own hardware. Your selection is a shareable URL — copy the address bar to send it to a friend.</p></div>'''
+  <div class="callout callout--info"><p><b>How it works:</b> each column is a real community submission. Values that <em>agree</em> stay plain; values that <em>differ</em> are tinted so the contrast jumps out. Every column has a one-click <strong>launch command</strong> so you can try the setup on your own hardware. Your selection is a shareable URL — copy the address bar to send it to a friend.</p></div>'''
 
     body = f'''
 {intro}

@@ -56,12 +56,25 @@ def split_front_matter(text: str) -> tuple[dict[str, str], str]:
     return _parse_front_matter_block(m.group(1)), text[m.end():]
 
 
+#: A decorative guide-icon div (raw HTML in the content markdown) — hidden
+#: from the accessibility tree; the card's heading is the accessible name.
+_GUIDE_ICON_RE = re.compile(r'<div class="guide-icon">([^<]*)</div>')
+
+
 def render_markdown(body: str) -> str:
     """Convert a markdown body to HTML.
 
     Raw HTML (e.g. ``<div class="diagram">...</div>``) passes through
     unchanged, so CSS-only diagrams authored in the markdown survive the
     conversion.
+
+    Two a11y post-passes (P2-6) run on the rendered fragment:
+
+    * ``<th>`` → ``<th scope="col">`` so screen readers associate each
+      column with its header (WCAG 1.3.1 / the Lighthouse table-scope
+      audit); guide tables use no row headers, so the blanket replace is
+      safe;
+    * decorative ``<div class="guide-icon">`` cards get ``aria-hidden``.
 
     Args:
         body: The markdown source (front-matter already removed).
@@ -74,8 +87,12 @@ def render_markdown(body: str) -> str:
     """
     import markdown  # deferred: keeps the five core pages stdlib-only
 
-    return markdown.markdown(
+    html = markdown.markdown(
         body,
         extensions=list(MARKDOWN_EXTENSIONS),
         output_format="html",
     )
+    html = re.sub(r"<th>", '<th scope="col">', html)
+    html = _GUIDE_ICON_RE.sub(
+        r'<div class="guide-icon" aria-hidden="true">\1</div>', html)
+    return html

@@ -35,7 +35,19 @@ function initNav() {
     const toggle = document.querySelector('.nav-toggle');
     const links = document.querySelector('.nav-links');
     if (toggle && links) {
-        toggle.addEventListener('click', () => links.classList.toggle('open'));
+        toggle.addEventListener('click', () => {
+            const open = links.classList.toggle('open');
+            // ARIA state so screen readers know the menu is expanded.
+            toggle.setAttribute('aria-expanded', String(open));
+        });
+        // Escape closes the mobile menu and returns focus to the toggle.
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && links.classList.contains('open')) {
+                links.classList.remove('open');
+                toggle.setAttribute('aria-expanded', 'false');
+                toggle.focus();
+            }
+        });
     }
 
     // Set active nav link. Handles both flat root pages (index.html,
@@ -57,17 +69,30 @@ function initNav() {
 
     // Guides dropdown toggle (P1-9 populates the menu; no-op while absent).
     // A click toggles an .open state for mobile/keyboard users; the CSS
-    // :hover / :focus-within rules also open it on desktop.
+    // :hover / :focus-within rules also open it on desktop. The toggle's
+    // aria-expanded is kept in sync so the disclosure state is announced.
     document.querySelectorAll('.nav-dropdown').forEach(dd => {
         const dt = dd.querySelector('.nav-dropdown-toggle');
         if (!dt) return;
+        const setOpen = (open) => {
+            dd.classList.toggle('open', open);
+            dt.setAttribute('aria-expanded', String(open));
+        };
         dt.addEventListener('click', (e) => {
             if (window.innerWidth <= 768) return; // let the link navigate on mobile
             e.preventDefault();
-            dd.classList.toggle('open');
+            setOpen(!dd.classList.contains('open'));
         });
         document.addEventListener('click', (e) => {
-            if (!dd.contains(e.target)) dd.classList.remove('open');
+            if (!dd.contains(e.target)) setOpen(false);
+        });
+        // Escape closes the menu and returns focus to the toggle.
+        dd.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && dd.classList.contains('open')) {
+                e.stopPropagation();
+                setOpen(false);
+                dt.focus();
+            }
         });
     });
 }
@@ -83,6 +108,8 @@ function initSorting() {
     table.querySelectorAll('th').forEach((th, colIdx) => {
         // The "Actions" column (detail/compare/launch buttons) is not a
         // data column — it carries data-nosort and is skipped here.
+        // Sortable headers carry a <button> (keyboard focusable; Enter/Space
+        // natively activate it), so the click below also covers keyboard.
         if (th.hasAttribute('data-nosort')) return;
         th.addEventListener('click', () => {
             sortState[colIdx] = -(sortState[colIdx] || -1);
@@ -125,7 +152,18 @@ function sortTable(table, col, sortState) {
 
     table.querySelectorAll('th').forEach((th, i) => {
         th.classList.remove('sort-asc', 'sort-desc');
-        if (sortState[i]) th.classList.add(sortState[i] === 1 ? 'sort-asc' : 'sort-desc');
+        const btn = th.querySelector('.th-btn');
+        if (btn) btn.classList.remove('sort-asc', 'sort-desc');
+        // aria-sort is the ARIA state for a sortable column (WCAG 1.3.1);
+        // the visual arrow class rides on the button (its ::after).
+        if (sortState[i]) {
+            const cls = sortState[i] === 1 ? 'sort-asc' : 'sort-desc';
+            if (btn) btn.classList.add(cls);
+            th.classList.add(cls);
+            th.setAttribute('aria-sort', sortState[i] === 1 ? 'ascending' : 'descending');
+        } else {
+            th.setAttribute('aria-sort', 'none');
+        }
     });
 }
 
@@ -259,15 +297,24 @@ function initFilters() {
     const emptyClear = document.getElementById('filter-empty-clear');
     if (emptyClear) emptyClear.addEventListener('click', reset);
 
-    // 🔗 Share: the URL is already in sync, so copy the address.
+    // 🔗 Share: the URL is already in sync, so copy the address. The
+    // button's nested .sr-only span is a polite live region, so the
+    // "Copied" feedback is announced to screen readers (P2-6).
     if (shareBtn) {
+        const shareLabel = shareBtn.querySelector('.share-label');
+        const shareStatus = shareBtn.querySelector('.sr-only');
+        const origText = shareLabel ? shareLabel.textContent : '🔗 Share';
         shareBtn.addEventListener('click', () => {
             const url = window.location.href;
             const done = (ok) => {
-                const orig = shareBtn.textContent;
-                shareBtn.textContent = ok ? '✓ Copied!' : 'Copy failed';
+                if (shareLabel) shareLabel.textContent = ok ? '✓ Copied!' : 'Copy failed';
+                if (shareStatus) shareStatus.textContent = ok ? 'Link copied to clipboard' : 'Copy failed';
                 shareBtn.disabled = true;
-                setTimeout(() => { shareBtn.textContent = orig; shareBtn.disabled = false; }, 1500);
+                setTimeout(() => {
+                    if (shareLabel) shareLabel.textContent = origText;
+                    shareBtn.disabled = false;
+                    if (shareStatus) shareStatus.textContent = '';
+                }, 1500);
             };
             if (navigator.clipboard && navigator.clipboard.writeText) {
                 navigator.clipboard.writeText(url).then(
@@ -421,14 +468,16 @@ function initDetailPanel() {
                 (when ? ' on ' + esc(when) : '') + '</div>';
         }
 
+        // Decorative leading icons are aria-hidden; the text labels carry
+        // the meaning (P2-6 a11y audit).
         html += '<div class="detail-actions">';
-        html += '<button class="btn btn-primary" type="button" data-launch-sub="' + esc(s.id) + '">🚀 Copy launch command</button>';
-        html += '<button class="btn detail-add-compare" type="button" aria-pressed="false">➕ Add to comparison</button>';
+        html += '<button class="btn btn-primary" type="button" data-launch-sub="' + esc(s.id) + '"><span class="icon" aria-hidden="true">🚀</span> Copy launch command</button>';
+        html += '<button class="btn detail-add-compare" type="button" aria-pressed="false"><span class="icon" aria-hidden="true">➕</span> Add to comparison</button>';
         html += '<a class="btn" href="compare/?a=' + encodeURIComponent(s.id) + '">Compare this setup →</a>';
-        html += '<a class="btn" href="' + esc(forumUrl(s)) + '" target="_blank" rel="noopener">💬 Read the forum post</a>';
+        html += '<a class="btn" href="' + esc(forumUrl(s)) + '" target="_blank" rel="noopener"><span class="icon" aria-hidden="true">💬</span> Read the forum post</a>';
         const mu = (s.model || {}).url;
         if (mu && /^https?:/.test(mu)) {
-            html += '<a class="btn" href="' + esc(mu) + '" target="_blank" rel="noopener">⬇ Download the model</a>';
+            html += '<a class="btn" href="' + esc(mu) + '" target="_blank" rel="noopener"><span class="icon" aria-hidden="true">⬇</span> Download the model</a>';
         }
         html += '</div>';
         body.innerHTML = html;
@@ -444,7 +493,9 @@ function initDetailPanel() {
                 check.checked = !check.checked;
                 check.dispatchEvent(new Event('change', { bubbles: true }));
                 addBtn.setAttribute('aria-pressed', String(check.checked));
-                addBtn.textContent = check.checked ? '✓ In comparison — click to remove' : '➕ Add to comparison';
+                addBtn.innerHTML = check.checked
+                    ? '✓ In comparison — click to remove'
+                    : '<span class="icon" aria-hidden="true">➕</span> Add to comparison';
             });
         }
     }

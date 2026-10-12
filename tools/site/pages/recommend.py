@@ -19,7 +19,6 @@ The page lives at ``recommend/index.html`` (depth 1) and loads the extra
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 from .. import markdown as md
@@ -36,16 +35,15 @@ def _config_island(schema: dict) -> str:
     The client ranks ``data.json`` and needs the canonical tier / use-case /
     vendor lists. Baking them in at generation time means the whole tool runs
     on a single local ``data.json`` fetch — no extra schema request, fully
-    client-side. ``indent=2`` keeps the braces on separate lines so the
-    generated HTML can never contain a ``{{``/``}}`` sequence (the
-    template-leak check).
+    client-side. The payload is compact (P2-7) and brace-safe for the
+    template-leak check via :func:`utils.compact_json`.
     """
     config = {
         "tiers": schema.get("tiers", []),
         "use_cases": schema.get("use_cases", []),
         "vendors": schema.get("hardware_vendors", []),
     }
-    payload = json.dumps(config, indent=2)
+    payload = utils.compact_json(config)
     return (
         '  <script type="application/json" id="recommend-config">\n'
         f"{payload}\n"
@@ -105,7 +103,7 @@ def render(subs: list[dict], schema: dict, content_dir: Path,
 
     form_html = f'''
   <section class="recommend-tool" aria-labelledby="rec-tool-title">
-    <h2 id="rec-tool-title" class="section-title">🎯 What should you run?</h2>
+    <h2 id="rec-tool-title" class="section-title">{utils.icon("🎯")} What should you run?</h2>
     <form class="rec-form" id="rec-form" autocomplete="off">
       <div class="rec-field rec-field--primary">
         <label for="rec-tier">How much video memory (VRAM) does your GPU have?</label>

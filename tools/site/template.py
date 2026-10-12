@@ -63,10 +63,16 @@ def _guides_dropdown(p: str, guides_menu: list[tuple[str, str]]) -> str:
         f'            <li><a href="{p}{url}">{html_escape(label)}</a></li>'
         for label, url in guides_menu
     )
+    # The toggle is a disclosure: aria-expanded/aria-controls (updated by
+    # js/main.js) make the state machine explicit for screen readers. The
+    # ▾ glyph is decorative (hidden from the a11y tree).
     return (
         '        <li class="nav-dropdown">\n'
-        f'          <a href="{p}guides/" class="nav-dropdown-toggle">Guides ▾</a>\n'
-        f'          <ul class="nav-dropdown-menu">\n{items}\n          </ul>\n'
+        '          <a href="' + p + 'guides/" class="nav-dropdown-toggle" '
+        'aria-expanded="false" aria-controls="guides-menu">'
+        'Guides <span class="icon" aria-hidden="true">▾</span></a>\n'
+        '          <ul class="nav-dropdown-menu" id="guides-menu">\n'
+        + items + '\n          </ul>\n'
         '        </li>'
     )
 
@@ -87,11 +93,11 @@ def nav(depth: int = 0, guides_menu: list[tuple[str, str]] | None = None) -> str
         guides_item = _guides_dropdown(p, guides_menu)
     else:
         guides_item = f'        <li><a href="{p}guides.html">Guides</a></li>'
-    return f'''  <nav class="nav">
+    return f'''  <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
-      <a href="{p}index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
-      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
-      <ul class="nav-links">
+      <a href="{p}index.html" class="nav-logo"><span class="icon" aria-hidden="true">📊</span> Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">☰</button>
+      <ul class="nav-links" id="nav-links">
         <li><a href="{p}index.html">Home</a></li>
         <li><a href="{p}matrix.html">Matrix</a></li>
         <li><a href="{p}compare/">Compare</a></li>
@@ -126,23 +132,28 @@ def page_shell(title: str, description: str, body: str,
         The full ``<!DOCTYPE html>`` document as a string.
     """
     p = asset_prefix(depth)
-    scripts = [f'<script src="{p}js/main.js"></script>']
+    # All scripts are deferred: they sit at the end of <body> (already
+    # non-render-blocking) and defer makes the intent explicit + guarantees
+    # ordered execution after the document is parsed (P2-7).
+    scripts = [f'<script src="{p}js/main.js" defer></script>']
     for s in (extra_scripts or []):
-        scripts.append(f'<script src="{p}{s}"></script>')
+        scripts.append(f'<script src="{p}{s}" defer></script>')
     scripts_html = "\n".join(scripts)
     return f'''<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0e17">
     <title>{html_escape(title)}</title>
     <meta name="description" content="{html_escape(description)}">
 {OG_TAGS}
     <link rel="stylesheet" href="{p}css/style.css">
 </head>
 <body>
+<a class="skip-link" href="#main-content">Skip to content</a>
 {nav(depth, guides_menu)}
-<main class="container">
+<main class="container" id="main-content">
 {body}
 </main>
 {FOOTER}

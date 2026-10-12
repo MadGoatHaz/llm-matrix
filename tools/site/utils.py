@@ -56,6 +56,32 @@ def html_escape(s: Any) -> str:
     return html_module.escape(str(s))
 
 
+def icon(glyph: str) -> str:
+    """A decorative icon/emoji wrapped in an ``aria-hidden`` span (P2-6).
+
+    Screen readers skip the glyph and read only the adjacent text label,
+    which is the accessible pattern for decorative icons.
+    """
+    return f'<span class="icon" aria-hidden="true">{html_module.escape(glyph)}</span>'
+
+
+def compact_json(obj: Any) -> str:
+    """Serialize ``obj`` to compact JSON that can never leak ``{{``/``}}``.
+
+    The template-leak check rejects any page containing the literal
+    ``{{`` or ``}}`` sequences. ``indent=2`` was the original workaround
+    (braces on their own lines), but it roughly doubles the size of the
+    baked config islands. Compact JSON with tight separators is valid and,
+    because a JSON object always opens with ``{"`` and closes its nesting
+    as ``}}``, the only possible adjacent-brace run is ``}}`` at the end of
+    nested objects — which is split into ``} }`` (legal JSON whitespace).
+    ``{{`` cannot occur in valid JSON at all (an opening brace is always
+    followed by a string key).
+    """
+    payload = json.dumps(obj, separators=(",", ":"))
+    return payload.replace("}}", "} }")
+
+
 # Unfilled template values look like "[e.g., ...]" — i.e. the whole value is
 # wrapped in brackets.
 PLACEHOLDER_RE = re.compile(r"^\[.*\]$", re.DOTALL)
@@ -210,15 +236,16 @@ def commands_config_island(subs: list[dict], schema: dict) -> str:
     means these tools make **no network request**: the page works offline
     straight from disk and stays fast.
 
-    ``indent=2`` puts every brace on its own line, so the serialized JSON can
-    never form a ``{{``/``}}`` sequence (the template-leak check).
+    The payload is compact (P2-7: halves the island size vs ``indent=2``)
+    and brace-safe (no ``{{``/``}}`` for the template-leak check) via
+    :func:`compact_json`.
     """
     config = {
         "backends": schema.get("backends", []),
         "tiers": schema.get("tiers", []),
         "submissions": [trim_for_client(s) for s in subs],
     }
-    payload = json.dumps(config, indent=2)
+    payload = compact_json(config)
     return (
         '  <script type="application/json" id="commands-config">\n'
         f"{payload}\n"

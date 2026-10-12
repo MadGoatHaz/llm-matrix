@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#0a0e17">
     <title>Guides — The Local AI Stack</title>
     <meta http-equiv="refresh" content="0; url=guides/">
     <link rel="canonical" href="guides/">
@@ -15,11 +16,12 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-  <nav class="nav">
+<a class="skip-link" href="#main-content">Skip to content</a>
+  <nav class="nav" aria-label="Main navigation">
     <div class="nav-inner">
-      <a href="index.html" class="nav-logo">📊 Local AI <span>Stack</span></a>
-      <button class="nav-toggle" aria-label="Toggle navigation">☰</button>
-      <ul class="nav-links">
+      <a href="index.html" class="nav-logo"><span class="icon" aria-hidden="true">📊</span> Local AI <span>Stack</span></a>
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false" aria-controls="nav-links">☰</button>
+      <ul class="nav-links" id="nav-links">
         <li><a href="index.html">Home</a></li>
         <li><a href="matrix.html">Matrix</a></li>
         <li><a href="compare/">Compare</a></li>
@@ -30,7 +32,7 @@
       </ul>
     </div>
   </nav>
-<main class="container">
+<main class="container" id="main-content">
   <div class="page-header">
     <h1>Guides</h1>
     <p class="subtitle">Redirecting to the guides index&hellip;</p>
@@ -41,6 +43,6 @@
     <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a></div>
     <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
   </footer>
-<script src="js/main.js"></script>
+<script src="js/main.js" defer></script>
 </body>
 </html>

@@ -23,32 +23,32 @@ def render(guides_menu: list[tuple[str, str]] | None = None) -> str:
   </div>
 
   <div class="card">
-    <h3>📖 What It Is</h3>
+    <h2>{utils.icon("📖")} What It Is</h2>
     <p>A community-driven resource for running AI models on your own hardware. Born from the
        Level1Techs forum, built for the broader local AI community.</p>
   </div>
 
   <div class="card">
-    <h3>🔄 How It Works</h3>
+    <h2>{utils.icon("🔄")} How It Works</h2>
     <p>Community members submit their setups. We parse, organize, and display the data. The more
        submissions, the better the resource.</p>
   </div>
 
   <div class="card">
-    <h3>🤝 Connection to L1Techs</h3>
+    <h2>{utils.icon("🤝")} Connection to L1Techs</h2>
     <p>This project originated in the <a href="{utils.FORUM_CATEGORY}">Machine Learning, LLMs &amp; AI category</a>
        on <a href="https://forum.level1techs.com">Level1Techs</a>. The forum thread is where the
        discussion happens — this site is where the reference lives.</p>
   </div>
 
   <div class="card">
-    <h3>✍️ How to Contribute</h3>
+    <h2>{utils.icon("✍️")} How to Contribute</h2>
     <p>Head to the <a href="{utils.FORUM_THREAD}">forum thread</a> and use the submission template in
        Post #2. Quick Submit takes 30 seconds.</p>
   </div>
 
   <div class="card">
-    <h3>👤 Credits</h3>
+    <h2>{utils.icon("👤")} Credits</h2>
     <p>Built and maintained by <a href="https://forum.level1techs.com/u/MadGoat">MadGoat</a> with
        data from the L1Techs community.</p>
     <p><a href="{utils.GITHUB_REPO}">GitHub →</a></p>

@@ -60,7 +60,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
         cards.append(f'''
     <div class="contributor-card">
       <div class="contributor-header">
-        <div class="avatar">{utils.html_escape(initial)}</div>
+        <div class="avatar" aria-hidden="true">{utils.html_escape(initial)}</div>
         <div>
           <div class="contributor-name">{utils.html_escape(username)}</div>
           <div class="contributor-role">{utils.html_escape(role)}</div>
@@ -125,11 +125,11 @@ def render(subs: list[dict], schema: dict, stats: dict,
       {mode_opts}
     </select>
     <button id="filter-reset" class="btn" type="button">Reset</button>
-    <button id="filter-share" class="btn" type="button" aria-label="Copy a shareable link to the current filters">🔗 Share</button>
+    <button id="filter-share" class="btn" type="button" aria-label="Copy a shareable link to the current filters"><span class="share-label">{utils.icon("🔗")} Share</span><span class="sr-only" role="status" aria-live="polite"></span></button>
   </div>
 
   <div class="filter-empty" id="filter-empty" role="status" hidden>
-    <p>🔍 No setups match the current filters.</p>
+    <p>{utils.icon("🔍")} No setups match the current filters.</p>
     <button class="btn" id="filter-empty-clear" type="button">Clear all filters</button>
   </div>
 
@@ -138,7 +138,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
   </div>
 
   <div class="card">
-    <h3>🙌 Want to be here?</h3>
+    <h2>{utils.icon("🙌")} Want to be here?</h2>
     <p>Submit your setup in the <a href="{utils.FORUM_THREAD}">forum thread</a> using the Quick Submit
        template in Post #2. It takes 30 seconds, and your data appears in the matrix on the next
        update. Every row in <a href="matrix.html">the matrix</a> started exactly this way.</p>

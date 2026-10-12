@@ -362,7 +362,7 @@
     overlay.innerHTML =
       '<div class="cmd-dialog" role="dialog" aria-modal="true" aria-labelledby="cmd-title">' +
         '<div class="cmd-header">' +
-          '<h2 id="cmd-title">🚀 Launch command</h2>' +
+          '<h2 id="cmd-title"><span class="icon" aria-hidden="true">🚀</span> Launch command</h2>' +
           '<button class="cmd-close" aria-label="Close dialog">✕</button>' +
         '</div>' +
         '<div class="cmd-model" id="cmd-model"></div>' +
@@ -398,7 +398,8 @@
     } else if (result.command) {
       html += '<div class="cmd-code-wrap">' +
         '<pre class="cmd-code"><code>' + esc(result.command) + '</code></pre>' +
-        '<button class="btn btn-primary cmd-copy" data-copy="' + esc(result.command) + '">📋 Copy command</button>' +
+        // aria-live so the "✓ Copied" feedback is announced (P2-6).
+        '<button class="btn btn-primary cmd-copy" aria-live="polite" data-copy="' + esc(result.command) + '"><span class="icon" aria-hidden="true">📋</span> Copy command</button>' +
         '</div>';
     }
     if (result.vram) {
