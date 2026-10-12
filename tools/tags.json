@@ -1,0 +1,41 @@
+{
+  "last_updated": "2026-10-12",
+  "notes": "Manual curation layer. Edit this to override auto-parsed values or add editorial context.",
+  "submissions": {
+    "post_26_kif_strata": {
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": true,
+      "highlight_reason": "First proof of 125B MoE on single consumer GPU via hybrid offload. Changes the VRAM tier model.",
+      "tags": ["breakthrough", "hybrid", "consumer"]
+    },
+    "post_28_digitalscream_radiance": {
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": true,
+      "highlight_reason": "200t/s+ on AMD with MTP. Radiance is the AMD answer to vLLM.",
+      "tags": ["amd", "high-performance", "mtp"]
+    },
+    "post_25_lhl_evals": {
+      "confidence": "community-verified",
+      "lifecycle": "current",
+      "highlight": true,
+      "highlight_reason": "Ran tens of billions of tokens. DeepSeek 4.1 Flash edged out Flash-Next and GLM 5.3.",
+      "tags": ["eval-verified", "heavy-usage"]
+    }
+  },
+  "forum_feedback": {
+    "post_20_digitalscream_r9700": {
+      "action": "add_to_gpu_lookup",
+      "note": "R9700 missing from hardware tier list. Added in v2.1."
+    },
+    "post_24_strawberry_nvfp4": {
+      "action": "add_quant_format",
+      "note": "NVFP4 → MXFP4 is 'the real golden ticket'. Added to schema."
+    },
+    "post_27_s1ugh34d_viewport": {
+      "action": "build_dashboard",
+      "note": "Requested a data viewport/index. This project IS the answer."
+    }
+  }
+}

@@ -1,0 +1,76 @@
+=== POST 1 TAG BALANCE ===
+  details  open=  31 close=  31 OK 
+  summary  open=  31 close=  31 OK 
+  table    open=  18 close=  18 OK 
+  thead    open=  18 close=  18 OK 
+  tbody    open=  18 close=  18 OK 
+  tr       open= 140 close= 140 OK 
+  td       open= 648 close= 648 OK 
+  th       open= 116 close= 116 OK 
+  div      open=  18 close=  18 OK 
+  ul       open=   2 close=   2 OK 
+  ol       open=   1 close=   1 OK 
+  li       open=   6 close=   6 OK 
+  pre      open=   0 close=   0 OK 
+  code     open=   0 close=   0 OK 
+  a        open=  63 close=  63 OK 
+  strong   open=  93 close=  93 OK 
+  em       open=  12 close=  12 OK 
+  p        open=  16 close=  16 OK 
+FILE updated_forum_post.md: 1524 lines, 67788 chars
+=== POST 1 CONTENT CHECKS ===
+  [PASS] QuickNav entry
+  [PASS] VendorNotes Unsloth para
+  [PASS] Option D
+  [PASS] Option D formats
+  [PASS] New section summary
+  [PASS] Intro para
+  [PASS] Sub: All-in-One Apps
+  [PASS] Sub: Chat Frontends
+  [PASS] Sub: Agentic Coding Harnesses
+  [PASS] Sub: Agent Frameworks
+  [PASS] Sub: Orchestration & Routing
+  [PASS] Closing stack note
+  [PASS] Unsloth link
+  [PASS] Kilo link
+  [PASS] Chatbox link
+  [PASS] MCP link
+  [PASS] Section order: new section before Master Matrix
+  [PASS] Section order: after Non-GGUF
+  [PASS] Preserved: v2.0 changelog
+  [PASS] Preserved: Tier 6 row
+  [PASS] Preserved: related threads
+=== POST 2 TAG BALANCE ===
+  details  open=   6 close=   6 OK 
+  summary  open=   6 close=   6 OK 
+  table    open=   1 close=   1 OK 
+  thead    open=   1 close=   1 OK 
+  tbody    open=   1 close=   1 OK 
+  tr       open=  10 close=  10 OK 
+  td       open=  54 close=  54 OK 
+  th       open=   6 close=   6 OK 
+  div      open=   1 close=   1 OK 
+  ul       open=   8 close=   8 OK 
+  ol       open=   1 close=   1 OK 
+  li       open=  44 close=  44 OK 
+  pre      open=   4 close=   4 OK 
+  code     open=   9 close=   9 OK 
+  a        open=   0 close=   0 OK 
+  strong   open=  64 close=  64 OK 
+  em       open=  14 close=  14 OK 
+  p        open=   3 close=   3 OK 
+FILE updated_post2_submissions.md: 314 lines, 17092 chars
+=== POST 2 CONTENT CHECKS ===
+  [PASS] QuickNav entry
+  [PASS] Q3 new answer
+  [PASS] Q3 old answer gone
+  [PASS] Q4 Apple MLX note
+  [PASS] Backend row Unsloth
+  [PASS] Quick Decision new
+  [PASS] Quick Decision old gone
+  [PASS] Post#1 cross-ref note
+  [PASS] Note placed before Golden Rule
+  [PASS] Preserved: Quick Submit
+  [PASS] Preserved: Full Submit
+  [PASS] Preserved: Example A/B
+  [PASS] Preserved: all 8 old backends

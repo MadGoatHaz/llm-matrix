@@ -1,0 +1,15 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Data snapshots (keep structure, ignore raw downloads > 1MB)
+data/raw/thread_*.json
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Keep these tracked:
+!data/raw/latest.json
+!data/submissions.json

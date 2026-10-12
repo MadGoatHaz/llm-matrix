@@ -1,0 +1,44 @@
+{
+  "version": "2.1",
+  "last_updated": "2026-10-12",
+  "tiers": [
+    {"id": "t1", "label": "≤16GB", "range": [0, 16]},
+    {"id": "t2", "label": "16-24GB", "range": [16, 24]},
+    {"id": "t3", "label": "24-32GB", "range": [24, 32]},
+    {"id": "t4", "label": "48-64GB", "range": [48, 64]},
+    {"id": "t5", "label": "96-128GB", "range": [96, 128]},
+    {"id": "t6", "label": "196-256GB+", "range": [196, 999]}
+  ],
+  "hardware_vendors": ["NVIDIA", "AMD", "Apple", "Intel", "Mixed"],
+  "backends": [
+    "vLLM", "llama.cpp", "llama-swap", "Ollama", "LM Studio",
+    "Unsloth Desktop", "Strata", "Radiance", "Colibri",
+    "TensorRT-LLM", "MLX", "Other"
+  ],
+  "os_drivers": [
+    "Linux/CUDA", "Linux/ROCm", "Linux/Vulkan",
+    "Windows/CUDA", "Windows/WSL2", "macOS/Metal", "Other"
+  ],
+  "quant_formats": [
+    "W4A16", "W4A16-AutoRound", "W4A16-AWQ", "W8A8",
+    "FP8", "NVFP4", "MXFP4", "BF16", "FP16",
+    "Q4_K_M", "Q5_K_M", "Q6_K", "Q8_0",
+    "IQ3_S", "IQ4_XS", "UD-Q2_K_XL", "UD-Q4_K_XL", "UD-Q8_K_XL",
+    "I-Nano", "EXL2 4.0bpw", "Other"
+  ],
+  "kv_cache_types": ["FP16", "BF16", "FP8", "INT8", "INT4", "Q8_0", "Default"],
+  "use_cases": [
+    "Agentic Coding", "Repo Editing", "Deep Reasoning", "Math/Logic",
+    "RAG", "Document Ingestion", "Creative Writing", "Roleplay",
+    "General Chat", "Translation", "Security Research",
+    "Multimodal", "Production Serving", "Embeddings", "Other"
+  ],
+  "engine_modes": [
+    "VRAM-only", "Hybrid (VRAM+RAM)", "Hybrid (VRAM+RAM+SSD)",
+    "CPU+GPU", "CPU-only"
+  ],
+  "confidence_levels": [
+    "op-verified", "community-verified", "community-reported", "unverified"
+  ],
+  "lifecycle_statuses": ["current", "watch", "superseded", "discontinued"]
+}
