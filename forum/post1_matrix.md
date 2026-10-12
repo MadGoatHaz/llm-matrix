@@ -2,6 +2,8 @@
 
 **A vram-first reference for running local models on real silicon.**
 
+> 🌐 **Interactive Dashboard:** [Browse all community submissions with filters](https://MadGoatHaz.github.io/llm-matrix-dashboard/) — or scroll down for the full matrix.
+
 This thread tracks suggested models, mapped by:
 
 - **Usable VRAM footprint** — organized across 6 VRAM tiers, from single consumer GPUs to enterprise clusters
@@ -1692,6 +1694,7 @@ Tier 6: 196 – 256 GB+ VRAM (Enterprise Nodes &amp; Full Workstation Clusters)
 <details>
 <summary>🔗 Related Threads on L1Techs</summary>
 
+- **This thread (the data source):** [The Best Local LLM Matrix](https://forum.level1techs.com/t/256443) — all community submissions are indexed on the [interactive dashboard](https://MadGoatHaz.github.io/llm-matrix-dashboard/)
 - [Why your local LLM feels dumber than it is](https://forum.level1techs.com/t/why-your-local-llm-feels-dumber-than-it-is/253917) — Implementation-spec impact on perceived model quality
 - [Qwen3.8-Flash-Next Q6_K on 3× Radeon Instinct MI50 16GB](https://forum.level1techs.com/t/qwen3-8-flash-next-q6-k-on-3x-radeon-instinct-mi50-16gb/256455) — AMD datacenter multi-GPU
 - [Dual R9700 llama.cpp Rocm tensor-split, working P2P on Proxmox, Qwen3.8-27B](https://forum.level1techs.com/t/dual-r9700-llama-cpp-rocm-tensor-split-working-p2p-on-proxmox-qwen-3-8-27b/254183) — AMD P2P on virtualized host

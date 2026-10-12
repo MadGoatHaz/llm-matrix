@@ -3,6 +3,33 @@
 @@@ ACTIVE_WORKERS @@@
 
 @@@ HISTORY @@@
+- [DONE] ID: publish-pages | AGENT: general (Implementation Agent) | BRANCH: main | FILES: (deploy) + index.html
+  Made repo MadGoatHaz/llm-matrix PUBLIC (was PRIVATE) via `gh repo edit --visibility public
+  --accept-visibility-change-consequences`. GitHub Pages: the REST API `POST /pages` REJECTS
+  source[path]=/dashboard (422: only `/` or `/docs` allowed), so Pages was enabled from source `/` on
+  main -> html_url https://madgoathaz.github.io/llm-matrix/ (public:true, https_enforced:true, build_type:legacy).
+  Added a minimal root index.html landing page (dark L1Techs-brand card: title, tagline, status pill,
+  "Open the Dashboard" -> dashboard/ + forum-thread button, not-official-L1Techs note) so the root URL is not
+  a dead 404. To serve ONLY the dashboard/ subfolder at the root, the source path must be set to /dashboard in
+  the GitHub web UI (Settings -> Pages -> "Deploy from a branch" -> main + /dashboard); the API cannot do this.
+  CAVEAT: dashboard/ still contains only .gitkeep (no index.html) — the pull.py->parse.py->generate.py pipeline
+  has not run, so the dashboard has no rendered content yet. Secret scan clean (only ${{secrets.GITHUB_TOKEN}}
+  placeholder in PLAN template; data/ has only .gitkeep, no PII). Committed branding changes (tools/generate.py,
+  forum/post1_matrix.md, forum/post2_submissions.md) + index.html + this log; pushed to origin/main. No lease contention.
+- [DONE] ID: dashboard-community-branding | AGENT: general (Implementation Agent) | FILES: tools/generate.py, forum/post1_matrix.md, forum/post2_submissions.md
+  Rebranded dashboard + Post #3 + forum posts to represent the L1Techs community. generate.py: (1) header now has
+  .branding div (title + .tagline + .forum-credit linking ML,LLMs&AI community at Level1Techs /t/256443), stats preserved;
+  (2) new .how-it-works <details> collapsible between header and filters (read-only view, how to contribute via Post #2
+  template, community-reported disclaimer, respect-contributors note); (3) table header "User"→"Contributor" +
+  td:first-child bolder; (4) footer rewritten: .footer-main attribution, .footer-cta "Join the Discussion / Submit Your
+  Setup" .btn-forum button, .footer-meta (date + forum link + not-official-L1Techs line); all CSS added f-string-safe
+  (doubled braces). Post #3: header now "A community index of all submissions from the **Local LLM Matrix** thread"
+  with dashboard quote-link (YOUR-USERNAME placeholder kept) + "full discussion lives here on the forum" line; footer now
+  "auto-generated from thread data... see the [thread](/t/256443) for full context". post1_matrix.md: +dashboard quote-line
+  after title (MadGoatHaz.github.io/llm-matrix-dashboard), +self-link bullet at top of Related Threads ("This thread (the
+  data source): /t/256443"). post2_submissions.md: +dashboard quote-line after title. VERIFIED: py_compile clean; synthetic
+  render smoke test 27/27 checks pass (output redirected to /tmp/kilo/matrix_out, real dashboard/ untouched — no
+  submissions.json yet, run pull.py→parse.py first). No lease contention. Non-git dir, no branch/commit.
 - [DONE] ID: tooling-infra-v1 | AGENT: general (Implementation Agent) | FILES: tools/*, data/*, dashboard/, forum/*, work/PLAN_dashboard.md, README.md
   Built the full Local LLM Matrix tooling workspace. (1) Created dirs: tools/, data/raw/,
   dashboard/, templates/, forum/, work/scratch/. (2) Moved 5 existing files:

@@ -103,6 +103,21 @@ def generate_dashboard(data, schema):
         }}
         header h1 {{ font-size: 1.8rem; margin-bottom: 0.5rem; }}
         header p {{ color: var(--text-muted); font-size: 0.9rem; }}
+        .branding {{ text-align: center; margin-bottom: 1rem; }}
+        .tagline {{ color: var(--text-muted); font-size: 1rem; margin-top: 0.25rem; }}
+        .forum-credit {{
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            padding-top: 0.75rem;
+            border-top: 1px solid var(--border);
+        }}
+        .forum-link {{
+            color: var(--accent);
+            text-decoration: none;
+            border-bottom: 1px dotted var(--accent);
+        }}
+        .forum-link:hover {{ border-bottom-style: solid; }}
         .stats {{
             display: flex;
             gap: 1.5rem;
@@ -154,6 +169,7 @@ def generate_dashboard(data, schema):
             padding: 0.6rem 0.75rem;
             border-bottom: 1px solid var(--border);
         }}
+        td:first-child {{ font-weight: 600; color: var(--text); }}
         tr.tier-header td {{
             background: var(--surface);
             font-weight: 700;
@@ -163,15 +179,55 @@ def generate_dashboard(data, schema):
         }}
         tr.highlighted {{ border-left: 3px solid var(--highlight); }}
         tr:hover {{ background: rgba(59, 130, 246, 0.05); }}
+        .how-it-works {{
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 0;
+        }}
+        .how-it-works summary {{
+            padding: 0.75rem 1rem;
+            cursor: pointer;
+            font-weight: 600;
+            color: var(--text-muted);
+        }}
+        .how-it-works[open] summary {{
+            border-bottom: 1px solid var(--border);
+        }}
+        .how-content {{
+            padding: 1rem;
+            font-size: 0.9rem;
+            line-height: 1.7;
+        }}
+        .how-content a {{ color: var(--accent); }}
+        .how-content p {{ margin-bottom: 0.5rem; }}
         .footer {{
-            margin-top: 2rem;
-            padding-top: 1rem;
+            margin-top: 3rem;
+            padding-top: 1.5rem;
             border-top: 1px solid var(--border);
             text-align: center;
             color: var(--text-muted);
             font-size: 0.8rem;
         }}
         .footer a {{ color: var(--accent); text-decoration: none; }}
+        .footer-main {{ margin-bottom: 1rem; font-size: 0.85rem; }}
+        .footer-cta {{ margin-bottom: 1rem; }}
+        .btn-forum {{
+            display: inline-block;
+            background: var(--accent);
+            color: white;
+            padding: 0.6rem 1.5rem;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: opacity 0.2s;
+        }}
+        .btn-forum:hover {{ opacity: 0.85; }}
+        .footer-meta {{ font-size: 0.75rem; opacity: 0.7; }}
+        .footer-meta a {{ color: var(--text-muted); }}
         @media (max-width: 768px) {{
             body {{ padding: 1rem; }}
             .filters {{ flex-direction: column; }}
@@ -183,8 +239,14 @@ def generate_dashboard(data, schema):
 <body>
     <div class="container">
         <header>
-            <h1>📊 The Local LLM Matrix</h1>
-            <p>Community-verified setups for running local models on real silicon</p>
+            <div class="branding">
+                <h1>📊 The Local LLM Matrix</h1>
+                <p class="tagline">A community-driven reference for running local AI models on real silicon</p>
+                <p class="forum-credit">
+                    From the <a href="https://forum.level1techs.com/t/256443" class="forum-link">Machine Learning, LLMs &amp; AI</a> community at
+                    <a href="https://forum.level1techs.com" class="forum-link"><strong>Level1Techs</strong></a>
+                </p>
+            </div>
             <div class="stats">
                 <div class="stat"><div class="num">{data["total_submissions"]}</div><div class="label">Submissions</div></div>
                 <div class="stat"><div class="num">{len(set(s["hardware"]["vendor"] for s in data["submissions"]))}</div><div class="label">Vendors</div></div>
@@ -192,6 +254,21 @@ def generate_dashboard(data, schema):
                 <div class="stat"><div class="num">{len(set(s["tier"] for s in data["submissions"] if s["tier"]))}</div><div class="label">Tiers</div></div>
             </div>
         </header>
+
+        <details class="how-it-works">
+        <summary>ℹ️ How This Dashboard Works</summary>
+        <div class="how-content">
+            <p>This is a <strong>read-only view</strong> of community submissions from the
+            <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread on Level1Techs</a>.</p>
+            <p><strong>How to contribute:</strong> Head to the
+            <a href="https://forum.level1techs.com/t/256443/2">forum thread</a> and use the submission template in Post #2.
+            Your data will appear here within the next weekly update.</p>
+            <p><strong>Data is community-reported.</strong> We don't independently verify benchmarks.
+            Treat numbers as user-experienced, not lab-tested. Hardware, drivers, and setup all affect results.</p>
+            <p><strong>Respect the contributors.</strong> The data here is people sharing their time and experience.
+            Link back to the forum, credit usernames, and keep the discussion constructive.</p>
+        </div>
+        </details>
 
         <div class="filters">
             <input type="text" id="search" placeholder="Search models, hardware, notes...">
@@ -212,7 +289,7 @@ def generate_dashboard(data, schema):
         <table id="main-table">
             <thead>
                 <tr>
-                    <th onclick="sortTable(0)">User</th>
+                    <th onclick="sortTable(0)">Contributor</th>
                     <th onclick="sortTable(1)">Hardware</th>
                     <th onclick="sortTable(2)">Vendor</th>
                     <th onclick="sortTable(3)">Backend</th>
@@ -228,8 +305,21 @@ def generate_dashboard(data, schema):
         </table>
 
         <div class="footer">
-            <p>Data source: <a href="https://forum.level1techs.com/t/256443">L1Techs Forum Thread</a> | Last updated: {data["generated_at"][:10]}</p>
-            <p>Community submissions are user-reported. Verify before purchasing hardware.</p>
+            <p class="footer-main">
+                <strong>The Local LLM Matrix</strong> is a community project originating from
+                <a href="https://forum.level1techs.com/t/256443">Level1Techs</a>.
+                All data is community-submitted and user-reported.
+            </p>
+            <p class="footer-cta">
+                <a href="https://forum.level1techs.com/t/256443" class="btn-forum">
+                    💬 Join the Discussion / Submit Your Setup
+                </a>
+            </p>
+            <p class="footer-meta">
+                Last updated: {data["generated_at"][:10]} |
+                <a href="https://forum.level1techs.com">forum.level1techs.com</a> |
+                Not an official Level1Techs product — a community resource built by forum members.
+            </p>
         </div>
     </div>
 
@@ -340,9 +430,11 @@ def generate_post3(data, schema):
 
     content = f"""# 📊 Community Data Viewport
 
-*Auto-generated index of all community submissions. Last updated: {data['generated_at'][:10]} | {data['total_submissions']} submissions*
+*A community index of all submissions from the **Local LLM Matrix** thread. Last updated: {data['generated_at'][:10]} | {data['total_submissions']} submissions*
 
-**🌐 Full Interactive Dashboard:** [llm-matrix dashboard](https://YOUR-GITHUB-USERNAME.github.io/llm-matrix-dashboard/)
+> 🌐 **Interactive Dashboard:** [Browse, filter, and compare all setups](https://YOUR-USERNAME.github.io/llm-matrix-dashboard/)
+> 
+> 💬 **The full discussion lives here on the forum.** Submit your own setup using the template in Post #2.
 
 ---
 
@@ -397,7 +489,7 @@ def generate_post3(data, schema):
 </details>
 
 ---
-*This post is auto-generated from thread data. If something looks wrong, report it in the thread. The interactive dashboard has full filtering, sorting, and comparison.*
+*This viewport is auto-generated from thread data. The interactive dashboard provides filtering, sorting, and comparison. All data is community-reported — see the [thread](/t/256443) for full context and discussion.*
 """
 
     out_path = FORUM_DIR / "post3_viewport.md"

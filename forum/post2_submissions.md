@@ -1,5 +1,7 @@
 # Community Submissions, Hardware Feedback & Thread Evolution
 
+> 📊 **See your setup on the [Community Dashboard](https://MadGoatHaz.github.io/llm-matrix-dashboard/)** — all submissions are indexed and filterable there.
+
 **Rather than running rigid polls right out of the gate, this thread is designed to gather real-world, operational data from the community.** Automated benchmarks and leaderboards miss how setups actually behave day-to-day — I want to know what you're actually loading up, what you use it for, and how you have it tuned.
 
 Use this space to share your daily drivers, niche workflow solutions, hardware limits, and suggestions on how to improve this living guide.
