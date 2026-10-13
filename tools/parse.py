@@ -160,6 +160,19 @@ FIELD_ALIASES = {
     'cold_load_ttft': 'ttft_cold',
     'context_length': 'stable_context_tested',
     'tps': 'throughput_tps',
+    # Friendly template names (the forum promo template and the thread's
+    # Quick Submit use these). MUST mirror schema.json "fields.aliases" —
+    # tests/test_schema.py enforces the sync.
+    'gpu': 'hardware',
+    'vram': 'tier',
+    'model': 'model_name',
+    'quant': 'quant_package',
+    'use_case': 'primary_use_case',
+    'notes': 'setup_notes',
+    'verdict': 'setup_notes',
+    'speed': 'throughput_tps',
+    'tok_s': 'throughput_tps',
+    'tokens_per_second': 'throughput_tps',
 }
 
 def apply_aliases(data):
@@ -202,11 +215,17 @@ def split_on_separator(block):
     return [p.strip() for p in SEPARATOR_RE.split(block) if p.strip()]
 
 # Canonical field names (incl. aliases) recognized for inline-field recovery.
+# Only unambiguous, technical tokens are listed: common English words
+# (``model``, ``quant``, ``notes``, ``speed``, ``verdict``) are deliberately
+# excluded so prose containing " notes:" / " speed:" in a value never gets
+# mis-split into a new key line. The multi-line forum template needs no
+# inline recovery — its keys are parsed by the key regex directly.
 KNOWN_FIELDS = (
     'tier', 'hardware', 'backend', 'os_driver', 'model_name', 'quant_package',
     'weight_precision', 'download_url', 'primary_use_case', 'stable_context_tested',
     'context_length', 'kv_cache_setting', 'engine_mode', 'throughput_tps', 'tps',
     'prefill_tps', 'ttft_cold', 'cold_load_ttft', 'power', 'power_draw', 'setup_notes',
+    'gpu', 'vram', 'use_case', 'tok_s', 'tokens_per_second',
 )
 _INLINE_FIELD_RE = re.compile(r'\s+(?=(?:' + '|'.join(KNOWN_FIELDS) + r'):\s)')
 
@@ -264,6 +283,19 @@ TEMPLATE_MARKERS = {
 }
 CORE_FIELDS = ('tier', 'hardware', 'backend', 'model_name')
 
+# Template *content* markers: an option list (pipe), an example marker, or a
+# fill-in instruction phrase. Covers both the Full Submit template ("[e.g.,
+# ...]", "[vLLM | llama.cpp | ...]", "[Full model ...]") and the Quick
+# Submit template's bracketed instructions ("[Your GPU model + VRAM]",
+# "[Model name + quant]", "[What you use it for]", "[One sentence: ...]").
+# Genuine values that users simply wrap in brackets (e.g. ``[llama-cpp]``,
+# ``[8192]``, ``[DeepSeek-R1:671b-0528_q8_0]``) match none of these.
+TEMPLATE_CONTENT_RE = re.compile(
+    r"\||e\.g\.|^example|full model|your \w+|model name|what you|one sentence|"
+    r"name here|insert",
+    re.IGNORECASE,
+)
+
 def _looks_like_placeholder(v):
     """A bracketed value is an unfilled template placeholder when it is an
     option list (contains a pipe) or an example/placeholder phrase. Genuine
@@ -274,8 +306,7 @@ def _looks_like_placeholder(v):
     if not inner.startswith('['):
         return False
     body = inner.strip('[]').strip()
-    low = body.lower()
-    return ('|' in body) or ('e.g.' in low) or (low.startswith('example'))
+    return bool(TEMPLATE_CONTENT_RE.search(body))
 
 def is_template_submission(data_dict):
     """Return True if the submission is clearly an unfilled template."""

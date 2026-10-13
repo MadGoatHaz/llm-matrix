@@ -107,6 +107,22 @@ class TestSubmissionsInvariants(unittest.TestCase):
                 for key in ("post_number", "post_id", "username"):
                     self.assertIn(key, sub["source"])
 
+    def test_speed_is_tracked_on_every_row(self):
+        # Speed (tokens/second) is a tracked, optional field: every row
+        # carries the decode_tps key (empty when not reported) so the
+        # template -> parser -> data -> site chain has no orphan fields.
+        for sub in self.subs:
+            with self.subTest(id=sub["id"]):
+                self.assertIn("decode_tps", sub["performance"])
+        reported = [
+            s for s in self.subs
+            if (s["performance"].get("decode_tps") or "").strip()
+        ]
+        self.assertGreater(
+            len(reported), 0,
+            "no submission reports a decode speed — the Speed column is empty",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()

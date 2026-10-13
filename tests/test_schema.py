@@ -12,7 +12,7 @@ depend on this file's shape. These tests lock its structure in place:
 
 import unittest
 
-from tests.util import load_json
+from tests.util import load_json, load_tool
 
 ENUM_KEYS = (
     "hardware_vendors",
@@ -93,6 +93,66 @@ class TestSchemaStructure(unittest.TestCase):
                 seen.add(thread["id"])
         # parse.py reads data/raw/main_latest.json; the main thread must exist.
         self.assertIn("main", seen)
+
+
+class TestFieldsRegistry(unittest.TestCase):
+    """``fields`` (schema v2.2) is the single source of truth for what the
+    forum template asks for and what parse.py extracts. This class locks the
+    registry's shape and enforces that it stays in sync with the parser.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.schema = load_json("tools/schema.json")
+        cls.parse = load_tool("tools/parse.py")
+
+    def test_fields_registry_present(self):
+        fields = self.schema.get("fields")
+        self.assertIsInstance(fields, dict, "schema is missing the fields registry")
+        for key in ("canonical", "aliases", "optional"):
+            self.assertIn(key, fields, f"fields.{key} missing")
+
+    def test_all_canonical_fields_registered(self):
+        # Every field parse.py maps into the dataset entry must be declared.
+        canonical = set(self.schema["fields"]["canonical"])
+        for required in (
+            "tier", "hardware", "backend", "os_driver", "model_name",
+            "quant_package", "weight_precision", "download_url",
+            "primary_use_case", "stable_context_tested", "kv_cache_setting",
+            "engine_mode", "throughput_tps", "prefill_tps", "ttft_cold",
+            "power_draw", "setup_notes",
+        ):
+            self.assertIn(required, canonical, f"{required} not registered")
+
+    def test_speed_is_a_tracked_field(self):
+        # The user-requested speed / tokens-per-second field: canonical name
+        # plus every friendly spelling the community uses.
+        self.assertIn("throughput_tps", self.schema["fields"]["canonical"])
+        aliases = self.schema["fields"]["aliases"]
+        for alias in ("speed", "tok_s", "tokens_per_second", "tps"):
+            self.assertEqual(aliases.get(alias), "throughput_tps",
+                             f"alias {alias} must target throughput_tps")
+
+    def test_aliases_match_parser_exactly(self):
+        # Drift guard: schema.json "fields.aliases" must equal parse.py's
+        # FIELD_ALIASES, so the registry and the code can never disagree.
+        self.assertEqual(
+            self.schema["fields"]["aliases"],
+            dict(self.parse.FIELD_ALIASES),
+            "schema fields.aliases and parse.py FIELD_ALIASES have drifted",
+        )
+
+    def test_alias_targets_are_registered_canonical(self):
+        canonical = set(self.schema["fields"]["canonical"])
+        for alias, target in self.schema["fields"]["aliases"].items():
+            self.assertIn(target, canonical, f"alias {alias} -> unregistered {target}")
+
+    def test_optional_fields_are_registered(self):
+        canonical = set(self.schema["fields"]["canonical"])
+        for opt in self.schema["fields"]["optional"]:
+            self.assertIn(opt, canonical, f"optional field {opt} not registered")
+        # Speed is tracked but optional (not every submission reports it).
+        self.assertIn("throughput_tps", self.schema["fields"]["optional"])
 
 
 if __name__ == "__main__":

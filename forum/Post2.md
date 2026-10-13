@@ -19,16 +19,16 @@ Full data (27 entries), updated weekly → [the site](https://madgoathaz.github.
 - **Compare** any two setups side-by-side
 - **Recommend** a model from your hardware
 
-## Submit your setup — COPY THIS TEMPLATE:
+## 📋 Submit your setup — COPY THIS TEMPLATE:
 ```
-📋 SUBMISSION TEMPLATE — copy, fill in, post:
-
-Hardware:     [e.g., PC / Laptop / Mac]
-GPU:          [e.g., RTX 4090, 2× 3090, M3 Ultra]
-VRAM/RAM:     [e.g., 24GB VRAM, 64GB unified]
-Model:        [e.g., Llama 3.1 8B, Mistral Nemo 12B]
-Backend:      [e.g., Ollama, llama.cpp, vLLM]
-Quant:        [e.g., Q4_K_M, Q5_K_S, FP16]
-Use case:     [e.g., daily chat, coding, summarization]
-Notes:        [optional — anything else relevant]
+[COMMUNITY-SUBMISSION]
+hardware: [e.g., 1x RTX 4090 24GB + 128GB RAM]
+vram:     [e.g., 24GB — pick: ≤16 / 16-24 / 24-32 / 48-64 / 96-128 / 196-256GB+]
+model:    [e.g., Llama 3.1 8B, Qwen3.8-27B]
+backend:  [e.g., Ollama, llama.cpp, vLLM]
+quant:    [e.g., Q4_K_M, Q5_K_S, FP16, FP8]
+speed:    [e.g., 45 tok/s, ~30 t/s] (optional)
+use_case: [e.g., daily chat, coding, summarization]
+notes:    [e.g., launch flags, quirks, anything else] (optional)
+[/COMMUNITY-SUBMISSION]
 ```

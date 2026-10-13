@@ -114,6 +114,51 @@ class TestApplyAliases(unittest.TestCase):
         self.assertEqual(data["power_draw"], "350W")
         self.assertNotIn("power", data)
 
+    def test_friendly_template_aliases(self):
+        # The forum promo template + the thread's Quick Submit use friendly
+        # single-token names; they all map to the canonical fields.
+        data = self.parse.apply_aliases(
+            {
+                "gpu": "1x RTX 4090 24GB",
+                "vram": "24-32GB",
+                "model": "Qwen3.8-27B",
+                "quant": "GGUF Q4_K_M",
+                "use_case": "daily chat",
+                "notes": "fast cold load",
+                "speed": "45 tok/s",
+            }
+        )
+        self.assertEqual(
+            data,
+            {
+                "hardware": "1x RTX 4090 24GB",
+                "tier": "24-32GB",
+                "model_name": "Qwen3.8-27B",
+                "quant_package": "GGUF Q4_K_M",
+                "primary_use_case": "daily chat",
+                "setup_notes": "fast cold load",
+                "throughput_tps": "45 tok/s",
+            },
+        )
+
+    def test_speed_alias_variants(self):
+        for alias in ("speed", "tok_s", "tokens_per_second", "tps"):
+            with self.subTest(alias=alias):
+                data = self.parse.apply_aliases({alias: "30 t/s"})
+                self.assertEqual(data.get("throughput_tps"), "30 t/s")
+                self.assertNotIn(alias, data)
+
+    def test_friendly_alias_loses_to_canonical(self):
+        # A post using both the friendly and canonical name keeps canonical.
+        data = self.parse.apply_aliases(
+            {"model": "OldName", "model_name": "NewName", "speed": "1 t/s",
+             "throughput_tps": "45 t/s"}
+        )
+        self.assertEqual(data["model_name"], "NewName")
+        self.assertEqual(data["throughput_tps"], "45 t/s")
+        self.assertNotIn("model", data)
+        self.assertNotIn("speed", data)
+
 
 class TestSplitOnSeparator(unittest.TestCase):
     @classmethod
@@ -231,6 +276,116 @@ class TestIsTemplateSubmission(unittest.TestCase):
             "model_name": "Qwen3.8-27B Q4_K_M",
         }
         self.assertFalse(self.parse.is_template_submission(data))
+
+    def test_quick_submit_fill_in_phrases_are_placeholders(self):
+        # The thread's Quick Submit template wraps fill-in instructions in
+        # brackets. Once its friendly names alias to canonical fields, these
+        # must still be detected as an unfilled template (not leak a fake
+        # "Your GPU model + VRAM" submission into the dataset).
+        for value in (
+            "[Your GPU model + VRAM]",
+            "[Model name + quant]",
+            "[What you use it for]",
+            "[One sentence: does it work? any quirks?]",
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(self.parse._looks_like_placeholder(value))
+
+    def test_genuine_bracketed_values_are_not_placeholders(self):
+        # Users wrap real values in brackets; none of them may trip the
+        # fill-in-phrase detection.
+        for value in (
+            "[llama-cpp]",
+            "[8192]",
+            "[default]",
+            "[1 tokens/sec]",
+            "[192-256GB+]",
+            "[RTX 5090 + IceLake Xeon]",
+            "[DeepSeek-R1:671b-0528_q8_0]",
+            "[ unsloth/DeepSeek-R1-GGUF-UD at main ]",
+            "[translation of government journal from 481 BCE China]",
+        ):
+            with self.subTest(value=value):
+                self.assertFalse(self.parse._looks_like_placeholder(value))
+
+    def test_unfilled_quick_template_after_aliasing_is_skipped(self):
+        # Full pipeline check: the unfilled Quick Submit template, with its
+        # friendly names aliased, is recognized as a template.
+        data = self.parse.apply_aliases(
+            {
+                "gpu": "[Your GPU model + VRAM]",
+                "model": "[Model name + quant]",
+                "use_case": "[What you use it for]",
+                "verdict": "[One sentence: does it work? any quirks?]",
+            }
+        )
+        self.assertTrue(self.parse.is_template_submission(data))
+
+
+class TestPromoTemplateEndToEnd(unittest.TestCase):
+    """The forum promo template (Post1/Post2) is the single source of truth
+    for what we ask contributors. It must round-trip: every line parseable,
+    every parsed field displayed on the site, and the unfilled form skipped."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.parse = load_tool("tools/parse.py")
+
+    #: The exact template block both forum posts ship (identical).
+    TEMPLATE = (
+        "[COMMUNITY-SUBMISSION]\n"
+        "hardware: [e.g., 1x RTX 4090 24GB + 128GB RAM]\n"
+        "vram:     [e.g., 24GB — pick: ≤16 / 16-24 / 24-32 / 48-64 / 96-128 / 196-256GB+]\n"
+        "model:    [e.g., Llama 3.1 8B, Qwen3.8-27B]\n"
+        "backend:  [e.g., Ollama, llama.cpp, vLLM]\n"
+        "quant:    [e.g., Q4_K_M, Q5_K_S, FP16, FP8]\n"
+        "speed:    [e.g., 45 tok/s, ~30 t/s] (optional)\n"
+        "use_case: [e.g., daily chat, coding, summarization]\n"
+        "notes:    [e.g., launch flags, quirks, anything else] (optional)\n"
+        "[/COMMUNITY-SUBMISSION]"
+    )
+
+    def _post(self, body):
+        return {
+            "cooked": "<p>" + body.replace("\n", "<br>") + "</p>",
+            "post_number": 30,
+            "username": "tester",
+            "id": 999,
+        }
+
+    def test_filled_template_parses_all_fields(self):
+        body = (
+            "[COMMUNITY-SUBMISSION]\n"
+            "hardware: 1x RTX 4090 24GB + 128GB RAM\n"
+            "vram: 24-32GB\n"
+            "model: Qwen3.8-27B\n"
+            "backend: llama.cpp\n"
+            "quant: GGUF Q4_K_M\n"
+            "speed: 45 tok/s\n"
+            "use_case: daily chat\n"
+            "notes: fast cold load\n"
+            "[/COMMUNITY-SUBMISSION]"
+        )
+        subs = self.parse.extract_submissions_from_post(self._post(body))
+        self.assertEqual(len(subs), 1)
+        self.assertFalse(self.parse.is_template_submission(subs[0]["data"]))
+        data = subs[0]["data"]
+        self.assertEqual(data["hardware"], "1x RTX 4090 24GB + 128GB RAM")
+        self.assertEqual(data["tier"], "24-32GB")
+        self.assertEqual(data["model_name"], "Qwen3.8-27B")
+        self.assertEqual(data["backend"], "llama.cpp")
+        self.assertEqual(data["quant_package"], "GGUF Q4_K_M")
+        self.assertEqual(data["throughput_tps"], "45 tok/s")
+        self.assertEqual(data["primary_use_case"], "daily chat")
+        self.assertEqual(data["setup_notes"], "fast cold load")
+
+    def test_unfilled_template_is_skipped(self):
+        subs = self.parse.extract_submissions_from_post(self._post(self.TEMPLATE))
+        self.assertEqual(len(subs), 1, "the block itself must be extracted")
+        self.assertTrue(
+            self.parse.is_template_submission(subs[0]["data"]),
+            "the unfilled promo template must be detected as a template",
+        )
 
 
 class TestInferVendor(unittest.TestCase):
