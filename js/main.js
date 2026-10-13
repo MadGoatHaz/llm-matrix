@@ -792,6 +792,35 @@ function initDetailPanel() {
         return String(b || '').replace(/\(.*$/, '').trim();
     }
 
+    // B4/C4: a clear confidence line for the panel header. The same three
+    // color states as the matrix dots (green = verified, blue =
+    // community-reported, gray = unverified), spelled out in words so the
+    // detail view is unambiguous.
+    function confidenceLine(s) {
+        const map = {
+            'op-verified': ['detail-conf-verified', '✓ Verified by maintainer'],
+            'community-verified': ['detail-conf-verified', '✓ Verified by community'],
+            'community-reported': ['detail-conf-community', 'Community-reported'],
+            'unverified': ['detail-conf-unverified', 'Unverified'],
+        };
+        const entry = map[s.confidence] || map['community-reported'];
+        return '<div class="detail-confidence ' + entry[0] + '">' + entry[1] + '</div>';
+    }
+
+    // B4/C4: a lifecycle warning for stale entries. Superseded setups are
+    // flagged as possibly outdated; discontinued ones as no longer
+    // recommended. Current / watch entries render nothing.
+    function lifecycleLine(s) {
+        const life = s.lifecycle || 'current';
+        if (life === 'superseded') {
+            return '<div class="detail-lifecycle detail-lifecycle-superseded">⚠ This setup may be outdated — it has been superseded.</div>';
+        }
+        if (life === 'discontinued') {
+            return '<div class="detail-lifecycle detail-lifecycle-discontinued">⛔ This setup is no longer recommended.</div>';
+        }
+        return '';
+    }
+
     // Original forum post: https://forum.level1techs.com/t/256443/#post-<id>
     function forumUrl(s) {
         const src = s.source || {};
@@ -824,6 +853,12 @@ function initDetailPanel() {
         html += '<span class="badge badge-blue">' + esc(shortBackend(s.backend) || '—') + '</span>';
         if (s.highlight) html += '<span class="badge badge-green">★ Community highlight</span>';
         html += '</div>';
+
+        // B4/C4: the confidence line + any lifecycle warning, up front so
+        // the reader knows how much to trust (and how current) this setup
+        // before reading the details.
+        html += confidenceLine(s);
+        html += lifecycleLine(s);
 
         html += '<dl class="detail-grid">';
         fields.forEach(pair => {

@@ -319,18 +319,23 @@
       return parts.slice(0, 4).join(' · ');
     }
 
-    // A2: a small badge next to the contributor name showing how
+    // A2 + B4/C4: a small badge next to the contributor name showing how
     // well-corroborated the report is (green = verified, blue = community,
-    // gray = unverified).
+    // gray = unverified). It pairs the same colored dot the Matrix uses
+    // (`.confidence-dot`) with the word label, so the trust system reads
+    // identically across the matrix, the detail panel, and the results.
     function confidenceBadge(s) {
       var c = s.confidence || '';
+      var dot, label, title;
       if (c === 'op-verified' || c === 'community-verified') {
-        return ' <span class="rec-conf rec-conf-verified" title="Verified report">✓ verified</span>';
+        dot = 'verified'; label = '✓ verified'; title = 'Verified report';
+      } else if (c === 'unverified') {
+        dot = 'unverified'; label = 'unverified'; title = 'Unverified report';
+      } else {
+        dot = 'community'; label = 'community'; title = 'Community-reported';
       }
-      if (c === 'unverified') {
-        return ' <span class="rec-conf rec-conf-unverified" title="Unverified report">unverified</span>';
-      }
-      return ' <span class="rec-conf rec-conf-community" title="Community-reported">community</span>';
+      return ' <span class="confidence-dot ' + dot + '" role="img" aria-label="' + title + '" title="' + title + '">●</span>' +
+        ' <span class="rec-conf rec-conf-' + dot + '" title="' + title + '">' + label + '</span>';
     }
 
     // A2: a subtle label for non-current entries (superseded / discontinued),
