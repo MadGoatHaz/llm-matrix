@@ -122,6 +122,20 @@ class TestDetailPanel(unittest.TestCase):
                 self.assertTrue(s["source"]["username"])
                 self.assertNotIn("raw", s, "verbose raw block must stay out")
 
+    # --- OS/driver is exposed to the panel (P0-3) ------------------------------
+    def test_detail_panel_shows_os_driver(self):
+        # The schema registry declares os_driver as a detail-panel field; the
+        # island must carry it on every row and main.js must render it.
+        js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+        self.assertIn("os_driver", js, "detail panel must render the OS/driver field")
+        config = self._island(self._page("matrix.html"))
+        for s in config["submissions"]:
+            with self.subTest(sub=s["id"]):
+                self.assertIn("os_driver", s, "island row missing os_driver")
+        by_id = {s["id"]: s for s in config["submissions"]}
+        self.assertEqual(by_id["post_22_sgtawesomesauce_0"]["os_driver"],
+                         "Linux/ROCm")
+
     # --- main.js implements the panel behavior --------------------------------------
     def test_main_js_panel_behavior(self):
         js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")

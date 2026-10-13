@@ -82,15 +82,32 @@ def compact_json(obj: Any) -> str:
     return payload.replace("}}", "} }")
 
 
-# Unfilled template values look like "[e.g., ...]", "[vLLM | llama.cpp | ...]"
-# or "[Full model name]" — the whole value is wrapped in brackets AND the
-# content reads as a fill-in instruction: an option list (pipes), an example
-# marker, or a template phrase. Contributors who simply wrap real values in
-# brackets (e.g. "[llama-cpp]", "[8192]") are NOT placeholders.
+# Unfilled template values look like "[e.g., ...]", "[vLLM | llama.cpp | ...]",
+# "[Prefill tok/s (if measured)]", "[Seconds for first token after cold load]"
+# or "[Launch flags, rope/yarn config, ...]" — the whole value is wrapped in
+# brackets AND the content reads as a fill-in instruction: an option list
+# (pipes), an example marker, or a template phrase. Contributors who simply
+# wrap real values in brackets (e.g. "[llama-cpp]", "[8192]") are NOT
+# placeholders.
+#
+# Two precision rules keep genuine data safe (both validated against the
+# whole dataset):
+#
+# * Instruction phrases are anchored where a real value can legitimately
+#   contain the words mid-prose: a note's "verify quality for *your task*"
+#   is not the template's "*Your* GPU model + VRAM"; "launch flags: --ctx
+#   8192" is not the template's "Launch flags, *rope*/yarn config, ...".
+# * A pipe only marks a template when it is a *bracketed* option list —
+#   real notes use " | " as a separator for joined detail (a backend note
+#   appended to the submitter's notes), so unbracketed pipes are ignored.
 PLACEHOLDER_RE = re.compile(r"^\[.*\]$", re.DOTALL)
 TEMPLATE_CONTENT_RE = re.compile(
-    r"\||e\.g\.|example|full model|your \w+|name here|insert", re.IGNORECASE
+    r"e\.g\.|^example|^full model|^your \w+|^model name|^what you|"
+    r"^one sentence|name here|^insert|^fill in|if measured|"
+    r"^seconds for first token|launch flags, rope|^pick:",
+    re.IGNORECASE,
 )
+OPTION_LIST_RE = re.compile(r"\|")
 
 
 def is_placeholder(value: Any) -> bool:
@@ -99,15 +116,69 @@ def is_placeholder(value: Any) -> bool:
     Bracket styling is irrelevant to the check: the template *content*
     (option lists, example markers, fill-in phrases) is what identifies an
     unfilled field, so values that parse.py has already unbracketed are
-    caught just as reliably as raw bracketed ones.
+    caught just as reliably as raw bracketed ones. A pipe only counts as
+    template content inside a bracketed value (an option list).
     """
     if value is None:
         return True
     s = str(value).strip()
     if not s:
         return True
-    body = s[1:-1].strip() if (s.startswith("[") and s.endswith("]")) else s
+    bracketed = s.startswith("[") and s.endswith("]")
+    body = s[1:-1].strip() if bracketed else s
+    if bracketed and OPTION_LIST_RE.search(body):
+        return True
     return bool(TEMPLATE_CONTENT_RE.search(body))
+
+
+# A submission key line whose value is a bracketed placeholder, e.g.
+# "prefill_tps: [Prefill tok/s (if measured)]". The value must end the line —
+# a literal newline, a <br>, or the end of the string (cooked HTML line
+# breaks vary between <pre> blocks and <p> prose) — optionally followed by
+# the template's "(optional)" / "(if measured)" decoration.
+_SCRUB_VALUE_RE = re.compile(
+    r"([A-Za-z_][A-Za-z0-9_]*):[ \t]*(\[[^\]]*\])(?:[ \t]*\((?:optional|if measured)\))?"
+    r"(?=[ \t]*(?:<br\s*/?>|\n|\r|$))"
+)
+
+# A submission block's interior: the bracketed form
+# ("[COMMUNITY-SUBMISSION] ... [/COMMUNITY-SUBMISSION]") or the bare-marker
+# form (a marker line, ..., a closing marker line — user variants such as
+# markers wrapped in <div class="math">). Only the interior is scrubbed, so
+# prose elsewhere in a post (e.g. a diff block showing tier options) is
+# never touched.
+_SUBMISSION_SPAN_RE = re.compile(
+    r"\[(?:COMMUNITY-SUBMISSION|QUICK-SUBMIT)\](.*?)\[(?:/(?:COMMUNITY-SUBMISSION|QUICK-SUBMIT))\]"
+    r"|"
+    r"^\s*(?:COMMUNITY-SUBMISSION|QUICK-SUBMIT)\s*$(.*?)^\s*/?(?:COMMUNITY-SUBMISSION|QUICK-SUBMIT)\s*$",
+    re.DOTALL | re.MULTILINE,
+)
+
+
+def scrub_placeholders(text: str) -> str:
+    """Blank unfilled template values inside submission blocks of forum text.
+
+    Within a ``[COMMUNITY-SUBMISSION]`` / ``[QUICK-SUBMIT]`` block (bracketed
+    or bare-marker form), a ``key: [instruction]`` line whose bracketed value
+    is a placeholder becomes ``key:``; genuine bracketed values
+    (``[llama-cpp]``, ``[8192]``) and everything outside a submission block
+    are untouched. Applied to the raw thread mirrors (``pull.py``) so
+    placeholder instructions never land in the data tree; ``parse.py``
+    applies :func:`is_placeholder` field-by-field to the same values when
+    building the dataset.
+    """
+    def _scrub_lines(block: str) -> str:
+        def _sub(m: re.Match) -> str:
+            return f"{m.group(1)}:" if is_placeholder(m.group(2)) else m.group(0)
+        return _SCRUB_VALUE_RE.sub(_sub, block)
+
+    def _scrub(m: re.Match) -> str:
+        gi = 1 if m.group(1) is not None else 2
+        head = text[m.start():m.start(gi)]
+        tail = text[m.end(gi):m.end()]
+        return head + _scrub_lines(m.group(gi)) + tail
+
+    return _SUBMISSION_SPAN_RE.sub(_scrub, text)
 
 
 def clean_value(value: Any) -> str:
@@ -145,7 +216,7 @@ def real_submissions(data: dict) -> list[dict]:
 #: ``source``/``confidence``/``lifecycle``/``highlight``/``tags`` metadata are
 #: dropped to keep the baked JSON island small.
 CLIENT_SUBMISSION_FIELDS = (
-    "id", "tier", "hardware", "backend", "model", "quant",
+    "id", "tier", "hardware", "backend", "os_driver", "model", "quant",
     "weight_precision", "use_cases", "context", "performance",
     "engine_mode", "notes",
 )
@@ -493,6 +564,72 @@ def parse_speed(value: Any) -> float | None:
 
 
 # ---------------------------------------------------------------------------
+# Speed decomposition (prefill vs decode)
+#
+# Contributors report speed in several shapes. A *single* unlabeled figure is
+# the decode speed (the Matrix "Speed" column and every speed ranking read
+# decode, never the much faster prompt-processing figure). A string that
+# carries BOTH a prefill and a decode figure must be split, or the prefill
+# number corrupts the decode ranking:
+#
+#   "PP 120t/s, TG 2.5 t/s"            (llama.cpp convention)
+#   "prefill: 120, decode: 2.5"        (label-first)
+#   "120 t/s prefill, 2.5 t/s decode"  (label-trailing)
+#   "54.4 tps decode / 215 tok/s prefill"
+# ---------------------------------------------------------------------------
+
+_NUM = r"(\d+(?:\.\d+)?)"
+# Optional speed unit ("120t/s", "54.4 tps", "200t/s+", or bare "128") — the
+# unit is not required, so "99-128 decode" (a range, no unit) still splits.
+_SPEED_UNIT = r"\s*(?:(?:t(?:ok)?/s|tps|tokens?/(?:sec|second)s?)\+?)?"
+
+#: Label-first figures.
+_PP_RE = re.compile(r"\bpp\b\s*[:=]?\s*" + _NUM, re.IGNORECASE)
+_TG_RE = re.compile(r"\btg\b\s*[:=]?\s*" + _NUM, re.IGNORECASE)
+_PREFILL_RE = re.compile(r"\bprefill\b\s*[:=]?\s*" + _NUM, re.IGNORECASE)
+_DECODE_RE = re.compile(r"\bdecode\b\s*[:=]?\s*" + _NUM, re.IGNORECASE)
+#: Label-trailing figures ("120 t/s prefill", "54.4 tps decode", "200t/s+ decode").
+_PREFILL_TAIL_RE = re.compile(_NUM + _SPEED_UNIT + r"\s+prefill\b", re.IGNORECASE)
+_DECODE_TAIL_RE = re.compile(_NUM + _SPEED_UNIT + r"\s+decode\b", re.IGNORECASE)
+
+
+def split_speed(raw: Any, existing_prefill: str = "") -> tuple[str, str]:
+    """Split a raw speed value into ``(prefill, decode)`` strings.
+
+    See the section comment for the shapes handled. Rules:
+
+    * both a prefill and a decode figure present -> each fills its own field;
+    * only one labeled figure present -> it fills its own field, the other
+      keeps ``existing_prefill`` / stays empty (a lone "PP 120 t/s" is NOT a
+      decode measurement);
+    * no labels at all -> the whole string is the decode figure (the
+      historic behavior) and ``existing_prefill`` is preserved;
+    * empty / placeholder input -> both fields empty.
+    """
+    s = clean_value(raw)
+    prefill0 = str(existing_prefill or "").strip()
+    if not s:
+        return prefill0, ""
+    pp = _PP_RE.search(s)
+    tg = _TG_RE.search(s)
+    if pp and tg:
+        return pp.group(1), tg.group(1)
+    if pp:
+        return pp.group(1), ""
+    if tg:
+        return prefill0, tg.group(1)
+    pre = _PREFILL_RE.search(s) or _PREFILL_TAIL_RE.search(s)
+    dec = _DECODE_RE.search(s) or _DECODE_TAIL_RE.search(s)
+    if pre and dec:
+        return pre.group(1), dec.group(1)
+    if pre:
+        return pre.group(1), ""
+    if dec:
+        return prefill0, dec.group(1)
+    return prefill0, s
+
+
+# ---------------------------------------------------------------------------
 # P4-1 / P4-2: chart + advanced-filter data helpers
 # ---------------------------------------------------------------------------
 
@@ -549,6 +686,7 @@ def search_blob(s: dict) -> str:
         hw(s).get("description"),
         hw(s).get("vendor"),
         s.get("backend"),
+        s.get("os_driver"),
         s.get("quant"),
         s.get("weight_precision"),
         s.get("use_cases"),

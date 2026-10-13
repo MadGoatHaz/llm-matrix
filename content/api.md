@@ -19,11 +19,11 @@ The full contract — every field, the versioning policy, the changelog — is d
 
 ## The shape of a record
 
-Each submission in <code>submissions[]</code> carries the 19-key canonical shape — provenance, hardware, model, quant, context, performance, and curation metadata:
+Each submission in <code>submissions[]</code> carries the 20-key canonical shape — provenance, hardware, OS/driver, model, quant, context, performance, and curation metadata:
 
 ```json
 {
-  "version": "1.0",
+  "version": "1.1",
   "generated_at": "2026-10-12T11:39:46.952962",
   "schema_version": "2.1",
   "source_thread": "https://forum.level1techs.com/t/256443",
@@ -37,6 +37,7 @@ Each submission in <code>submissions[]</code> carries the 19-key canonical shape
       "tier": "t1",
       "hardware": { "description": "1x Radeon VII 16GB HBM2 …", "vendor": "AMD" },
       "backend": "llama-swap (llama.cpp subprocess, ROCm)",
+      "os_driver": "Linux/ROCm",
       "model": { "name": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B" },
       "quant": "GGUF I-Nano",
       "context": { "stable": "65536 tokens", "kv_cache": "Q8_0 (quantized)" },

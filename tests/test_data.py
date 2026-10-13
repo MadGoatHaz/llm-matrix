@@ -15,7 +15,7 @@ import unittest
 
 from tests.util import load_json, load_tool
 
-#: Canonical keys every parsed submission must carry (schema v2.1 contract).
+#: Canonical keys every parsed submission must carry (schema v2.2 contract).
 REQUIRED_KEYS = (
     "id",
     "source",
@@ -24,6 +24,7 @@ REQUIRED_KEYS = (
     "tier",
     "hardware",
     "backend",
+    "os_driver",
     "model",
     "quant",
     "weight_precision",
@@ -121,6 +122,59 @@ class TestSubmissionsInvariants(unittest.TestCase):
         self.assertGreater(
             len(reported), 0,
             "no submission reports a decode speed — the Speed column is empty",
+        )
+
+    def test_no_placeholder_instructions_in_dataset(self):
+        # P0-1 data-tree guard (the `grep -r "if measured" data/` contract):
+        # no string value anywhere in the dataset — including the verbatim
+        # raw blocks — may carry unfilled-template instruction text.
+        from tools.site.utils import TEMPLATE_CONTENT_RE, OPTION_LIST_RE
+        bad = []
+
+        def walk(o, path):
+            if isinstance(o, str):
+                s = o.strip()
+                if not s:
+                    return
+                bracketed = s.startswith("[") and s.endswith("]")
+                body = s[1:-1].strip() if bracketed else s
+                if (bracketed and OPTION_LIST_RE.search(body)) or \
+                        TEMPLATE_CONTENT_RE.search(body):
+                    bad.append(f"{path}: {o!r}")
+            elif isinstance(o, dict):
+                for k, v in o.items():
+                    walk(v, f"{path}.{k}")
+            elif isinstance(o, list):
+                for i, v in enumerate(o):
+                    walk(v, f"{path}[{i}]")
+
+        for sub in self.subs:
+            walk(sub, sub.get("id", "?"))
+        self.assertEqual(bad, [], "placeholder instruction text leaked into the dataset")
+
+    def test_speed_fields_are_decomposed(self):
+        # P0-2 data guard: decode_tps must never carry a prefill figure.
+        # A "PP ... TG ..." / "prefill ... decode ..." compound string is
+        # split at parse time; what remains in decode_tps is the decode
+        # number (or a single unlabeled figure, as before).
+        for sub in self.subs:
+            with self.subTest(id=sub["id"]):
+                decode = (sub["performance"].get("decode_tps") or "").lower()
+                self.assertNotIn("pp ", f" {decode}",
+                                 f"{sub['id']}: prefill figure leaked into decode_tps")
+                self.assertNotIn("tg ", f" {decode}",
+                                 f"{sub['id']}: compound speed string not split")
+
+    def test_os_driver_key_present_and_populated(self):
+        # P0-3 contract: every row carries the os_driver key (empty when not
+        # reported) and at least one submission exposes a real value.
+        for sub in self.subs:
+            with self.subTest(id=sub["id"]):
+                self.assertIn("os_driver", sub)
+        populated = [s for s in self.subs if (s.get("os_driver") or "").strip()]
+        self.assertGreaterEqual(
+            len(populated), 1,
+            "no submission exposes an OS/driver value",
         )
 
 

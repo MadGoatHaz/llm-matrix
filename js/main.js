@@ -806,6 +806,7 @@ function initDetailPanel() {
         const ctx = s.context || {};
         const fields = [
             ['Hardware', [hw.description, hw.vendor].filter(Boolean).join(' · ')],
+            ['OS / driver', s.os_driver],
             ['Backend', s.backend],
             ['Quant', [s.quant, s.weight_precision].filter(Boolean).join(' · ')],
             ['Use case', s.use_cases],

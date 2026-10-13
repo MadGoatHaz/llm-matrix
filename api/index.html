@@ -63,9 +63,9 @@
 </ul>
 <p>The full contract — every field, the versioning policy, the changelog — is documented in the <a href="https://github.com/MadGoatHaz/llm-matrix/blob/main/data/api/README.md" target="_blank" rel="noopener">API README</a> in the repo.</p>
 <h2 id="the-shape-of-a-record">The shape of a record</h2>
-<p>Each submission in <code>submissions[]</code> carries the 19-key canonical shape — provenance, hardware, model, quant, context, performance, and curation metadata:</p>
+<p>Each submission in <code>submissions[]</code> carries the 20-key canonical shape — provenance, hardware, OS/driver, model, quant, context, performance, and curation metadata:</p>
 <pre><code class="language-json">{
-  &quot;version&quot;: &quot;1.0&quot;,
+  &quot;version&quot;: &quot;1.1&quot;,
   &quot;generated_at&quot;: &quot;2026-10-12T11:39:46.952962&quot;,
   &quot;schema_version&quot;: &quot;2.1&quot;,
   &quot;source_thread&quot;: &quot;https://forum.level1techs.com/t/256443&quot;,
@@ -79,6 +79,7 @@
       &quot;tier&quot;: &quot;t1&quot;,
       &quot;hardware&quot;: { &quot;description&quot;: &quot;1x Radeon VII 16GB HBM2 …&quot;, &quot;vendor&quot;: &quot;AMD&quot; },
       &quot;backend&quot;: &quot;llama-swap (llama.cpp subprocess, ROCm)&quot;,
+      &quot;os_driver&quot;: &quot;Linux/ROCm&quot;,
       &quot;model&quot;: { &quot;name&quot;: &quot;samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B&quot; },
       &quot;quant&quot;: &quot;GGUF I-Nano&quot;,
       &quot;context&quot;: { &quot;stable&quot;: &quot;65536 tokens&quot;, &quot;kv_cache&quot;: &quot;Q8_0 (quantized)&quot; },

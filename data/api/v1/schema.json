@@ -129,6 +129,10 @@
           "type": "string",
           "description": "Inference engine as reported. May carry a version or qualifier in parentheses (e.g. 'vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)'); the canonical name is the leading token."
         },
+        "os_driver": {
+          "type": "string",
+          "description": "OS / driver stack as reported (e.g. 'Linux/ROCm', 'Windows 11 Pro + WSL2/Ubuntu 24.04'). Empty string = not reported. Displayed in the matrix detail panel. (Added in API v1.1.)"
+        },
         "model": {
           "type": "object",
           "additionalProperties": false,
@@ -200,7 +204,7 @@
         },
         "notes": {
           "type": "string",
-          "description": "The submitter's setup notes: launch flags, quirks, what worked, what didn't."
+          "description": "The submitter's setup notes — quirks, tuning, what worked, what didn't."
         },
         "confidence": {
           "type": "string",

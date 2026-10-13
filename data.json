@@ -1,6 +1,6 @@
 {
-  "version": "1.0",
-  "generated_at": "2026-10-13T09:55:02.577089",
+  "version": "1.1",
+  "generated_at": "2026-10-13T10:41:41.173398",
   "schema_version": "2.2",
   "source_thread": "https://forum.level1techs.com/t/256443",
   "total_submissions": 25,
@@ -34,6 +34,7 @@
         "vendor": "AMD"
       },
       "backend": "vLLM",
+      "os_driver": "",
       "model": {
         "name": "d0xin/Swift-Qwen3.8-27B-Uncensored-FP8",
         "url": "https://huggingface.co/d0xin/Swift-Qwen3.8-27B-Uncensored-FP8"
@@ -79,10 +80,10 @@
         "kv_cache_setting": "q8_0",
         "engine_mode": "Hybrid (VRAM+RAM)",
         "throughput_tps": "~20-30 t/s",
-        "prefill_tps": "[Prefill tok/s (if measured)]",
-        "ttft_cold": "[Seconds for first token after cold load]",
+        "prefill_tps": "",
+        "ttft_cold": "",
         "power_draw": "75 W",
-        "setup_notes": "[Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]"
+        "setup_notes": ""
       },
       "tier": "t2",
       "hardware": {
@@ -90,6 +91,7 @@
         "vendor": "NVIDIA"
       },
       "backend": "Ollama",
+      "os_driver": "",
       "model": {
         "name": "Qwen3.6-27b-q4_KM",
         "url": "https://ollama.com/library/qwen3.6:27b-q4_K_M"
@@ -103,12 +105,12 @@
       },
       "performance": {
         "decode_tps": "~20-30 t/s",
-        "prefill_tps": "Prefill tok/s (if measured)",
-        "ttft_cold": "Seconds for first token after cold load",
+        "prefill_tps": "",
+        "ttft_cold": "",
         "power_w": "75 W"
       },
       "engine_mode": "Hybrid (VRAM+RAM)",
-      "notes": "Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks",
+      "notes": "",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -135,10 +137,10 @@
         "kv_cache_setting": "q8_0",
         "engine_mode": "Hybrid (VRAM+RAM)",
         "throughput_tps": "~35 t/s",
-        "prefill_tps": "[Prefill tok/s (if measured)]",
-        "ttft_cold": "[Seconds for first token after cold load]",
+        "prefill_tps": "",
+        "ttft_cold": "",
         "power_draw": "75 W",
-        "setup_notes": "[Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]"
+        "setup_notes": ""
       },
       "tier": "t2",
       "hardware": {
@@ -146,6 +148,7 @@
         "vendor": "NVIDIA"
       },
       "backend": "Ollama",
+      "os_driver": "",
       "model": {
         "name": "LFM2.5-thinking:1.2b-q8_0",
         "url": "https://ollama.com/library/lfm2.5-thinking:1.2b-q8_0"
@@ -159,12 +162,12 @@
       },
       "performance": {
         "decode_tps": "~35 t/s",
-        "prefill_tps": "Prefill tok/s (if measured)",
-        "ttft_cold": "Seconds for first token after cold load",
+        "prefill_tps": "",
+        "ttft_cold": "",
         "power_w": "75 W"
       },
       "engine_mode": "Hybrid (VRAM+RAM)",
-      "notes": "Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks",
+      "notes": "",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -191,10 +194,10 @@
         "kv_cache_setting": "q8_0",
         "engine_mode": "Hybrid (VRAM+RAM)",
         "throughput_tps": "~25-30 t/s",
-        "prefill_tps": "[Prefill tok/s (if measured)]",
-        "ttft_cold": "[Seconds for first token after cold load]",
+        "prefill_tps": "",
+        "ttft_cold": "",
         "power_draw": "75 W",
-        "setup_notes": "[Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]"
+        "setup_notes": ""
       },
       "tier": "t2",
       "hardware": {
@@ -202,6 +205,7 @@
         "vendor": "NVIDIA"
       },
       "backend": "Ollama",
+      "os_driver": "",
       "model": {
         "name": "Gemma4:26b-a4b-it-mtp-q4_K_M",
         "url": "https://ollama.com/library/gemma4:26b-a4b-it-mtp-q4_K_M"
@@ -215,12 +219,12 @@
       },
       "performance": {
         "decode_tps": "~25-30 t/s",
-        "prefill_tps": "Prefill tok/s (if measured)",
-        "ttft_cold": "Seconds for first token after cold load",
+        "prefill_tps": "",
+        "ttft_cold": "",
         "power_w": "75 W"
       },
       "engine_mode": "Hybrid (VRAM+RAM)",
-      "notes": "Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks",
+      "notes": "",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -247,10 +251,10 @@
         "kv_cache_setting": "q8_0",
         "engine_mode": "Hybrid (VRAM+RAM)",
         "throughput_tps": "~30 t/s",
-        "prefill_tps": "[Prefill tok/s (if measured)]",
-        "ttft_cold": "[Seconds for first token after cold load]",
+        "prefill_tps": "",
+        "ttft_cold": "",
         "power_draw": "75 W",
-        "setup_notes": "[Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]"
+        "setup_notes": ""
       },
       "tier": "t2",
       "hardware": {
@@ -258,6 +262,7 @@
         "vendor": "NVIDIA"
       },
       "backend": "Ollama",
+      "os_driver": "",
       "model": {
         "name": "Qwen3.5:9b-q8_0",
         "url": "https://ollama.com/library/qwen3.5:9b-q8_0"
@@ -271,12 +276,12 @@
       },
       "performance": {
         "decode_tps": "~30 t/s",
-        "prefill_tps": "Prefill tok/s (if measured)",
-        "ttft_cold": "Seconds for first token after cold load",
+        "prefill_tps": "",
+        "ttft_cold": "",
         "power_w": "75 W"
       },
       "engine_mode": "Hybrid (VRAM+RAM)",
-      "notes": "Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks",
+      "notes": "",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -312,6 +317,7 @@
         "vendor": "AMD"
       },
       "backend": "llama-swap",
+      "os_driver": "",
       "model": {
         "name": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B (I-Nano)",
         "url": "samuelcardillo/Carnice-Qwen3.6-MoE-35B-A3B \u00b7 Hugging Face"
@@ -324,8 +330,8 @@
         "kv_cache": "quantized KV (observed near-flat VRAM growth w/ context)"
       },
       "performance": {
-        "decode_tps": "54.4 tps decode / 215 tok/s prefill (short ctx)",
-        "prefill_tps": "",
+        "decode_tps": "54.4",
+        "prefill_tps": "215",
         "ttft_cold": "19.3 s",
         "power_w": "~150 W peak, 99% GPU util"
       },
@@ -366,6 +372,7 @@
         "vendor": "AMD"
       },
       "backend": "llama-swap",
+      "os_driver": "",
       "model": {
         "name": "deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF",
         "url": "deadbydawn101/gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF \u00b7 Hugging Face"
@@ -378,8 +385,8 @@
         "kv_cache": "quantized KV (VRAM ~flat: 4618MB @49k vs 4619MB @4k)"
       },
       "performance": {
-        "decode_tps": "86.7 tps decode / 408 tok/s prefill",
-        "prefill_tps": "",
+        "decode_tps": "86.7",
+        "prefill_tps": "408",
         "ttft_cold": "",
         "power_w": "~214 W peak, 99% GPU util"
       },
@@ -420,6 +427,7 @@
         "vendor": "AMD"
       },
       "backend": "llama-swap",
+      "os_driver": "",
       "model": {
         "name": "unsloth/Qwen3.8-27B-GGUF (UD-Q2_K_XL)",
         "url": "unsloth/Qwen3.8-27B-GGUF \u00b7 Hugging Face"
@@ -432,8 +440,8 @@
         "kv_cache": "quantized KV (VRAM 13770\u219213798MB across 8k\u219232k, +28MB)"
       },
       "performance": {
-        "decode_tps": "13.9 tps decode / 79 tok/s prefill",
-        "prefill_tps": "",
+        "decode_tps": "13.9",
+        "prefill_tps": "79",
         "ttft_cold": "",
         "power_w": "~233 W peak, 100% GPU util"
       },
@@ -473,6 +481,7 @@
         "vendor": "AMD"
       },
       "backend": "llama-swap",
+      "os_driver": "",
       "model": {
         "name": "MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF",
         "url": "MaziyarPanahi/DeepSeek-R1-0528-Qwen3-8B-GGUF \u00b7 Hugging Face"
@@ -485,8 +494,8 @@
         "kv_cache": "quantized KV (7327\u21927299 MB, flat)"
       },
       "performance": {
-        "decode_tps": "84.4 tps decode / 490 tok/s prefill",
-        "prefill_tps": "",
+        "decode_tps": "84.4",
+        "prefill_tps": "490",
         "ttft_cold": "",
         "power_w": "~268 W peak, 93% GPU util"
       },
@@ -526,6 +535,7 @@
         "vendor": "AMD"
       },
       "backend": "llama-swap",
+      "os_driver": "",
       "model": {
         "name": "bartowski/Qwen_Qwen3.5-4B-GGUF",
         "url": "bartowski/Qwen_Qwen3.5-4B-GGUF \u00b7 Hugging Face"
@@ -538,8 +548,8 @@
         "kv_cache": "quantized KV (VRAM 5312MB @4k \u2192 5312MB @65k, +0)"
       },
       "performance": {
-        "decode_tps": "96.4 tps decode / 468 tok/s prefill",
-        "prefill_tps": "",
+        "decode_tps": "96.4",
+        "prefill_tps": "468",
         "ttft_cold": "",
         "power_w": "~225 W peak, 99% GPU util"
       },
@@ -577,6 +587,7 @@
         "vendor": "NVIDIA"
       },
       "backend": "llama.cpp",
+      "os_driver": "",
       "model": {
         "name": "DeepSeek-R1:671b-0528_q8_0",
         "url": "unsloth/DeepSeek-R1-GGUF-UD at main"
@@ -622,6 +633,7 @@
         "vendor": "Mixed"
       },
       "backend": "",
+      "os_driver": "",
       "model": {
         "name": "DeepSeek-V3.1 Terminus:671b_q8_0",
         "url": "unsloth/DeepSeek-V3.1-Terminus-GGUF \u00b7 Hugging Face"
@@ -667,6 +679,7 @@
         "vendor": "Mixed"
       },
       "backend": "",
+      "os_driver": "",
       "model": {
         "name": "DeepSeek-V3.2:671b_UD-Q8_K_XL",
         "url": "unsloth/DeepSeek-V3.2-GGUF \u00b7 Hugging Face"
@@ -712,6 +725,7 @@
         "vendor": "Mixed"
       },
       "backend": "",
+      "os_driver": "",
       "model": {
         "name": "GLM-5.2-UD-Q6_K_XL",
         "url": "unsloth/GLM-5.2-GGUF \u00b7 Hugging Face"
@@ -757,6 +771,7 @@
         "vendor": "Mixed"
       },
       "backend": "",
+      "os_driver": "",
       "model": {
         "name": "Kimi-K2.6-UD-Q8_K_XL",
         "url": "unsloth/Kimi-K2.6 \u00b7 Hugging Face"
@@ -801,6 +816,7 @@
         "vendor": "Mixed"
       },
       "backend": "",
+      "os_driver": "",
       "model": {
         "name": "Qwen3:235b-a22b-thinking-2507-q4",
         "url": "Qwen/Qwen3-235B-A22B-Thinking-2507 \u00b7 Hugging Face"
@@ -844,6 +860,7 @@
         "vendor": "Mixed"
       },
       "backend": "",
+      "os_driver": "",
       "model": {
         "name": "nemotron-3-super:120b",
         "url": ""
@@ -888,6 +905,7 @@
         "vendor": "Mixed"
       },
       "backend": "",
+      "os_driver": "",
       "model": {
         "name": "GPT-OSS:120b",
         "url": "unsloth/gpt-oss-120b-GGUF \u00b7 Hugging Face"
@@ -937,6 +955,7 @@
         "vendor": "NVIDIA"
       },
       "backend": "llama.cpp",
+      "os_driver": "",
       "model": {
         "name": "DeepSeek-V4-Pro-0813-UD_K_XL.gguf",
         "url": "unsloth/DeepSeek-V4-Pro-0813-GGUF \u00b7 Hugging Face"
@@ -988,6 +1007,7 @@
         "vendor": "AMD"
       },
       "backend": "llama.cpp",
+      "os_driver": "",
       "model": {
         "name": "bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf, Qwen3-Embedding-8B-Q8_0.gguf, Qwen3.5-9B-The-Defiant-Fable-Uncnr-Heretic-NEO-MAX-MTP-Q8_0.gguf",
         "url": "https://huggingface.co/bartowski/Kwaipilot_KAT-Coder-V2.5-Dev-GGUF, https://huggingface.co/Qwen/Qwen3-Embedding-8B-GGUF, https://huggingface.co/DavidAU/Qwen3.5-9B-The-Defiant-Fable-Uncensored-Heretic-NEO-IMATRIX-MAX-MTP-GGUF"
@@ -1039,6 +1059,7 @@
         "vendor": "AMD"
       },
       "backend": "llama.cpp",
+      "os_driver": "",
       "model": {
         "name": "Qwen3.8-Flash-Next-Q4_K_M",
         "url": "https://huggingface.co/bartowski/Qwen3.8-Flash-Next-GGUF"
@@ -1096,6 +1117,7 @@
         "vendor": "AMD"
       },
       "backend": "vLLM",
+      "os_driver": "Linux/ROCm",
       "model": {
         "name": "qwen3.8-flash-next",
         "url": "https://huggingface.co/wtdcode/Qwen3.8-Flash-Next-AWQ-W4A16"
@@ -1153,6 +1175,7 @@
         "vendor": "NVIDIA"
       },
       "backend": "Strata",
+      "os_driver": "Windows 11 Pro + WSL2/Ubuntu 24.04 (96 GB allocated via .wslconfig); NVIDIA 610.43.02, KMD 610.47, CUDA UMD 13.3",
       "model": {
         "name": "Qwen/Qwen3.8-Flash-Next (GGUF IQ3_S)",
         "url": "https://huggingface.co/ISTA-DASLab/Qwen3.8-Flash-Next-GSQ-RCO-GGUF"
@@ -1165,7 +1188,7 @@
         "kv_cache": "int8 (engine-native quantized KV)"
       },
       "performance": {
-        "decode_tps": "99-128 decode (median 108, on 50k+ token prompts)",
+        "decode_tps": "128",
         "prefill_tps": "825-3600 on uncached tokens (median ~2800, prompt cache ~90% hits)",
         "ttft_cold": "N/A (bench.sh planned)",
         "power_w": "450W stock cap, 12W idle at P8; peak under load not measured"
@@ -1215,6 +1238,7 @@
         "vendor": "AMD"
       },
       "backend": "Radiance",
+      "os_driver": "amdgpu",
       "model": {
         "name": "Swift 1.5 Flash Next",
         "url": "https://huggingface.co/StillDeadcode/swift1.5-qwen3.8-next-flash-fp8-iq4r-moe"
@@ -1227,7 +1251,7 @@
         "kv_cache": "FP8"
       },
       "performance": {
-        "decode_tps": "200t/s+ decode average",
+        "decode_tps": "200",
         "prefill_tps": "5200-6200t/s",
         "ttft_cold": "N/A",
         "power_w": "500-600W during inference, GPUs at 330W cap each"
@@ -1269,6 +1293,7 @@
         "vendor": "Intel"
       },
       "backend": "llama.cpp",
+      "os_driver": "",
       "model": {
         "name": "gemma-4-31B-it-BF16.gguf",
         "url": ""
@@ -1281,8 +1306,8 @@
         "kv_cache": ""
       },
       "performance": {
-        "decode_tps": "PP 120t/s, TG 2.5 t/s",
-        "prefill_tps": "",
+        "decode_tps": "2.5",
+        "prefill_tps": "120",
         "ttft_cold": "",
         "power_w": ""
       },

@@ -18,12 +18,23 @@ Prints:
 
 Data-quality handling:
     - Unfilled template/placeholder submissions are detected and skipped.
+    - Unfilled template VALUES are blanked in every field (not just the
+      four core ones) and scrubbed from the stored raw block, so
+      instruction text ("Prefill tok/s (if measured)", ...) never reaches
+      the dataset or the site.
     - Multi-model submissions separated by a `------` line are split and
       parsed as individual submissions.
     - Non-standard field names are aliased to canonical names.
+    - Speed strings carrying both a prefill and a decode figure
+      ("PP 120t/s, TG 2.5 t/s", "prefill: X, decode: Y",
+      "X t/s prefill, Y t/s decode") are split into prefill_tps /
+      decode_tps so the prompt-processing number never corrupts the
+      decode ranking.
     - Tier normalization matches most-specific patterns first (no substring
       false-positives like '16' matching inside '16-24').
     - List/bullet artifacts in values are cleaned.
+    - os_driver is extracted from the block and emitted on the entry
+      (schema canonical field; displayed in the detail panel).
 """
 
 import json
@@ -39,15 +50,25 @@ SCHEMA = WORKSPACE / "tools" / "schema.json"
 TAGS = WORKSPACE / "tools" / "tags.json"
 OUTPUT = DATA_DIR / "submissions.json"
 
-# Reuse the site generator's backend normalizer (the single source of truth,
-# shared with validate.py) so parsed submissions store schema-legal backend
-# values; free-text detail (e.g. "vulkan with no performance tuning") is
-# moved into the submission's notes.
+# Reuse the site generator's helpers (the single source of truth, shared
+# with validate.py and the site pages): the backend normalizer (free-text
+# detail like "vulkan with no performance tuning" is moved into the
+# submission's notes), the placeholder detector (an unfilled template value
+# is blanked in EVERY field, not just the core four), and the speed
+# decomposer (a "PP 120t/s, TG 2.5 t/s" string splits into prefill + decode
+# so the prompt-processing figure never corrupts the decode ranking).
 _REPO_ROOT = str(WORKSPACE)
 if _REPO_ROOT not in sys.path:
     sys.path.insert(0, _REPO_ROOT)
 
-from tools.site.utils import split_backend  # noqa: E402
+from tools.site.utils import (  # noqa: E402
+    OPTION_LIST_RE,
+    TEMPLATE_CONTENT_RE,
+    is_placeholder,
+    scrub_placeholders,
+    split_backend,
+    split_speed,
+)
 
 # ---------------------------------------------------------------------------
 # Loading helpers
@@ -293,22 +314,22 @@ TEMPLATE_MARKERS = {
 }
 CORE_FIELDS = ('tier', 'hardware', 'backend', 'model_name')
 
-# Template *content* markers: an option list (pipe), an example marker, or a
-# fill-in instruction phrase. Covers both the Full Submit template ("[e.g.,
-# ...]", "[vLLM | llama.cpp | ...]", "[Full model ...]") and the Quick
-# Submit template's bracketed instructions ("[Your GPU model + VRAM]",
-# "[Model name + quant]", "[What you use it for]", "[One sentence: ...]").
-# Genuine values that users simply wrap in brackets (e.g. ``[llama-cpp]``,
+# Template *content* detection lives in tools/site/utils.py (the single
+# source of truth, shared with the site generator and validate.py): an
+# option list (pipe, inside brackets), an example marker, or a fill-in
+# instruction phrase. Covers both the Full Submit template ("[e.g., ...]",
+# "[vLLM | llama.cpp | ...]", "[Full model ...]") and the Quick Submit
+# template's bracketed instructions ("[Your GPU model + VRAM]",
+# "[Model name + quant]", "[What you use it for]", "[One sentence: ...]"),
+# plus the per-field placeholders contributors leave in otherwise genuine
+# submissions ("[Prefill tok/s (if measured)]", "[Seconds for first token
+# after cold load]", "[Launch flags, rope/yarn config, ...]"). Genuine
+# values that users simply wrap in brackets (e.g. ``[llama-cpp]``,
 # ``[8192]``, ``[DeepSeek-R1:671b-0528_q8_0]``) match none of these.
-TEMPLATE_CONTENT_RE = re.compile(
-    r"\||e\.g\.|^example|full model|your \w+|model name|what you|one sentence|"
-    r"name here|insert",
-    re.IGNORECASE,
-)
 
 def _looks_like_placeholder(v):
     """A bracketed value is an unfilled template placeholder when it is an
-    option list (contains a pipe) or an example/placeholder phrase. Genuine
+    option list (contains a pipe) or a fill-in instruction phrase. Genuine
     values that users simply wrapped in brackets (e.g. ``[llama-cpp]``,
     ``[DeepSeek-R1:671b-0528_q8_0]``) do NOT look like placeholders.
     """
@@ -316,7 +337,23 @@ def _looks_like_placeholder(v):
     if not inner.startswith('['):
         return False
     body = inner.strip('[]').strip()
-    return bool(TEMPLATE_CONTENT_RE.search(body))
+    return bool(OPTION_LIST_RE.search(body)) or bool(TEMPLATE_CONTENT_RE.search(body))
+
+def is_field_placeholder(v):
+    """Placeholder check for a raw field value: both the bracketed form
+    (a bracketed option list like "[Windows 11 | Linux | macOS]") and the
+    unbracketed form (a bare instruction string) are considered."""
+    return is_placeholder(v) or is_placeholder(_unbracket(v))
+
+def clean_field(v):
+    """Unbracket a value and blank it when it is an unfilled template
+    placeholder. Applied to EVERY field (not just the core four) so an
+    instruction like "Prefill tok/s (if measured)" never survives into the
+    dataset; genuine values — including ones users wrapped in brackets —
+    keep their content.
+    """
+    s = _unbracket(v)
+    return "" if is_field_placeholder(v) else s
 
 def is_template_submission(data_dict):
     """Return True if the submission is clearly an unfilled template."""
@@ -405,12 +442,22 @@ def main():
 
             # Normalize the backend to a schema-legal value; any free-text
             # detail the contributor tacked onto the name (e.g. "vulkan with
-            # no performance tuning") is moved into the notes field.
-            backend, backend_detail = split_backend(
-                _unbracket(sub["data"].get("backend", "")), schema)
-            notes = _unbracket(sub["data"].get("setup_notes", ""))
+            # no performance tuning") is moved into the notes field. An
+            # unfilled placeholder backend is blanked (never matched).
+            backend_raw = clean_field(sub["data"].get("backend", ""))
+            backend, backend_detail = split_backend(backend_raw, schema)
+            notes = clean_field(sub["data"].get("setup_notes", ""))
             if backend_detail:
                 notes = f"{notes} | {backend_detail}" if notes else backend_detail
+
+            # Speed: a single unlabeled figure is the decode speed; a string
+            # carrying BOTH a prefill and a decode figure ("PP 120t/s, TG
+            # 2.5 t/s") is split so the prompt-processing number never lands
+            # in decode_tps and corrupts the "fastest setups" ranking.
+            prefill, decode = split_speed(
+                clean_field(sub["data"].get("throughput_tps", "")),
+                clean_field(sub["data"].get("prefill_tps", "")),
+            )
 
             entry = {
                 "id": f"post_{post_num}_{username.lower()}_{i}",
@@ -421,32 +468,38 @@ def main():
                     "submitted_at": post.get("created_at", "")
                 },
                 "type": sub["type"],
-                "raw": sub["data"],
+                # Verbatim block, with unfilled template values blanked — the
+                # instruction text must not survive into the dataset.
+                "raw": {
+                    k: ("" if is_field_placeholder(v) else str(v))
+                    for k, v in sub["data"].items()
+                },
                 # Parsed/normalized fields
-                "tier": normalize_tier(sub["data"].get("tier", "")),
+                "tier": normalize_tier(clean_field(sub["data"].get("tier", ""))),
                 "hardware": {
-                    "description": _unbracket(sub["data"].get("hardware", "")),
-                    "vendor": infer_vendor(sub["data"].get("hardware", ""))
+                    "description": clean_field(sub["data"].get("hardware", "")),
+                    "vendor": infer_vendor(clean_field(sub["data"].get("hardware", "")))
                 },
                 "backend": backend,
+                "os_driver": clean_field(sub["data"].get("os_driver", "")),
                 "model": {
-                    "name": _unbracket(sub["data"].get("model_name", "")),
-                    "url": _unbracket(sub["data"].get("download_url", ""))
+                    "name": clean_field(sub["data"].get("model_name", "")),
+                    "url": clean_field(sub["data"].get("download_url", ""))
                 },
-                "quant": _unbracket(sub["data"].get("quant_package", "")),
-                "weight_precision": _unbracket(sub["data"].get("weight_precision", "")),
-                "use_cases": _unbracket(sub["data"].get("primary_use_case", "")),
+                "quant": clean_field(sub["data"].get("quant_package", "")),
+                "weight_precision": clean_field(sub["data"].get("weight_precision", "")),
+                "use_cases": clean_field(sub["data"].get("primary_use_case", "")),
                 "context": {
-                    "stable": _unbracket(sub["data"].get("stable_context_tested", "")),
-                    "kv_cache": _unbracket(sub["data"].get("kv_cache_setting", ""))
+                    "stable": clean_field(sub["data"].get("stable_context_tested", "")),
+                    "kv_cache": clean_field(sub["data"].get("kv_cache_setting", ""))
                 },
                 "performance": {
-                    "decode_tps": _unbracket(sub["data"].get("throughput_tps", "")),
-                    "prefill_tps": _unbracket(sub["data"].get("prefill_tps", "")),
-                    "ttft_cold": _unbracket(sub["data"].get("ttft_cold", "")),
-                    "power_w": _unbracket(sub["data"].get("power_draw", ""))
+                    "decode_tps": decode,
+                    "prefill_tps": prefill,
+                    "ttft_cold": clean_field(sub["data"].get("ttft_cold", "")),
+                    "power_w": clean_field(sub["data"].get("power_draw", ""))
                 },
-                "engine_mode": _unbracket(sub["data"].get("engine_mode", "")),
+                "engine_mode": clean_field(sub["data"].get("engine_mode", "")),
                 "notes": notes,
                 # Curation fields (from tags.json)
                 "confidence": "community-reported",

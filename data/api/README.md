@@ -32,7 +32,7 @@ Top level (all seven keys required):
 
 | Field | Type | Meaning |
 |-------|------|---------|
-| `version` | string | The API version (`major.minor`) — currently `1.0`. |
+| `version` | string | The API version (`major.minor`) — currently `1.1`. |
 | `generated_at` | string (ISO 8601) | When the pipeline last produced this dataset. |
 | `schema_version` | string | The `tools/schema.json` version the data was parsed against. |
 | `source_thread` | string (URL) | The forum thread the data came from. |
@@ -40,7 +40,7 @@ Top level (all seven keys required):
 | `skipped_templates` | integer | Unfilled template posts excluded from `submissions`. |
 | `submissions` | array | The records — see below. |
 
-Each submission record (19-key canonical shape; the full formal definition
+Each submission record (20-key canonical shape; the full formal definition
 is [`v1/schema.json`](v1/schema.json)):
 
 | Field | Type | Meaning |
@@ -52,6 +52,7 @@ is [`v1/schema.json`](v1/schema.json)):
 | `tier` | string | VRAM tier `t1`…`t6` (≤16GB → 196-256GB+). |
 | `hardware` | object | `{description, vendor}` — free text + `NVIDIA`/`AMD`/`Apple`/`Intel`/`Mixed`. |
 | `backend` | string | Inference engine as reported (leading token is canonical: `vLLM (…MTP=8)` → `vLLM`). |
+| `os_driver` | string | OS / driver stack as reported (e.g. `Linux/ROCm`, `Windows 11 Pro + WSL2/Ubuntu 24.04`); `""` = unreported. Displayed in the matrix detail panel. (Added in v1.1.) |
 | `model` | object | `{name, url}`. |
 | `quant` | string | e.g. `GGUF Q4_K_M`, `FP8`, `I-Nano`. |
 | `weight_precision` | string | e.g. `~2.5bpw`. |
@@ -103,6 +104,11 @@ conformance check of `data.json` against the schema on every CI run.
 
 ### Changelog
 
+- **v1.1 — 2026-10-13** — added the optional `os_driver` field to each
+  submission record (OS / driver stack, shown in the detail panel);
+  placeholder template values are now blanked across every field, and
+  compound speed strings ("PP 120t/s, TG 2.5 t/s") are split into
+  `prefill_tps` / `decode_tps` at parse time.
 - **v1.0 — 2026-10-12** — initial publication: versioned `data.json`
   (`version` field added), `v1/submissions.json`, `v1/schema.json`
   (JSON Schema draft 2020-12), `v1/benchmarks.json`, `v1/hardware.json`.

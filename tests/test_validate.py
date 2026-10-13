@@ -37,6 +37,7 @@ def make_sub(**overrides):
         "tier": "t1",
         "hardware": {"description": "1x RTX 4090 24GB", "vendor": "NVIDIA"},
         "backend": "llama.cpp",
+        "os_driver": "",
         "model": {"name": "Qwen3.8-27B", "url": "https://huggingface.co/x"},
         "quant": "GGUF Q4_K_M",
         "weight_precision": "",

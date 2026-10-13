@@ -32,6 +32,16 @@ WORKSPACE = Path(__file__).parent.parent
 RAW_DIR = WORKSPACE / "data" / "raw"
 SCHEMA = WORKSPACE / "tools" / "schema.json"
 
+# Reuse the site generator's placeholder scrubber (the single source of
+# truth, shared with parse.py) so unfilled template values are blanked in
+# the raw thread mirrors on the way in — instruction text must not land in
+# the data tree. Genuine values and all non-submission content are untouched.
+_REPO_ROOT = str(WORKSPACE)
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
+from tools.site.utils import scrub_placeholders  # noqa: E402
+
 DEFAULT_URL = "https://forum.level1techs.com/t/256443.json"
 
 # Browser-like User-Agent to avoid Discourse 403 bot-protection on plain urllib.
@@ -204,8 +214,16 @@ def summarize(data):
 def save_thread(thread, data):
     """Save a thread's JSON to data/raw/{id}_latest.json.
 
+    Unfilled template values in the posts' cooked HTML are blanked on the
+    way in (see :func:`tools.site.utils.scrub_placeholders`); genuine values
+    and all non-submission content are untouched.
+
     Returns (path, label, count, size_bytes).
     """
+    for post in data.get("post_stream", {}).get("posts", []):
+        cooked = post.get("cooked")
+        if cooked:
+            post["cooked"] = scrub_placeholders(cooked)
     tid = thread["id"]
     out_path = RAW_DIR / f"{tid}_latest.json"
     with open(out_path, "w") as f:

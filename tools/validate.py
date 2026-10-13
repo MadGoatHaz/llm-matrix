@@ -72,9 +72,10 @@ DATA_FILES = (
 # The canonical key contract every parsed submission carries (schema v2.1).
 # Mirrors tests/test_data.py so the validator and the test suite agree.
 REQUIRED_KEYS = (
-    "id", "source", "type", "raw", "tier", "hardware", "backend", "model",
-    "quant", "weight_precision", "use_cases", "context", "performance",
-    "engine_mode", "notes", "confidence", "lifecycle", "highlight", "tags",
+    "id", "source", "type", "raw", "tier", "hardware", "backend", "os_driver",
+    "model", "quant", "weight_precision", "use_cases", "context",
+    "performance", "engine_mode", "notes", "confidence", "lifecycle",
+    "highlight", "tags",
 )
 
 # No real accelerator (or system) has this much memory; it bounds "reasonable".

@@ -443,6 +443,273 @@ class TestNormalizeTier(unittest.TestCase):
         self.assertIsNone(self.parse.normalize_tier("some gibberish"))
 
 
+class TestPlaceholderDetection(unittest.TestCase):
+    """Unfilled template values — bracketed OR bare (the parser unbrackets
+    before display) — are detected as placeholders, so they get blanked in
+    every field. Genuine values, including prose that merely contains
+    template-like words, are NOT placeholders (data-loss guard)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.parse = load_tool("tools/parse.py")
+
+    def test_burhan_template_strings_are_placeholders(self):
+        # The exact values that leaked onto the live site (P0-1): after
+        # _unbracket() they are bare instruction strings, and they must be
+        # caught with or without the user's bracket styling.
+        for value in (
+            "Prefill tok/s (if measured)",
+            "[Prefill tok/s (if measured)]",
+            "Seconds for first token after cold load",
+            "[Seconds for first token after cold load]",
+            "Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks",
+            "[Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]",
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(self.parse.is_placeholder(value))
+
+    def test_instruction_phrases_are_placeholders(self):
+        for value in (
+            "pick: A or B",
+            "[pick: A or B]",
+            "Fill in your setup",
+            "Your GPU model + VRAM",
+            "Insert the model name",
+            "Name here",
+            "One sentence: does it work? any quirks?",
+            "What you use it for",
+            "Model name + quant",
+            "Full model name + quant",
+            "Example model name",
+            "e.g., 45 tok/s, ~30 t/s",
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(self.parse.is_placeholder(value))
+
+    def test_bracketed_option_list_is_a_placeholder(self):
+        for value in (
+            "[≤16GB | 16-24GB | 24-32GB]",
+            "[vLLM | llama.cpp | Ollama]",
+        ):
+            with self.subTest(value=value):
+                self.assertTrue(self.parse.is_placeholder(value))
+
+    def test_genuine_values_are_not_placeholders(self):
+        # Data-loss guard: real values from the live dataset — several
+        # contain template-like words mid-prose and must survive.
+        for value in (
+            "MoE A3B — fits 12.7GB incl. KV headroom. verify quality for your task, "
+            "but pipeline ran coherent through 65k. | llama.cpp subprocess, ROCm/ROCm backends",
+            "launch flags: --ctx-size 8192 --flash-attn on",
+            "Tuned launch flags, got 20% more throughput",
+            "41 seconds for the first token",
+            "Linux/ROCm",
+            "amdgpu",
+            "Windows 11 Pro + WSL2/Ubuntu 24.04 (96 GB allocated via .wslconfig)",
+            "54.4 tps decode / 215 tok/s prefill (short ctx)",
+            "120t/s code, 70t/s chat",
+            "99-128 decode (median 108, on 50k+ token prompts)",
+            "200t/s+ decode average",
+            "llama.cpp vulkan with no performance tuning",
+            "peak under load not measured",
+        ):
+            with self.subTest(value=value[:40]):
+                self.assertFalse(self.parse.is_placeholder(value))
+
+    def test_genuine_bracketed_values_are_not_placeholders(self):
+        # Users wrap real values in brackets; none may trip detection.
+        for value in (
+            "[llama-cpp]",
+            "[8192]",
+            "[default]",
+            "[1 tokens/sec]",
+            "[192-256GB+]",
+            "[RTX 5090 + IceLake Xeon]",
+            "[DeepSeek-R1:671b-0528_q8_0]",
+            "[ unsloth/DeepSeek-R1-GGUF-UD at main ]",
+            "[translation of government journal from 481 BCE China]",
+        ):
+            with self.subTest(value=value):
+                self.assertFalse(self.parse.is_placeholder(value))
+                self.assertFalse(self.parse._looks_like_placeholder(value))
+
+
+class TestSpeedSplit(unittest.TestCase):
+    """A speed string carrying both a prefill and a decode figure is split
+    so the (much faster) prompt-processing number never lands in decode_tps
+    and corrupts the "fastest setups" ranking (P0-2)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.parse = load_tool("tools/parse.py")
+
+    def test_pp_tg_split(self):
+        # The exact live case: post 33 (manoreken2).
+        self.assertEqual(
+            self.parse.split_speed("PP 120t/s, TG 2.5 t/s", ""),
+            ("120", "2.5"),
+        )
+
+    def test_pp_tg_variants(self):
+        for value in (
+            "PP 120 t/s, TG 2.5 t/s",
+            "pp 120 t/s; tg 2.5 t/s",
+            "PP: 120, TG: 2.5",
+            "TG 2.5 t/s, PP 120 t/s",
+        ):
+            with self.subTest(value=value):
+                self.assertEqual(self.parse.split_speed(value, ""), ("120", "2.5"))
+
+    def test_label_first_split(self):
+        self.assertEqual(self.parse.split_speed("prefill: 120, decode: 2.5", ""),
+                         ("120", "2.5"))
+        self.assertEqual(self.parse.split_speed("decode: 2.5, prefill: 120", ""),
+                         ("120", "2.5"))
+
+    def test_label_trailing_split(self):
+        self.assertEqual(self.parse.split_speed("120 t/s prefill, 2.5 t/s decode", ""),
+                         ("120", "2.5"))
+        # The s1ugh34d live shape (decode first, unit variants, trailing note).
+        self.assertEqual(
+            self.parse.split_speed("54.4 tps decode / 215 tok/s prefill (short ctx)", ""),
+            ("215", "54.4"),
+        )
+        # "200t/s+ decode average" + a separately reported prefill field.
+        self.assertEqual(self.parse.split_speed("200t/s+ decode average",
+                                               "5200-6200t/s"),
+                         ("5200-6200t/s", "200"))
+        # Kif's live shape: a range with the label trailing the last figure.
+        self.assertEqual(
+            self.parse.split_speed("99-128 decode (median 108, on 50k+ token prompts)",
+                                   "825-3600 on uncached tokens"),
+            ("825-3600 on uncached tokens", "128"),
+        )
+
+    def test_single_unlabeled_value_is_decode(self):
+        # No PP/TG distinction -> historic behavior: the whole string is the
+        # decode figure and any separately reported prefill is preserved.
+        self.assertEqual(self.parse.split_speed("30 t/s", ""), ("", "30 t/s"))
+        self.assertEqual(self.parse.split_speed("~20-30 t/s", ""), ("", "~20-30 t/s"))
+        self.assertEqual(self.parse.split_speed("120t/s code, 70t/s chat", ""),
+                         ("", "120t/s code, 70t/s chat"))
+        self.assertEqual(self.parse.split_speed("68-92", "1200@0ctx"),
+                         ("1200@0ctx", "68-92"))
+
+    def test_lone_labeled_figure_fills_only_its_slot(self):
+        # A lone prefill figure is NOT a decode measurement (and vice versa).
+        self.assertEqual(self.parse.split_speed("PP 120 t/s", ""), ("120", ""))
+        self.assertEqual(self.parse.split_speed("TG 2.5 t/s", ""), ("", "2.5"))
+        self.assertEqual(self.parse.split_speed("prefill: 120", ""), ("120", ""))
+
+    def test_empty_and_placeholder_input(self):
+        self.assertEqual(self.parse.split_speed("", "120"), ("120", ""))
+        self.assertEqual(self.parse.split_speed("[Prefill tok/s (if measured)]", ""),
+                         ("", ""))
+
+
+class TestOsDriverEmission(unittest.TestCase):
+    """os_driver is a schema canonical field (detail panel) — it must be
+    extracted from the block and emitted on the entry (P0-3)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.parse = load_tool("tools/parse.py")
+
+    def test_os_driver_extracted_from_block(self):
+        data = self.parse.parse_submission_block(
+            "hardware: 4x AMD v620\nos_driver: Linux/ROCm\nmodel_name: qwen3.8"
+        )
+        self.assertEqual(data["os_driver"], "Linux/ROCm")
+
+    def test_os_driver_placeholder_is_blanked(self):
+        data = self.parse.parse_submission_block(
+            "os_driver: [Windows 11 | Linux | macOS]\nmodel_name: X"
+        )
+        self.assertEqual(self.parse.clean_field(data["os_driver"]), "")
+
+    def test_os_driver_genuine_bracketed_value_kept(self):
+        data = self.parse.parse_submission_block("os_driver: [ROCm 6.3]")
+        self.assertEqual(self.parse.clean_field(data["os_driver"]), "ROCm 6.3")
+
+    def test_entry_carries_os_driver_end_to_end(self):
+        post = {
+            "cooked": "<pre><code>[COMMUNITY-SUBMISSION]\n"
+                      "hardware: 4x AMD v620\n"
+                      "os_driver: Linux/ROCm\n"
+                      "backend: vLLM\n"
+                      "model_name: qwen3.8-flash-next\n"
+                      "[/COMMUNITY-SUBMISSION]</code></pre>",
+            "post_number": 99,
+            "username": "tester",
+            "id": 1,
+        }
+        subs = self.parse.extract_submissions_from_post(post)
+        self.assertEqual(len(subs), 1)
+        self.assertFalse(self.parse.is_template_submission(subs[0]["data"]))
+        self.assertEqual(subs[0]["data"]["os_driver"], "Linux/ROCm")
+
+
+class TestRawScrub(unittest.TestCase):
+    """scrub_placeholders blanks unfilled template values inside submission
+    blocks only — genuine values, and prose outside blocks, stay verbatim."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.parse = load_tool("tools/parse.py")
+
+    def test_scrubs_burhan_block(self):
+        block = (
+            "[COMMUNITY-SUBMISSION]\n"
+            "tier: 16-24GB\n"
+            "hardware: 1x RTX-4000 Ada SFF (20 GB)\n"
+            "throughput_tps: ~20-30 t/s\n"
+            "prefill_tps: [Prefill tok/s (if measured)]\n"
+            "ttft_cold: [Seconds for first token after cold load]\n"
+            "power_draw: 75 W\n"
+            "setup_notes: [Launch flags, rope/yarn config, host RAM offload, prompt prefill behavior, quirks]\n"
+            "[/COMMUNITY-SUBMISSION]"
+        )
+        out = self.parse.scrub_placeholders(block)
+        for gone in ("if measured", "seconds for", "launch flags"):
+            self.assertNotIn(gone, out)
+        for kept in ("tier: 16-24GB", "hardware: 1x RTX-4000 Ada SFF (20 GB)",
+                     "throughput_tps: ~20-30 t/s", "power_draw: 75 W",
+                     "prefill_tps:", "ttft_cold:", "setup_notes:"):
+            self.assertIn(kept, out)
+
+    def test_genuine_bracketed_values_survive(self):
+        block = (
+            "[COMMUNITY-SUBMISSION]\n"
+            "backend: [llama-cpp]\n"
+            "stable_context_tested: [8192]\n"
+            "kv_cache_setting: [default]\n"
+            "[/COMMUNITY-SUBMISSION]"
+        )
+        self.assertEqual(self.parse.scrub_placeholders(block), block)
+
+    def test_optional_decoration_after_bracket(self):
+        line = "notes:    [e.g., launch flags, quirks, anything else] (optional)\n"
+        out = self.parse.scrub_placeholders("[COMMUNITY-SUBMISSION]\n" + line +
+                                           "[/COMMUNITY-SUBMISSION]")
+        self.assertNotIn("launch flags", out)
+        self.assertIn("notes:", out)
+
+    def test_br_separated_lines(self):
+        text = ("[QUICK-SUBMIT]\nmodel_name: [Full model name + quant]<br>"
+                "backend: [llama-cpp]<br>[/QUICK-SUBMIT]")
+        out = self.parse.scrub_placeholders(text)
+        self.assertNotIn("Full model", out)
+        self.assertIn("backend: [llama-cpp]", out)
+
+    def test_prose_outside_blocks_is_untouched(self):
+        # A diff block suggesting tier options (post 7) is prose, not a
+        # submission — it must survive verbatim.
+        text = ("<p>There's a hole in the <code>tier</code> options:</p>\n"
+                "<pre><code class=\"lang-diff\">- tier: [≤16GB | 24-32GB]\n"
+                "+ tier: [≤16GB | 16-24GB | 24-32GB]\n</code></pre>")
+        self.assertEqual(self.parse.scrub_placeholders(text), text)
+
+
 class TestBackendNormalization(unittest.TestCase):
     """Free-text backend values normalize to a schema-legal enum value, with
     the descriptive remainder preserved (parse.py moves it into notes)."""
