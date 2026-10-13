@@ -39,7 +39,10 @@ class TestSchemaStructure(unittest.TestCase):
         self.assertEqual(len(parts), 2, f"version {version!r} is not major.minor")
         self.assertTrue(all(p.isdigit() for p in parts))
 
-    def test_six_tiers_in_strict_ascending_order(self):
+    def test_six_disjoint_tiers_are_contiguous(self):
+        # A3: the tiers are DISJOINT bands — each starts exactly where the
+        # previous one ends, so every VRAM amount has exactly one tier
+        # home (a 16GB card is t2, a 24GB card t3, a 32GB 5090 t4, ...).
         tiers = self.schema["tiers"]
         self.assertEqual(len(tiers), 6, "expected exactly 6 tiers")
         self.assertEqual(
@@ -50,16 +53,11 @@ class TestSchemaStructure(unittest.TestCase):
             self.assertIn("label", tier)
             self.assertEqual(len(tier["range"]), 2)
             self.assertLess(tier["range"][0], tier["range"][1])
-        # Strictly ascending. (Gaps are intentional: e.g. no 32–48GB
-        # consumer hardware class exists, so t4 starts at 48.)
         for prev, cur in zip(tiers, tiers[1:]):
-            self.assertGreater(
-                cur["range"][0], prev["range"][0],
-                f"{cur['id']} must start above {prev['id']}",
-            )
-            self.assertGreater(
-                cur["range"][1], prev["range"][1],
-                f"{cur['id']} must end above {prev['id']}",
+            self.assertEqual(
+                cur["range"][0], prev["range"][1],
+                f"{cur['id']} must start exactly where {prev['id']} ends "
+                "(disjoint bands: no gaps, no overlaps)",
             )
 
     def test_all_enums_non_empty(self):

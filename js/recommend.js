@@ -9,12 +9,18 @@
 // (rare) case where the island is missing. No server, no frameworks, no
 // dependencies.
 //
-// The hard gate is VRAM: a setup only appears if it fits the user's tier (or
-// a smaller one). Use case, vendor, and priority shape the ranking, and the
-// submission's confidence + lifecycle state weight it (a superseded or
-// discontinued setup ranks below a current one, and lower-corroborated
-// reports rank below verified ones). Every result carries a plain-English
-// "why this matched" and a deep link to its row in the Matrix.
+// The hard gate is VRAM, estimated honestly (A3): a setup only appears if
+// its ESTIMATED VRAM — an explicit "N GB" in its notes, else in its hardware
+// description, else its tier band's ceiling — fits within the LOWER bound of
+// the user's tier. Tiers are ranges ("16–23 GB"), so the floor is the only
+// amount the user is guaranteed to have; a 16 GB card is shown only setups
+// estimated at 16 GB or less, never the band's top. A setup that cannot be
+// estimated never appears (no fit guarantee). Use case, vendor, and priority
+// shape the ranking, and the submission's confidence + lifecycle state weight
+// it (a superseded or discontinued setup ranks below a current one, and
+// lower-corroborated reports rank below verified ones). Every result carries
+// a plain-English "why this matched" and a deep link to its row in the
+// Matrix.
 
 (function () {
   'use strict';
@@ -298,7 +304,9 @@
     function whyLine(s, sel) {
       var parts = [];
       var label = tierLabel[s.tier] || s.tier;
-      if (s.tier === sel.tier) parts.push('Sized for your ' + label + ' card');
+      // A3: "In your VRAM class" — the tier is a range, not a guarantee
+      // (the card may need tuning to fit the user's exact GPU).
+      if (s.tier === sel.tier) parts.push('In your ' + label + ' VRAM class');
       else parts.push('Fits in ' + label + ' — less VRAM than you have');
       if (sel.useCase && s.useCases.indexOf(sel.useCase) !== -1) {
         parts.push('Built for ' + sel.useCase);
@@ -370,6 +378,48 @@
     }
 
     // ----------------------------------------------------------------
+    // A3: honest VRAM fitting (client-side port of the generator's
+    // estimate_vram_gb, which is the single source of truth)
+    // ----------------------------------------------------------------
+
+    // The first "N GB" figure in a string.
+    function firstGb(s) {
+      if (!s) return null;
+      var m = String(s).match(/(\d+(?:\.\d+)?)\s*GB/i);
+      return m ? parseFloat(m[1]) : null;
+    }
+
+    // Best-known VRAM footprint of a submission, in GB: an explicit
+    // "N GB" in the notes, then the hardware description, then the tier
+    // band's ceiling (the documented fallback). Null when none of the
+    // three yields a number — no estimate means no fit guarantee.
+    function estimateVram(s) {
+      var gb = firstGb(s.notes);
+      if (gb !== null) return gb;
+      gb = firstGb(s.hardware);
+      if (gb !== null) return gb;
+      var tier = null;
+      (config.tiers || []).forEach(function (t) {
+        if (t.id === s.tier) tier = t;
+      });
+      if (tier && tier.range) return tier.range[1];
+      return null;
+    }
+
+    // The user's VRAM ceiling = the LOWER bound of their tier. A tier is a
+    // range, so a user at its bottom can only guarantee the floor. t1's
+    // floor is 0 (uninformative), so 8 GB — the practical floor of small
+    // cards — serves as its ceiling.
+    function vramCeiling(tierId) {
+      var tier = null;
+      (config.tiers || []).forEach(function (t) {
+        if (t.id === tierId) tier = t;
+      });
+      if (!tier || !tier.range) return null;
+      return Math.max(tier.range[0], 8);
+    }
+
+    // ----------------------------------------------------------------
     // Render
     // ----------------------------------------------------------------
     function render() {
@@ -383,9 +433,17 @@
         return;
       }
 
-      var userTierIdx = tierIndex[sel.tier];
-      // Hard gate: the setup must fit (its tier index <= the user's).
-      var compatible = subs.filter(function (s) { return s.tierIdx <= userTierIdx; });
+      // A3: hard gate on ESTIMATED VRAM, not tier order. The setup's
+      // estimate (notes > hardware > tier-band ceiling) must fit within the
+      // LOWER bound of the user's tier — the only amount the user is
+      // guaranteed to have. A setup that cannot be estimated never appears.
+      var ceiling = vramCeiling(sel.tier);
+      var compatible = (ceiling !== null) ?
+        subs.filter(function (s) {
+          var est = estimateVram(s);
+          return est !== null && est <= ceiling;
+        }) :
+        [];
 
       var pool = compatible;
       var emptyForUseCase = false;

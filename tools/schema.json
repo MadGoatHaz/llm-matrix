@@ -1,5 +1,5 @@
 {
-  "version": "2.2",
+  "version": "2.3",
   "last_updated": "2026-10-13",
   "fields": {
     "description": "Canonical submission fields and recognized aliases — the single source of truth for what the forum template asks for, what parse.py extracts, and what the site displays. parse.py's FIELD_ALIASES must mirror the 'aliases' map (tests/test_schema.py enforces the sync). Every canonical field is rendered somewhere on the site; 'optional' fields may be left blank.",
@@ -45,12 +45,12 @@
     ]
   },
   "tiers": [
-    {"id": "t1", "label": "≤16GB", "range": [0, 16]},
-    {"id": "t2", "label": "16-24GB", "range": [16, 24]},
-    {"id": "t3", "label": "24-32GB", "range": [24, 32]},
-    {"id": "t4", "label": "48-64GB", "range": [48, 64]},
-    {"id": "t5", "label": "96-128GB", "range": [96, 128]},
-    {"id": "t6", "label": "196-256GB+", "range": [196, 999]}
+    {"id": "t1", "label": "Under 16 GB", "range": [0, 16]},
+    {"id": "t2", "label": "16–23 GB", "range": [16, 24]},
+    {"id": "t3", "label": "24–31 GB", "range": [24, 32]},
+    {"id": "t4", "label": "32–47 GB", "range": [32, 48]},
+    {"id": "t5", "label": "48–95 GB", "range": [48, 96]},
+    {"id": "t6", "label": "96+ GB", "range": [96, 999]}
   ],
   "hardware_vendors": ["NVIDIA", "AMD", "Apple", "Intel", "Mixed"],
   "backends": [

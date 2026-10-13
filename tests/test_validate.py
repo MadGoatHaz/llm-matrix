@@ -141,6 +141,15 @@ class TestIndividualChecks(unittest.TestCase):
         results = self.mod.check_enum_conformance([make_sub()], self.schema)
         self.assertEqual(results[0]["status"], "pass")
 
+    def test_empty_vendor_is_missing_data_not_failure(self):
+        # B5: a hardware description with no GPU vendor signal yields vendor
+        # "" (e.g. a CPU-only rig) — missing data, which must not fail the
+        # enum check (the same rule the empty-tier case gets).
+        results = self.mod.check_enum_conformance(
+            [make_sub(hardware={"description": "Xeon 1024GB RAM", "vendor": ""})],
+            self.schema)
+        self.assertEqual(results[0]["status"], "pass")
+
     # --- check 4: duplicates ------------------------------------------------
     def test_duplicate_id_fails(self):
         a = make_sub(id="post_1_x_0")
@@ -186,9 +195,9 @@ class TestIndividualChecks(unittest.TestCase):
         self.assertEqual(results[0]["status"], "pass")
 
     def test_t1_zero_floor_is_legit(self):
-        # t1 is "≤16GB" = [0, 16]; a 0 floor must NOT be flagged (only the
-        # ceiling is bounded). This is the exact case that tripped the first
-        # validator draft on real data.
+        # t1 is "Under 16 GB" = [0, 16]; a 0 floor must NOT be flagged (only
+        # the ceiling is bounded). This is the exact case that tripped the
+        # first validator draft on real data.
         results = self.mod.check_vram_reasonable([make_sub(tier="t1")],
                                                 self.schema)
         self.assertEqual(results[0]["status"], "pass")

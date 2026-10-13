@@ -1,7 +1,7 @@
 {
-  "version": "1.2",
-  "generated_at": "2026-10-13T11:13:38.266264",
-  "schema_version": "2.2",
+  "version": "1.3",
+  "generated_at": "2026-10-13T15:49:36.654058",
+  "schema_version": "2.3",
   "source_thread": "https://forum.level1techs.com/t/256443",
   "total_submissions": 26,
   "skipped_templates": 2,
@@ -29,7 +29,7 @@
         "throughput_tps": "120t/s code, 70t/s chat",
         "setup_notes": "magiccodingman/vllm-radiance, with adaptive MTP = 8"
       },
-      "tier": "t4",
+      "tier": "t5",
       "hardware": {
         "description": "2 x R9700",
         "vendor": "AMD"
@@ -317,7 +317,7 @@
         "power_draw": "~150 W peak, 99% GPU util",
         "ttft_cold": "19.3 s"
       },
-      "tier": "t1",
+      "tier": "t2",
       "hardware": {
         "description": "Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM",
         "vendor": "AMD"
@@ -373,7 +373,7 @@
         "coherence": "holds through 49k NIAH.",
         "power_draw": "~214 W peak, 99% GPU util"
       },
-      "tier": "t1",
+      "tier": "t2",
       "hardware": {
         "description": "Radeon VII 16GB HBM2 (gfx906)",
         "vendor": "AMD"
@@ -429,7 +429,7 @@
         "coherence": "holds through full 49k NIAH. Good value if you need 30k+ ctx on a dense 27B and can live with 14 tps.",
         "power_draw": "~233 W peak, 100% GPU util"
       },
-      "tier": "t1",
+      "tier": "t2",
       "hardware": {
         "description": "Radeon VII 16GB HBM2 (gfx906)",
         "vendor": "AMD"
@@ -484,7 +484,7 @@
         "setup_notes": "Reasoning model (reasoning_content stream). NIAH hit at native 16k limit. Cheap 7.4GB. Run with generous max_tokens; single-request math budget 512 burned in reasoning without emitting final answer (content overflow quirk). Strong ttft + throughput for an 8B R1 distill.",
         "power_draw": "~268 W peak, 93% GPU util"
       },
-      "tier": "t1",
+      "tier": "t2",
       "hardware": {
         "description": "Radeon VII 16GB HBM2 (gfx906)",
         "vendor": "AMD"
@@ -539,7 +539,7 @@
         "setup_notes": "Fastest model tested; everything fits with massive KV headroom. Full native 65k context usable. Verified arithmetic (final answer 4). Budget max_tokens \u2014 it reasons too. Best \u201cleave always loaded\u201d generalist.",
         "power_draw": "~225 W peak, 99% GPU util"
       },
-      "tier": "t1",
+      "tier": "t2",
       "hardware": {
         "description": "Radeon VII 16GB HBM2 (gfx906)",
         "vendor": "AMD"
@@ -843,7 +843,7 @@
         "model_name": "[Qwen3:235b-a22b-thinking-2507-q4]",
         "download_url": "[ Qwen/Qwen3-235B-A22B-Thinking-2507 \u00b7 Hugging Face ]"
       },
-      "tier": "t5",
+      "tier": "t6",
       "hardware": {
         "description": "RTX 5090 + IceLake Xeon",
         "vendor": "NVIDIA"
@@ -892,7 +892,7 @@
         "tier": "[48-64GB]",
         "model_name": "[nemotron-3-super:120b]"
       },
-      "tier": "t4",
+      "tier": "t5",
       "hardware": {
         "description": "RTX 5090 + IceLake Xeon",
         "vendor": "NVIDIA"
@@ -942,7 +942,7 @@
         "model_name": "[GPT-OSS:120b]",
         "download_url": "[ unsloth/gpt-oss-120b-GGUF \u00b7 Hugging Face ]"
       },
-      "tier": "t4",
+      "tier": "t5",
       "hardware": {
         "description": "RTX 5090 + IceLake Xeon",
         "vendor": "NVIDIA"
@@ -1049,7 +1049,7 @@
       "tier": null,
       "hardware": {
         "description": "",
-        "vendor": "Mixed"
+        "vendor": ""
       },
       "backend": "Colibri",
       "os_driver": "",
@@ -1099,7 +1099,7 @@
         "power_draw": "~600w",
         "throughput_tps": "~50t/s chat"
       },
-      "tier": "t4",
+      "tier": "t5",
       "hardware": {
         "description": "2 x R9700",
         "vendor": "AMD"
@@ -1152,7 +1152,7 @@
         "throughput_tps": "~35t/s chat",
         "power_draw": "~750w"
       },
-      "tier": "t4",
+      "tier": "t5",
       "hardware": {
         "description": "2 x w7900",
         "vendor": "AMD"
@@ -1211,7 +1211,7 @@
         "power_draw": "~900w, full system power from wall",
         "setup_notes": "Following https://github.com/leapdragon/vllm-rdna2-recipe, I got the flash-next fork working. Tweaks from that guide: enable vision, `max_pixels=1638400`, `DENSE_INT8=1`, `DENSE_INT8_ONLY=1`, `MTP=0` (collapses under multiple inference threads), `GPUUTIL=0.98` (needs fully headless system), `MAXLEN=262144`, PLE table `ples_fp8`, ~50GB of system memory required for it. Total KV capacity ~840k tokens Quantized PLE doesn't seem to have any meaningful impact on quality."
       },
-      "tier": "t5",
+      "tier": "t6",
       "hardware": {
         "description": "4x AMD v620",
         "vendor": "AMD"
@@ -1334,7 +1334,7 @@
         "power_draw": "500-600W during inference, GPUs at 330W cap each",
         "setup_notes": "Everything running in VRAM and system RAM, no disk tier"
       },
-      "tier": "t4",
+      "tier": "t5",
       "hardware": {
         "description": "2 x R9700 32GB, Threadripper 3960X, 128GB DDR4",
         "vendor": "AMD"
@@ -1390,7 +1390,7 @@
         "setup_notes": "It outputs clean Japanese. The model knows kings of \u897f\u79e6 therefore it knows China history more than GPT-OSS-120B, but less than DeepSeek-R1 : Gemma4 31B does not know the older sexagenary cycle year names such as \u65c3\u8499\u5927\u8352\u843d, \u67d4\u5146\u56f0\u6566 or \u662d\u967d\u5927\u6df5\u737b and those words trigger pretty sloppy quasi-history. Denial of translation of cruel historical text is somewhat relaxed than DeepSeek-V4-Pro-0813.",
         "throughput_tps": "PP 120t/s, TG 2.5 t/s"
       },
-      "tier": "t5",
+      "tier": "t6",
       "hardware": {
         "description": "Intel Arc B60 24GB x4",
         "vendor": "Intel"

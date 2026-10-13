@@ -30,8 +30,13 @@ Data-quality handling:
       "X t/s prefill, Y t/s decode") are split into prefill_tps /
       decode_tps so the prompt-processing number never corrupts the
       decode ranking.
-    - Tier normalization matches most-specific patterns first (no substring
-      false-positives like '16' matching inside '16-24').
+    - Tier normalization maps to the schema's DISJOINT bands (v2.3:
+      t1 <16 <= t2 <24 <= t3 <32 <= t4 <48 <= t5 <96 <= t6).
+      Most-specific patterns first (no substring false-positives like bare
+      '16' matching inside '16-23'); multi-GPU figures are summed
+      (4×24 = 96 -> t6); legacy range labels that straddle two bands are
+      refined against the hardware description, and vendor inference
+      collects ALL GPU vendors present (2+ -> "Mixed", none -> "").
     - List/bullet artifacts in values are cleaned.
     - os_driver is extracted from the block and emitted on the entry
       (schema canonical field; displayed in the detail panel).
@@ -638,7 +643,7 @@ TEMPLATE_MARKERS = {
     'model_name': ('[Full model',),
     'hardware': ('[e.g.,',),
     'backend': ('[vLLM |',),
-    'tier': ('[≤16GB |',),
+    'tier': ('[e.g., 24GB',),
 }
 CORE_FIELDS = ('tier', 'hardware', 'backend', 'model_name')
 
@@ -698,43 +703,183 @@ def is_template_submission(data_dict):
 # Normalization
 # ---------------------------------------------------------------------------
 
+# ---------------------------------------------------------------------------
+# Vendor inference (B5: multi-vendor aware)
+# ---------------------------------------------------------------------------
+
+# GPU vendor signals. CPU names (Xeon, Ryzen, Threadripper, EPYC) are
+# deliberately ABSENT — a CPU is not a GPU vendor, so "RTX 5090 + IceLake
+# Xeon" stays NVIDIA, not Mixed.
+_VENDOR_SUBSTRINGS = {
+    "NVIDIA": ('nvidia', 'rtx', 'geforce', 'a100', 'h100', 'h200', 'quadro',
+               '2080', '3080', '3090', '4080', '4090', '5080', '5090'),
+    "AMD": ('amd', 'r9700', 'r9600', 'mi210', 'mi250', 'mi300', 'radeon',
+            'rx 7', 'w7900', 'v620'),
+    "Apple": ('apple', 'mac', 'mlx'),
+    "Intel": ('intel',),
+}
+# Apple M-series chips need word boundaries: the substring "m2" appears
+# inside RAM-module names ("CMK64GX4M2D3") and would otherwise flip a
+# single-NVIDIA rig to Mixed.
+_APPLE_CHIP_RE = re.compile(r'\bm[1-4]\b')
+
+
 def infer_vendor(hardware_str):
-    """Infer hardware vendor from description string."""
-    s = hardware_str.lower()
-    if 'nvidia' in s or 'rtx' in s or 'geforce' in s or 'a100' in s or 'h100' in s or 'quadro' in s or 'rtx 50' in s:
-        return "NVIDIA"
-    if 'amd' in s or 'r9700' in s or 'r9600' in s or 'mi210' in s or 'mi250' in s or 'mi300' in s or 'radeon' in s or 'rx 7' in s or 'w7900' in s or 'v620' in s:
-        return "AMD"
-    if 'apple' in s or 'mac' in s or 'm1' in s or 'm2' in s or 'm3' in s or 'm4' in s or 'mlx' in s:
-        return "Apple"
-    if 'intel' in s:
-        return "Intel"
-    return "Mixed"
+    """Infer the GPU vendor(s) from a hardware description.
 
-def normalize_tier(tier_str):
-    """Normalize tier strings to match schema.
+    Collects EVERY vendor signal present (not just the first): exactly one
+    -> that vendor; two or more -> "Mixed" (a "4090 + R9700" rig is neither
+    "NVIDIA" nor "AMD"); none -> "" (unknown, e.g. a CPU-only rig). CPU
+    names (Xeon, Ryzen, Threadripper, EPYC) never count as GPU signals.
+    """
+    s = (hardware_str or '').lower()
+    found = {vendor for vendor, signals in _VENDOR_SUBSTRINGS.items()
+             if any(sig in s for sig in signals)}
+    if _APPLE_CHIP_RE.search(s):
+        found.add("Apple")
+    if len(found) == 1:
+        return found.pop()
+    if len(found) > 1:
+        return "Mixed"
+    return ""
 
-    Checks most-specific (longest) patterns first so e.g. '16-24' is not
-    matched by the bare '16' substring.
+# ---------------------------------------------------------------------------
+# Tier normalization (A3: disjoint bands)
+# ---------------------------------------------------------------------------
+
+# The schema's tiers are disjoint bands (v2.3):
+#   t1 < 16 <= t2 < 24 <= t3 < 32 <= t4 < 48 <= t5 < 96 <= t6
+def _tier_for_vram(vram_gb):
+    """The tier band a single VRAM amount (GB) falls into."""
+    if vram_gb < 16:
+        return "t1"
+    if vram_gb < 24:
+        return "t2"
+    if vram_gb < 32:
+        return "t3"
+    if vram_gb < 48:
+        return "t4"
+    if vram_gb < 96:
+        return "t5"
+    return "t6"
+
+
+# Multi-GPU figures: "N x [MODEL] G GB" (count before the per-card capacity:
+# "4x24GB", "2 x 16 GB", "2 x R9700 32GB") and "G GB x N" (count after it:
+# "Intel Arc B60 24GB x4"). The per-card capacity is the number glued to GB.
+# The count is 1-2 digits and the capacity 1-3 digits, and neither may be
+# preceded by another digit: model names like "Ryzen 9 5900X" (a trailing
+# "x") must not be read as "5900 x 128GB" — that would multiply a CPU name
+# by the system RAM and send a 24GB rig to t6.
+_MULTI_GB_RE = re.compile(
+    r'(?<!\d)(\d{1,2})\s*[x×]\s*(?:[A-Za-z0-9\.\-/]+\s+)?'
+    r'(\d{1,3}(?:\.\d+)?)\s*GB',
+    re.IGNORECASE)
+_REV_MULTI_GB_RE = re.compile(
+    r'(?<!\d)(\d{1,3}(?:\.\d+)?)\s*GB\s*[x×]\s*(\d{1,2})\b',
+    re.IGNORECASE)
+_SINGLE_GB_RE = re.compile(r'(?<!\d)(\d{1,3}(?:\.\d+)?)\s*GB', re.IGNORECASE)
+
+
+def _hardware_vram_total(hardware_str):
+    """Total VRAM (GB) implied by a hardware description, or ``None``.
+
+    Multi-GPU first (the count applies to the per-card capacity:
+    "2 x R9700 32GB" -> 64, "Intel Arc B60 24GB x4" -> 96), then a single
+    explicit "N GB" figure ("Radeon VII 16GB HBM2" -> 16).
+
+    A multi-GPU match is trusted only when its capacity is the FIRST "N GB"
+    figure in the string: GPUs are stated before CPUs/RAM in this dataset,
+    and "N x N GB" shapes occur in RAM context too ("128GB DDR4 ...
+    4x32GB double-rank" — that is four RAM modules, not four GPUs).
+    No number -> None (the caller then keeps the conservative default).
+    """
+    s = hardware_str or ''
+    first_gb = _SINGLE_GB_RE.search(s)
+    for rx, cap_group in ((_MULTI_GB_RE, 2), (_REV_MULTI_GB_RE, 1)):
+        for m in rx.finditer(s):
+            if first_gb is None or m.start(cap_group) == first_gb.start():
+                return float(m.group(1)) * float(m.group(2))
+    if first_gb is not None:
+        return float(first_gb.group(1))
+    return None
+
+
+# Legacy range labels that straddle two of the new disjoint bands, mapped to
+# (lower band, upper band). Only these need hardware refinement; a range that
+# lies wholly inside one band maps directly (no guesswork).
+_STRADDLING_RANGES = {
+    '<=16': ('t1', 't2'),
+    '16-24': ('t2', 't3'),
+    '24-32': ('t3', 't4'),
+    '32-64': ('t4', 't5'),
+    '48-96': ('t5', 't6'),
+}
+# Ranges that sit entirely inside a single new band (new + legacy labels).
+_CLEAN_RANGES = [
+    ('16-23', 't2'), ('24-31', 't3'), ('32-47', 't4'), ('48-95', 't5'),
+    ('48-64', 't5'),
+    ('96-128', 't6'), ('128-196', 't6'), ('192-256', 't6'), ('196-256', 't6'),
+]
+
+
+def normalize_tier(tier_str, hardware_str=""):
+    """Normalize a free-text VRAM value to a schema tier.
+
+    The schema's tiers are disjoint bands (v2.3), so a value has exactly one
+    home. Most-specific patterns are checked first, so a bare "16" never
+    matches inside "16-23":
+
+    1. a multi-GPU figure in the value ("4x24", "2 x 16") — the per-card
+       capacity is summed (4×24 = 96 -> t6);
+    2. a named range that lies wholly inside one band (the new labels
+       "16-23" … "96", plus legacy labels "48-64", "96-128", "128-196",
+       "196-256");
+    3. a legacy range that straddles two bands ("≤16", "16-24", "24-32",
+       "32-64", "48-96") — refined against the hardware description when it
+       names an explicit total ("2 x R9700 32GB" -> 64 -> t5); when it does
+       not, the LOWER band is kept (never guess up);
+    4. a single number ("8" -> t1, "16" -> t2, "20" -> t2, "24" -> t3,
+       "28" -> t3, "32" -> t4, "36" -> t4, "40" -> t4, "48" -> t5,
+       "96" -> t6).
+
+    ``None`` when no rule fires (the entry renders under the matrix's
+    "Unclassified" group).
     """
     if not tier_str:
         return None
-    s = tier_str.lower().replace('gb', '').replace('+', '').strip()
-    # Check most specific (longest) patterns first
-    ordered_checks = [
-        ('196-256', 't6'), ('192-256', 't6'), ('256', 't6'),
-        ('128-196', 't5'), ('96-128', 't5'), ('96-96', 't5'),
-        ('48-96', 't4'), ('48-64', 't4'), ('32-64', 't4'),
-        ('24-32', 't3'), ('16-24', 't2'),
-        ('≤16', 't1'), ('<=16', 't1'),
-    ]
-    for pattern, tid in ordered_checks:
+    s = str(tier_str).lower()
+    s = s.replace('gb', '').replace('+', '').strip()
+    s = s.replace('–', '-').replace('—', '-').replace('≤', '<=')
+    s = re.sub(r'\s*-\s*', '-', s)
+
+    # 1. Multi-GPU in the value itself: count x per-card capacity.
+    m = re.search(r'(?<!\d)(\d{1,2})\s*[x×]\s*(\d{1,3}(?:\.\d+)?)', s)
+    if m:
+        return _tier_for_vram(float(m.group(1)) * float(m.group(2)))
+
+    # 2. Ranges wholly inside one band.
+    for pattern, tid in _CLEAN_RANGES:
         if pattern in s:
             return tid
-    # Fallback: single number
-    for num, tid in [('16', 't1'), ('24', 't3'), ('48', 't4'), ('96', 't5'), ('128', 't5'), ('196', 't6'), ('256', 't6')]:
-        if s == num or s.startswith(num):
-            return tid
+
+    # 3. Legacy ranges that straddle two bands.
+    for pattern, (low, _high) in _STRADDLING_RANGES.items():
+        if pattern in s:
+            total = _hardware_vram_total(hardware_str)
+            if total is not None:
+                return _tier_for_vram(total)
+            return low
+
+    # The new t1 label in word form.
+    if 'under 16' in s:
+        return 't1'
+
+    # 4. A single number.
+    m = re.search(r'(\d+(?:\.\d+)?)', s)
+    if m:
+        return _tier_for_vram(float(m.group(1)))
+
     return None
 
 # ---------------------------------------------------------------------------
@@ -825,8 +970,12 @@ def main():
                     k: ("" if is_field_placeholder(v) else str(v))
                     for k, v in sub["data"].items()
                 },
-                # Parsed/normalized fields
-                "tier": normalize_tier(clean_field(sub["data"].get("tier", ""))),
+                # Parsed/normalized fields. The tier is resolved against the
+                # hardware string too: a legacy range label that straddles
+                # two of the new disjoint bands (e.g. "32-64") is refined by
+                # the rig's actual VRAM total when the description names one.
+                "tier": normalize_tier(clean_field(sub["data"].get("tier", "")),
+                                       clean_field(sub["data"].get("hardware", ""))),
                 "hardware": {
                     "description": clean_field(sub["data"].get("hardware", "")),
                     "vendor": infer_vendor(clean_field(sub["data"].get("hardware", "")))

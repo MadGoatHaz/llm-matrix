@@ -153,7 +153,7 @@ def render(subs: list[dict], schema: dict, content_dir: Path,
   <section class="recommend-how" aria-labelledby="rec-how-title">
     <h2 id="rec-how-title" class="section-title">How the ranking works</h2>
     <div class="card">
-      <p><strong>Fit first.</strong> A result only appears if it runs in your VRAM tier (or a smaller one). Setups bigger than your card are never shown — they wouldn't fit.</p>
+      <p><strong>Fit first.</strong> Results are filtered to your VRAM class — a setup only appears if its estimated VRAM fits within your card. A setup in your class may still need tuning to fit your exact card, so check the VRAM estimate in the details.</p>
       <p><strong>Then your needs.</strong> Pick a use case and we match it against what each setup was actually used for. Pick a vendor and matching hardware ranks higher. Your priority (speed / quality / context) sets the main sort order.</p>
       <p><strong>Always honest.</strong> Every card is a real community submission with a plain-English "why this matched." The numbers are community-reported, not lab-tested — a starting point, not a guarantee.</p>
     </div>

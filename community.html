@@ -56,11 +56,11 @@
     <input type="text" id="filter-search" placeholder="Search models, hardware, backends..." aria-label="Search submissions">
     <select class="filter-select" data-filter="tier" aria-label="Filter by VRAM tier">
       <option value="">All Tiers</option>
-      <option value="t1">≤16GB</option><option value="t2">16-24GB</option><option value="t3">24-32GB</option><option value="t4">48-64GB</option><option value="t5">96-128GB</option><option value="t6">196-256GB+</option>
+      <option value="t1">Under 16 GB</option><option value="t2">16–23 GB</option><option value="t3">24–31 GB</option><option value="t4">32–47 GB</option><option value="t5">48–95 GB</option><option value="t6">96+ GB</option>
     </select>
     <select class="filter-select" data-filter="vendor" aria-label="Filter by GPU vendor">
       <option value="">All Vendors</option>
-      <option value="AMD">AMD</option><option value="Intel">Intel</option><option value="Mixed">Mixed</option><option value="NVIDIA">NVIDIA</option>
+      <option value="AMD">AMD</option><option value="Intel">Intel</option><option value="NVIDIA">NVIDIA</option>
     </select>
     <select class="filter-select" data-filter="backend" aria-label="Filter by backend">
       <option value="">All Backends</option>
@@ -99,12 +99,12 @@
           <li data-sub-id="post_12_manoreken2_2" data-tier="t6" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>DeepSeek-V3.2:671b_UD-Q8_K_XL</strong> — RTX 5090 + IceLake Xeon · 1 tokens/sec</li>
           <li data-sub-id="post_12_manoreken2_3" data-tier="t6" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>GLM-5.2-UD-Q6_K_XL</strong> — RTX 5090 + IceLake Xeon · 1 tokens/sec</li>
           <li data-sub-id="post_12_manoreken2_4" data-tier="t6" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>Kimi-K2.6-UD-Q8_K_XL</strong> — RTX 5090 + IceLake Xeon · 1 tokens/sec</li>
-          <li data-sub-id="post_12_manoreken2_5" data-tier="t5" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>Qwen3:235b-a22b-thinking-2507-q4</strong> — RTX 5090 + IceLake Xeon</li>
-          <li data-sub-id="post_12_manoreken2_6" data-tier="t4" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>nemotron-3-super:120b</strong> — RTX 5090 + IceLake Xeon</li>
-          <li data-sub-id="post_12_manoreken2_7" data-tier="t4" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>GPT-OSS:120b</strong> — RTX 5090 + IceLake Xeon</li>
+          <li data-sub-id="post_12_manoreken2_5" data-tier="t6" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>Qwen3:235b-a22b-thinking-2507-q4</strong> — RTX 5090 + IceLake Xeon</li>
+          <li data-sub-id="post_12_manoreken2_6" data-tier="t5" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>nemotron-3-super:120b</strong> — RTX 5090 + IceLake Xeon</li>
+          <li data-sub-id="post_12_manoreken2_7" data-tier="t5" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="" data-mode=""><strong>GPT-OSS:120b</strong> — RTX 5090 + IceLake Xeon</li>
           <li data-sub-id="post_17_manoreken2_0" data-tier="t6" data-vendor="NVIDIA" data-backend="llama.cpp" data-use-case="Translation" data-mode=""><strong>DeepSeek-V4-Pro-0813-UD_K_XL.gguf</strong> — 1x RTX5090 (32 GB) + IceLake Xeon CPU (1024 GB)</li>
-          <li data-sub-id="post_18_manoreken2_0" data-tier="" data-vendor="Mixed" data-backend="Colibri" data-use-case="Translation" data-mode=""><strong>DeepSeek-V4.1-Flash</strong></li>
-          <li data-sub-id="post_33_manoreken2_0" data-tier="t5" data-vendor="Intel" data-backend="llama.cpp" data-use-case="Translation" data-mode=""><strong>gemma-4-31B-it-BF16.gguf</strong> — Intel Arc B60 24GB x4 · 2.5</li>
+          <li data-sub-id="post_18_manoreken2_0" data-tier="" data-vendor="" data-backend="Colibri" data-use-case="Translation" data-mode=""><strong>DeepSeek-V4.1-Flash</strong></li>
+          <li data-sub-id="post_33_manoreken2_0" data-tier="t6" data-vendor="Intel" data-backend="llama.cpp" data-use-case="Translation" data-mode=""><strong>gemma-4-31B-it-BF16.gguf</strong> — Intel Arc B60 24GB x4 · 2.5</li>
           </ul>
     </div>
 
@@ -117,11 +117,11 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li data-sub-id="post_8_s1ugh34d_0" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Carnice-Qwen3.6-MoE-35B-A3B</strong> — Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM · 54.4</li>
-          <li data-sub-id="post_8_s1ugh34d_1" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 86.7</li>
-          <li data-sub-id="post_8_s1ugh34d_2" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Qwen3.8-27B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 13.9</li>
-          <li data-sub-id="post_8_s1ugh34d_3" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>DeepSeek-R1-0528-Qwen3-8B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 84.4</li>
-          <li data-sub-id="post_8_s1ugh34d_4" data-tier="t1" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Qwen_Qwen3.5-4B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 96.4</li>
+          <li data-sub-id="post_8_s1ugh34d_0" data-tier="t2" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Carnice-Qwen3.6-MoE-35B-A3B</strong> — Radeon VII 16GB HBM2 (gfx906), 32-core EPYC host, 67GB RAM · 54.4</li>
+          <li data-sub-id="post_8_s1ugh34d_1" data-tier="t2" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>gemma-4-E4B-Agentic-Opus-Reasoning-GeminiCLI-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 86.7</li>
+          <li data-sub-id="post_8_s1ugh34d_2" data-tier="t2" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Qwen3.8-27B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 13.9</li>
+          <li data-sub-id="post_8_s1ugh34d_3" data-tier="t2" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>DeepSeek-R1-0528-Qwen3-8B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 84.4</li>
+          <li data-sub-id="post_8_s1ugh34d_4" data-tier="t2" data-vendor="AMD" data-backend="llama-swap" data-use-case="Agentic Coding" data-mode=""><strong>Qwen_Qwen3.5-4B-GGUF</strong> — Radeon VII 16GB HBM2 (gfx906) · 96.4</li>
           </ul>
     </div>
 
@@ -150,8 +150,8 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li data-sub-id="post_5_digitalscream_0" data-tier="t4" data-vendor="AMD" data-backend="vLLM" data-use-case="Agentic Coding" data-mode=""><strong>Swift-Qwen3.8-27B-Uncensored-FP8</strong> — 2 x R9700 · 120t/s code, 70t/s chat</li>
-          <li data-sub-id="post_28_digitalscream_0" data-tier="t4" data-vendor="AMD" data-backend="Radiance" data-use-case="Agentic Coding" data-mode=""><strong>Swift 1.5 Flash Next</strong> — 2 x R9700 32GB, Threadripper 3960X, 128GB DDR4 · 200</li>
+          <li data-sub-id="post_5_digitalscream_0" data-tier="t5" data-vendor="AMD" data-backend="vLLM" data-use-case="Agentic Coding" data-mode=""><strong>Swift-Qwen3.8-27B-Uncensored-FP8</strong> — 2 x R9700 · 120t/s code, 70t/s chat</li>
+          <li data-sub-id="post_28_digitalscream_0" data-tier="t5" data-vendor="AMD" data-backend="Radiance" data-use-case="Agentic Coding" data-mode=""><strong>Swift 1.5 Flash Next</strong> — 2 x R9700 32GB, Threadripper 3960X, 128GB DDR4 · 200</li>
           </ul>
     </div>
 
@@ -164,8 +164,8 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li data-sub-id="post_21_pawingunplug_0" data-tier="t4" data-vendor="AMD" data-backend="llama.cpp" data-use-case="Agentic Coding" data-mode=""><strong>Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf</strong> — 2 x R9700 · ~50t/s chat</li>
-          <li data-sub-id="post_21_pawingunplug_1" data-tier="t4" data-vendor="AMD" data-backend="llama.cpp" data-use-case="Agentic Coding" data-mode=""><strong>Qwen3.8-Flash-Next-Q4_K_M</strong> — 2 x w7900 · ~35t/s chat</li>
+          <li data-sub-id="post_21_pawingunplug_0" data-tier="t5" data-vendor="AMD" data-backend="llama.cpp" data-use-case="Agentic Coding" data-mode=""><strong>Kwaipilot_KAT-Coder-V2.5-Dev-Q5_K_M.gguf</strong> — 2 x R9700 · ~50t/s chat</li>
+          <li data-sub-id="post_21_pawingunplug_1" data-tier="t5" data-vendor="AMD" data-backend="llama.cpp" data-use-case="Agentic Coding" data-mode=""><strong>Qwen3.8-Flash-Next-Q4_K_M</strong> — 2 x w7900 · ~35t/s chat</li>
           </ul>
     </div>
 
@@ -191,7 +191,7 @@
         </div>
       </div>
           <ul class="setup-list">
-          <li data-sub-id="post_22_sgtawesomesauce_0" data-tier="t5" data-vendor="AMD" data-backend="vLLM" data-use-case="Agentic Coding" data-mode=""><strong>qwen3.8-flash-next</strong> — 4x AMD v620 · 68-92</li>
+          <li data-sub-id="post_22_sgtawesomesauce_0" data-tier="t6" data-vendor="AMD" data-backend="vLLM" data-use-case="Agentic Coding" data-mode=""><strong>qwen3.8-flash-next</strong> — 4x AMD v620 · 68-92</li>
           </ul>
     </div>
   </div>

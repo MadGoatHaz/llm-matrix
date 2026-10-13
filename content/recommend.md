@@ -16,4 +16,6 @@ icon: 🎯
 
 Each card is a **real, working setup submitted by a community member** — not a theoretical recommendation. You'll see the model, the hardware it ran on, its speed, context, and precision, plus a one-line **"why this matched."** Follow any card into the <a href="../matrix.html">Matrix</a> for the full submission and the original forum post.
 
-<div class="callout callout--warning"><p><b>Stay honest with yourself:</b> these are community-reported numbers, not lab benchmarks. A setup that fits your VRAM tier is a great starting point, but your exact GPU, driver, and model file will change the speed. When in doubt, start with the <b>smallest model that does the job</b> — it's faster, cooler, and leaves you room to grow.</p></div>
+Results are filtered to your **VRAM class**. A setup in your class may still need tuning to fit your exact card — check the VRAM estimate in the details.
+
+<div class="callout callout--warning"><p><b>Stay honest with yourself:</b> these are community-reported numbers, not lab benchmarks. A setup in your VRAM class is a great starting point, but your exact GPU, driver, and model file will change the speed. When in doubt, start with the <b>smallest model that does the job</b> — it's faster, cooler, and leaves you room to grow.</p></div>

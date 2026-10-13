@@ -28,7 +28,7 @@ from pathlib import Path
 from . import utils
 
 #: The current data API version (major.minor).
-API_VERSION = "1.2"
+API_VERSION = "1.3"
 
 #: The published, versioned data directory (relative to the repo root).
 API_DIR = "data/api"

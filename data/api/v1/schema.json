@@ -114,7 +114,7 @@
             {"enum": ["t1", "t2", "t3", "t4", "t5", "t6"]},
             {"type": "null"}
           ],
-          "description": "VRAM tier: t1 = ≤16GB, t2 = 16-24GB, t3 = 24-32GB, t4 = 48-64GB, t5 = 96-128GB, t6 = 196-256GB+. null = no VRAM tier (e.g. a CPU-only rig) — the entry renders under the matrix's 'Unclassified' group. (null allowed in v1.2.)"
+          "description": "VRAM tier (disjoint bands since API v1.3 / tools/schema.json v2.3): t1 = under 16GB, t2 = 16-23GB, t3 = 24-31GB, t4 = 32-47GB, t5 = 48-95GB, t6 = 96GB+. null = no VRAM tier (e.g. a CPU-only rig) — the entry renders under the matrix's 'Unclassified' group. (null allowed in v1.2.)"
         },
         "hardware": {
           "type": "object",
@@ -127,8 +127,8 @@
             },
             "vendor": {
               "type": "string",
-              "enum": ["NVIDIA", "AMD", "Apple", "Intel", "Mixed"],
-              "description": "Primary GPU vendor."
+              "enum": ["", "NVIDIA", "AMD", "Apple", "Intel", "Mixed"],
+              "description": "GPU vendor(s) inferred from the hardware description: exactly one GPU vendor signal -> that vendor, two or more -> 'Mixed' (e.g. a 4090 + R9700 rig), none -> '' (unknown, e.g. a CPU-only rig). CPU names (Xeon, Ryzen, Threadripper, EPYC) are not GPU vendors. (Empty value allowed in v1.3.)"
             }
           }
         },

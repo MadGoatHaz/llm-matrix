@@ -239,7 +239,11 @@ def check_enum_conformance(subs, schema):
         if tier is not None and tier not in valid_tiers:
             violations.append(f"{sid}: tier {tier!r}")
         vendor = (s.get("hardware") or {}).get("vendor")
-        if vendor not in valid_vendors:
+        # An empty vendor is *missing data* (no GPU vendor signal in the
+        # hardware description, e.g. a CPU-only rig), not a contract break —
+        # the same rule the tier check applies. A non-empty value must be
+        # schema-legal.
+        if vendor and vendor not in valid_vendors:
             violations.append(f"{sid}: vendor {vendor!r}")
         backend_raw = (s.get("backend") or "").strip()
         if backend_raw:
@@ -297,10 +301,10 @@ def check_vram_reasonable(subs, schema):
 
     Two sources: the submission's tier (whose *upper* bound must be a real,
     finite amount of memory) and any explicit ``N GB`` figure in the hardware
-    string. A tier like ``t1`` is ``≤16GB`` = ``[0, 16]`` — a 0 *floor* is
-    legitimate (small cards live there), so only the ceiling is bounded: it
-    must be ``> 0`` and ``<= MAX_VRAM_GB``. An explicit ``0GB`` or ``5000GB``
-    in the hardware text is a genuine error.
+    string. A tier like ``t1`` is ``Under 16 GB`` = ``[0, 16]`` — a 0 *floor*
+    is legitimate (small cards live there), so only the ceiling is bounded:
+    it must be ``> 0`` and ``<= MAX_VRAM_GB``. An explicit ``0GB`` or
+    ``5000GB`` in the hardware text is a genuine error.
 
     System memory is not VRAM: a ``N GB`` figure whose immediate context
     names a CPU/RAM component ("Xeon CPU (1024 GB)", "128GB DDR4") is

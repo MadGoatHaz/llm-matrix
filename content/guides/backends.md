@@ -318,12 +318,12 @@ What "good" looks like, by the VRAM tier the Matrix uses:
 
 | Tier | VRAM | Dense model | MoE model | Realistic decode speed |
 |---|---|---|---|---|
-| T1 | ≤16GB | 7–8B Q4_K_M | 35B-A3B I-Nano | 30–100 t/s (dense), 50–60 t/s (MoE) |
-| T2 | 16–24GB | 27B Q4_K_M | 35B-A3B Q4_K_M | 15–30 t/s (dense), 40–60 t/s (MoE) |
-| T3 | 24–32GB | 27B Q5_K_M / FP8 | 70B-A6B Q4_K_M | 10–25 t/s (dense), 20–40 t/s (MoE) |
-| T4 | 48–64GB | 70B Q4_K_M / FP8 | 125B IQ3_S (Strata) | 5–15 t/s (dense), 15–30 t/s (MoE hybrid) |
-| T5 | 96–128GB | 70B FP16 / 125B Q4 | 200B+ MoE (vLLM 2×48GB) | 3–10 t/s (dense), 10–20 t/s (MoE) |
-| T6 | 196GB+ | 70B+ FP16 | 671B (CPU+GPU hybrid) | 1–5 t/s (CPU), 5–15 t/s (multi-GPU) |
+| T1 | Under 16GB | 7–8B Q4_K_M | 35B-A3B I-Nano | 30–100 t/s (dense), 50–60 t/s (MoE) |
+| T2 | 16–23GB | 27B Q4_K_M | 35B-A3B Q4_K_M | 15–30 t/s (dense), 40–60 t/s (MoE) |
+| T3 | 24–31GB | 27B Q5_K_M / FP8 | 70B-A6B Q4_K_M | 10–25 t/s (dense), 20–40 t/s (MoE) |
+| T4 | 32–47GB | 32B–35B Q5_K_M | 70B-A6B Q5_K_M (tight) | 8–20 t/s (dense), 15–30 t/s (MoE) |
+| T5 | 48–95GB | 70B Q4_K_M / FP8 | 125B IQ3_S (Strata) | 5–15 t/s (dense), 15–30 t/s (MoE hybrid) |
+| T6 | 96GB+ | 70B FP16 / 125B Q4 | 200B+ MoE (vLLM) | 3–10 t/s (dense), 10–20 t/s (MoE) |
 
 These are the ranges the Matrix data supports. A well-tuned setup at the top of a tier beats a poorly configured one at the bottom of the next tier — the backend and its flags matter as much as the hardware.
 

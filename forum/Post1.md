@@ -21,7 +21,7 @@ Built by the [Level1Techs](https://forum.level1techs.com) ML / LLM / AI communit
 ```
 [COMMUNITY-SUBMISSION]
 hardware: [e.g., 1x RTX 4090 24GB + 128GB RAM]
-vram:     [e.g., 24GB — pick: ≤16 / 16-24 / 24-32 / 48-64 / 96-128 / 196-256GB+]
+vram:     [e.g., 24GB — pick: under 16 / 16-23 / 24-31 / 32-47 / 48-95 / 96+ GB]
 model:    [e.g., Llama 3.1 8B, Qwen3.8-27B]
 backend:  [e.g., Ollama, llama.cpp, vLLM]
 quant:    [e.g., Q4_K_M, Q5_K_S, FP16, FP8]

@@ -337,7 +337,7 @@ class TestPromoTemplateEndToEnd(unittest.TestCase):
     TEMPLATE = (
         "[COMMUNITY-SUBMISSION]\n"
         "hardware: [e.g., 1x RTX 4090 24GB + 128GB RAM]\n"
-        "vram:     [e.g., 24GB — pick: ≤16 / 16-24 / 24-32 / 48-64 / 96-128 / 196-256GB+]\n"
+        "vram:     [e.g., 24GB — pick: under 16 / 16-23 / 24-31 / 32-47 / 48-95 / 96+ GB]\n"
         "model:    [e.g., Llama 3.1 8B, Qwen3.8-27B]\n"
         "backend:  [e.g., Ollama, llama.cpp, vLLM]\n"
         "quant:    [e.g., Q4_K_M, Q5_K_S, FP16, FP8]\n"
@@ -391,39 +391,108 @@ class TestPromoTemplateEndToEnd(unittest.TestCase):
 
 
 class TestInferVendor(unittest.TestCase):
+    """B5: vendor inference collects ALL GPU vendor signals — exactly one
+    -> that vendor, two or more -> "Mixed", none -> "" (unknown). CPU names
+    (Xeon, Ryzen, Threadripper, EPYC) are never GPU vendor signals."""
+
     @classmethod
     def setUpClass(cls):
         cls.parse = load_tool("tools/parse.py")
 
-    def test_vendor_mapping(self):
+    def test_single_vendor_mapping(self):
         cases = {
             "NVIDIA RTX 4090": "NVIDIA",
             "RTX 5090 32GB": "NVIDIA",
+            "4090": "NVIDIA",
+            "2× 3090": "NVIDIA",
             "AMD R9700 32GB": "AMD",
+            "R9700": "AMD",
             "2x Radeon RX 7900 XTX": "AMD",
             "Apple M3 Ultra Mac Studio": "Apple",
+            "M3 Ultra": "Apple",
             "Intel Arc A770": "Intel",
-            "some unknown box": "Mixed",
         }
         for hardware, expected in cases.items():
             with self.subTest(hardware=hardware):
                 self.assertEqual(self.parse.infer_vendor(hardware), expected)
 
+    def test_multi_vendor_is_mixed(self):
+        # A rig with GPUs from two vendors is neither "NVIDIA" nor "AMD".
+        for hardware in ("4090 + R9700", "RTX 5090 + R9700",
+                         "2x 4090 + 1x MI300"):
+            with self.subTest(hardware=hardware):
+                self.assertEqual(self.parse.infer_vendor(hardware), "Mixed")
+
+    def test_cpu_names_are_not_gpu_vendors(self):
+        # A CPU next to a single GPU never flips the rig to Mixed.
+        for hardware in ("5090 + Xeon 1024GB",
+                         "RTX 5090 + IceLake Xeon CPU (1024 GB)",
+                         "1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4"):
+            with self.subTest(hardware=hardware):
+                self.assertEqual(self.parse.infer_vendor(hardware), "NVIDIA")
+
+    def test_no_gpu_signal_is_unknown(self):
+        self.assertEqual(self.parse.infer_vendor("some unknown box"), "")
+        self.assertEqual(self.parse.infer_vendor("Ryzen 9 5900X + Threadripper"), "")
+        self.assertEqual(self.parse.infer_vendor(""), "")
+
 
 class TestNormalizeTier(unittest.TestCase):
+    """A3: the schema's tiers are DISJOINT bands (v2.3) — t1 <16 <= t2 <24
+    <= t3 <32 <= t4 <48 <= t5 <96 <= t6 — so every VRAM amount has exactly
+    one home. Most-specific patterns first (a bare "16" never matches
+    inside "16-23"); multi-GPU figures are summed; legacy range labels that
+    straddle two bands are refined against the hardware description."""
+
     @classmethod
     def setUpClass(cls):
         cls.parse = load_tool("tools/parse.py")
 
-    def test_tier_mapping(self):
+    def test_new_disjoint_labels(self):
         cases = {
-            "≤16GB": "t1",
-            "16-24GB": "t2",
-            "24-32GB": "t3",
-            "32-64GB": "t4",
-            "48-96GB": "t4",
-            "96-128GB": "t5",
-            "128-196GB": "t5",
+            "Under 16 GB": "t1",
+            "16-23GB": "t2",
+            "24-31GB": "t3",
+            "32-47GB": "t4",
+            "48-95GB": "t5",
+            "96+ GB": "t6",
+            "96GB": "t6",
+        }
+        for tier_str, expected in cases.items():
+            with self.subTest(tier=tier_str):
+                self.assertEqual(self.parse.normalize_tier(tier_str), expected)
+
+    def test_single_numbers_map_to_their_band(self):
+        # The 32GB gap is closed: a bare "32" (RTX 5090) is t4, not None.
+        cases = {
+            "8": "t1", "12": "t1",
+            "16": "t2", "20": "t2",
+            "24": "t3", "28": "t3",
+            "32": "t4", "36": "t4", "40": "t4",
+            "48": "t5", "64": "t5", "80": "t5",
+            "96": "t6", "128": "t6", "196": "t6", "256": "t6",
+        }
+        for num, expected in cases.items():
+            with self.subTest(num=num):
+                self.assertEqual(self.parse.normalize_tier(num), expected)
+
+    def test_multigpu_figures_are_summed(self):
+        cases = {
+            "4x24GB": "t6",     # 4×24 = 96
+            "2 x 16 GB": "t4",  # 2×16 = 32
+            "4x8GB": "t4",      # 4×8 = 32
+            "2×32GB": "t5",     # 2×32 = 64
+        }
+        for tier_str, expected in cases.items():
+            with self.subTest(tier=tier_str):
+                self.assertEqual(self.parse.normalize_tier(tier_str), expected)
+
+    def test_legacy_labels_wholly_inside_one_band(self):
+        cases = {
+            "48-64GB": "t5",
+            "96-128GB": "t6",
+            "128-196GB": "t6",
+            "192-256GB+": "t6",
             "196-256GB": "t6",
             "256GB+": "t6",
         }
@@ -431,12 +500,44 @@ class TestNormalizeTier(unittest.TestCase):
             with self.subTest(tier=tier_str):
                 self.assertEqual(self.parse.normalize_tier(tier_str), expected)
 
-    def test_longest_first_prevents_false_positive(self):
-        # ``16-24`` must map to t2, NOT t1 (which the bare-``16`` fallback
-        # would give). This is the whole point of the most-specific-first
-        # ordering in normalize_tier.
-        self.assertEqual(self.parse.normalize_tier("16-24GB"), "t2")
-        self.assertEqual(self.parse.normalize_tier("16GB"), "t1")
+    def test_straddling_legacy_labels_refine_from_hardware(self):
+        p = self.parse.normalize_tier
+        # A 16GB card that picked the old "≤16" label is t2 (16GB is t2).
+        self.assertEqual(p("≤16GB", "Radeon VII 16GB HBM2"), "t2")
+        # A 20GB card that picked the old "16-24" label is t2.
+        self.assertEqual(p("16-24GB", "1x RTX-4000 Ada SFF (20 GB)"), "t2")
+        # A 24GB card that picked the old "24-32" label is t3.
+        self.assertEqual(p("24-32GB", "1x RTX 4090 24GB"), "t3")
+        # 2 x 32GB picked the old "32-64" label -> 64GB total -> t5.
+        self.assertEqual(
+            p("32-64GB", "2 x R9700 32GB, Threadripper 3960X, 128GB DDR4"), "t5")
+        # The count can trail the capacity: "24GB x4" = 96 -> t6.
+        self.assertEqual(p("48-96GB", "Intel Arc B60 24GB x4"), "t6")
+        # The "5900X" trap: a CPU model name ending in "x" must NOT be read
+        # as a multi-GPU count times the system RAM.
+        self.assertEqual(
+            p("24-32GB", "1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4"), "t3")
+        # The "4x32GB" RAM trap: "128GB DDR4 ... 4x32GB double-rank" is four
+        # RAM modules, not four GPUs — the GPU's 24GB (the first "N GB"
+        # figure) is the refinement, so the old "24-32" label stays t3.
+        self.assertEqual(
+            p("24-32GB",
+              "1x RTX 4090 24GB, Ryzen 9 5900X, 128GB DDR4-3600 CL18 "
+              "(2x CMK64GX4M2D3600C18, 4x32GB double-rank), Aorus X570"),
+            "t3")
+
+    def test_straddling_without_hardware_keeps_the_lower_band(self):
+        # No explicit total in the hardware -> the conservative lower band
+        # (never guess up).
+        p = self.parse.normalize_tier
+        self.assertEqual(p("≤16GB"), "t1")
+        self.assertEqual(p("16-24GB"), "t2")
+        self.assertEqual(p("24-32GB"), "t3")
+        self.assertEqual(p("32-64GB"), "t4")
+        self.assertEqual(p("48-96GB"), "t5")
+
+    def test_en_dash_and_space_variants(self):
+        self.assertEqual(self.parse.normalize_tier("196 GB – 256 GB+"), "t6")
 
     def test_empty_and_unknown_return_none(self):
         self.assertIsNone(self.parse.normalize_tier(""))

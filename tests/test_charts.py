@@ -266,9 +266,9 @@ class TestChartDataDriven(unittest.TestCase):
         s = {"tier": "t1", "notes": "no size here",
              "hardware": {"description": "1x RTX 4090 24GB"}}
         self.assertEqual(e(s, self.schema), 24.0)
-        # then the tier range maximum
+        # then the tier range maximum (t4 = 32–47GB, ceiling 48)
         s = {"tier": "t4", "notes": "", "hardware": {"description": "2x R9700"}}
-        self.assertEqual(e(s, self.schema), 64.0)
+        self.assertEqual(e(s, self.schema), 48.0)
         # nothing at all
         s = {"tier": None, "notes": "", "hardware": {}}
         self.assertIsNone(e(s, self.schema))
@@ -295,14 +295,17 @@ class TestChartPlacementInRealPages(unittest.TestCase):
         self.assertIn("By the numbers", index)
 
     def test_real_dataset_values_appear_in_generated_charts(self):
-        # The chart title/desc must reflect the real dataset's size and t1 share.
+        # The chart title/desc must reflect the real dataset's size and the
+        # first tier's share (data-driven label — the bands change with the
+        # schema, so the label is read from it, not hard-coded).
+        schema = load_json("tools/schema.json")
         matrix = _TempSite.page("matrix.html")
         svg = _svgs(matrix)[0]
         total = len(self.subs)
         t1 = sum(1 for s in self.subs if s.get("tier") == "t1")
         self.assertIn(f"{total} submissions across",
                       re.search(r"<title[^>]*>(.*?)</title>", svg, re.DOTALL).group(1))
-        self.assertIn(f"≤16GB: {t1}",
+        self.assertIn(f"{schema['tiers'][0]['label']}: {t1}",
                       re.search(r"<desc[^>]*>(.*?)</desc>", svg, re.DOTALL).group(1))
 
 

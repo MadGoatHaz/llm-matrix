@@ -32,7 +32,7 @@ Top level (all seven keys required):
 
 | Field | Type | Meaning |
 |-------|------|---------|
-| `version` | string | The API version (`major.minor`) — currently `1.2`. |
+| `version` | string | The API version (`major.minor`) — currently `1.3`. |
 | `generated_at` | string (ISO 8601) | When the pipeline last produced this dataset. |
 | `schema_version` | string | The `tools/schema.json` version the data was parsed against. |
 | `source_thread` | string (URL) | The forum thread the data came from. |
@@ -49,8 +49,8 @@ is [`v1/schema.json`](v1/schema.json)):
 | `source` | object | `{post_number, post_id, username, submitted_at, marked}` — provenance + credit. `marked` is `false` for entries recovered from an unmarked structured post (v1.2). |
 | `type` | string | `"full"` (complete template) or `"quick"` (minimal report). |
 | `raw` | object | The original `[COMMUNITY-SUBMISSION]` block, verbatim. For provenance — use the normalized fields. |
-| `tier` | string or null | VRAM tier `t1`…`t6` (≤16GB → 196-256GB+). `null` = no VRAM tier (e.g. a CPU-only rig); renders under the matrix's "Unclassified" group (v1.2). |
-| `hardware` | object | `{description, vendor}` — free text + `NVIDIA`/`AMD`/`Apple`/`Intel`/`Mixed`. |
+| `tier` | string or null | VRAM tier `t1`…`t6` — disjoint bands (v1.3): t1 = under 16GB, t2 = 16–23GB, t3 = 24–31GB, t4 = 32–47GB, t5 = 48–95GB, t6 = 96GB+. `null` = no VRAM tier (e.g. a CPU-only rig); renders under the matrix's "Unclassified" group (v1.2). |
+| `hardware` | object | `{description, vendor}` — free text + one of `NVIDIA`/`AMD`/`Apple`/`Intel`/`Mixed`/`""`. |
 | `backend` | string | Inference engine as reported (leading token is canonical: `vLLM (…MTP=8)` → `vLLM`). |
 | `os_driver` | string | OS / driver stack as reported (e.g. `Linux/ROCm`, `Windows 11 Pro + WSL2/Ubuntu 24.04`); `""` = unreported. Displayed in the matrix detail panel. (Added in v1.1.) |
 | `model` | object | `{name, url}`. |
@@ -103,9 +103,19 @@ conformance check of `data.json` against the schema on every CI run.
 - The changelog is below. If you build on this data, pin the major version
   in your code and check `version` at runtime.
 
- ### Changelog
+  ### Changelog
 
- - **v1.2 — 2026-10-13** — additive P1 data-recovery fields: `source.marked`
+  - **v1.3 — 2026-10-13** — the VRAM tiers are now **disjoint bands**
+    (parsed against `tools/schema.json` v2.3): t1 = under 16GB, t2 =
+    16–23GB, t3 = 24–31GB, **t4 = 32–47GB (new — 32 GB cards such as the
+    RTX 5090 now have a home)**, t5 = 48–95GB, t6 = 96GB+. The tier *enum*
+    (`t1`…`t6`, `null`) is unchanged, so the payload shape is stable; what
+    changed is the band each id denotes. `hardware.vendor` may now be `""`
+    (unknown — no GPU vendor signal in the description, e.g. a CPU-only
+    rig); 2+ distinct GPU vendors infer `Mixed` (a 4090 + R9700 rig is no
+    longer just "NVIDIA"), and CPU names (Xeon, Ryzen, Threadripper, EPYC)
+    never count as GPU vendors.
+  - **v1.2 — 2026-10-13** — additive P1 data-recovery fields: `source.marked`
    (`false` for entries recovered from an unmarked structured post), the
    optional `inherited_from` provenance map (cross-block inheritance), and
    `tier` now accepts `null` (a CPU-only rig has no VRAM tier and renders

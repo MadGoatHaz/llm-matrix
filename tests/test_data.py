@@ -76,7 +76,12 @@ class TestSubmissionsInvariants(unittest.TestCase):
         valid = set(self.schema["hardware_vendors"])
         for sub in self.subs:
             with self.subTest(id=sub["id"]):
-                self.assertIn(sub["hardware"]["vendor"], valid)
+                vendor = sub["hardware"]["vendor"]
+                # "" = no GPU vendor signal (e.g. a CPU-only rig) — missing
+                # data, not a contract break. A non-empty vendor must be
+                # schema-legal.
+                if vendor:
+                    self.assertIn(vendor, valid)
 
     def test_backends_normalize_to_schema_values(self):
         valid = set(self.schema["backends"])
