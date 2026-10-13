@@ -32,18 +32,29 @@ def get_posts(data):
     return {p["id"]: p for p in data.get("post_stream", {}).get("posts", [])}
 
 def extract_submissions(cooked):
-    """Find all submission blocks in cooked HTML."""
+    """Find all submission blocks in cooked HTML.
+
+    Matches both the standard bracketed markers ([COMMUNITY-SUBMISSION] ...
+    [/COMMUNITY-SUBMISSION]) and bare marker lines (user variants where the
+    marker sits alone on a line, e.g. inside <div class="math">). Line
+    structure is preserved (br -> newline) so the bare-line patterns work.
+    """
     import re
-    # Strip HTML tags to get plain text for parsing
-    text = re.sub(r'<[^>]+>', ' ', cooked)
-    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'<br\s*/?>', '\n', cooked)
+    text = re.sub(r'<[^>]+>', '', text)
+    text = text.replace('&amp;', '&').replace('&lt;', '<').replace('&gt;', '>')
     blocks = []
-    # Find [COMMUNITY-SUBMISSION] ... [/COMMUNITY-SUBMISSION]
-    for match in re.finditer(r'\[COMMUNITY-SUBMISSION\](.*?)\[\/COMMUNITY-SUBMISSION\]', text, re.DOTALL):
-        blocks.append(match.group(1).strip())
-    # Find [QUICK-SUBMIT] ... [/QUICK-SUBMIT]
-    for match in re.finditer(r'\[QUICK-SUBMIT\](.*?)\[\/QUICK-SUBMIT\]', text, re.DOTALL):
-        blocks.append(match.group(1).strip())
+    patterns = (
+        r'\[COMMUNITY-SUBMISSION\](.*?)\[\/COMMUNITY-SUBMISSION\]',
+        r'(?m)^\s*COMMUNITY-SUBMISSION\s*$(.*?)^\s*/?COMMUNITY-SUBMISSION\s*$',
+        r'\[QUICK-SUBMIT\](.*?)\[\/QUICK-SUBMIT\]',
+        r'(?m)^\s*QUICK-SUBMIT\s*$(.*?)^\s*/?QUICK-SUBMIT\s*$',
+    )
+    for pattern in patterns:
+        for match in re.finditer(pattern, text, re.DOTALL):
+            b = match.group(1).strip()
+            if b:
+                blocks.append(b)
     return blocks
 
 def main():

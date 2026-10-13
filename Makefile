@@ -22,11 +22,13 @@ else
 PYTHON ?= .venv/bin/python
 endif
 
-.PHONY: help test build lint validate clean golden check
+.PHONY: help test build lint validate clean golden check pull
 
 help:
 	@echo "Local AI Stack — common commands"
 	@echo ""
+	@echo "  make pull      Run the full data pipeline (pull -> diff -> parse ->"
+	@echo "                 parse_thread -> validate -> build) — the manual weekly cycle"
 	@echo "  make test      Run the full unittest suite (the CI quality gate)"
 	@echo "  make build     Regenerate the site (all pages + data.json)"
 	@echo "  make lint      Byte-compile all .py files + validate all JSON"
@@ -54,6 +56,16 @@ validate:
 	$(PYTHON) tools/validate.py
 
 check: lint validate test
+
+# --- Data pipeline (the manual weekly cycle — see work/docs/manual-pull.md) --
+
+pull:
+	$(PYTHON) tools/pull.py
+	$(PYTHON) tools/diff.py
+	$(PYTHON) tools/parse.py
+	$(PYTHON) tools/parse_thread.py
+	$(PYTHON) tools/validate.py
+	$(PYTHON) -m tools.site
 
 # --- Site generation --------------------------------------------------------
 

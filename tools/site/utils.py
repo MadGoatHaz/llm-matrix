@@ -82,26 +82,43 @@ def compact_json(obj: Any) -> str:
     return payload.replace("}}", "} }")
 
 
-# Unfilled template values look like "[e.g., ...]" — i.e. the whole value is
-# wrapped in brackets.
+# Unfilled template values look like "[e.g., ...]", "[vLLM | llama.cpp | ...]"
+# or "[Full model name]" — the whole value is wrapped in brackets AND the
+# content reads as a fill-in instruction: an option list (pipes), an example
+# marker, or a template phrase. Contributors who simply wrap real values in
+# brackets (e.g. "[llama-cpp]", "[8192]") are NOT placeholders.
 PLACEHOLDER_RE = re.compile(r"^\[.*\]$", re.DOTALL)
+TEMPLATE_CONTENT_RE = re.compile(
+    r"\||e\.g\.|example|full model|your \w+|name here|insert", re.IGNORECASE
+)
 
 
 def is_placeholder(value: Any) -> bool:
-    """True if value is empty/None or an unfilled template placeholder."""
+    """True if value is empty/None or an unfilled template placeholder.
+
+    Bracket styling is irrelevant to the check: the template *content*
+    (option lists, example markers, fill-in phrases) is what identifies an
+    unfilled field, so values that parse.py has already unbracketed are
+    caught just as reliably as raw bracketed ones.
+    """
     if value is None:
         return True
     s = str(value).strip()
     if not s:
         return True
-    return bool(PLACEHOLDER_RE.match(s))
+    body = s[1:-1].strip() if (s.startswith("[") and s.endswith("]")) else s
+    return bool(TEMPLATE_CONTENT_RE.search(body))
 
 
 def clean_value(value: Any) -> str:
-    """Display string for a field: '' if placeholder, else the stripped value."""
+    """Display string for a field: '' if placeholder, else the stripped
+    value (a user's surrounding-bracket styling is removed)."""
     if is_placeholder(value):
         return ""
-    return str(value).strip()
+    s = str(value).strip()
+    if s.startswith("[") and s.endswith("]"):
+        s = s[1:-1].strip()
+    return s
 
 
 def is_template_submission(s: dict) -> bool:
@@ -282,6 +299,8 @@ def short_model(name: Any) -> str:
     if not name:
         return ""
     s = str(name).strip()
+    if s.startswith("[") and s.endswith("]"):
+        s = s[1:-1].strip()
     s = s.split(",")[0].strip()
     if "/" in s and not s.lower().startswith(("http", "www")):
         s = s.split("/", 1)[1]
@@ -308,6 +327,8 @@ def normalize_backend(raw: Any, schema: dict) -> str:
     if not raw:
         return ""
     s = str(raw).strip()
+    if s.startswith("[") and s.endswith("]"):       # drop user's bracket styling
+        s = s[1:-1].strip()
     s = re.sub(r"\(.*$", "", s).strip()              # drop trailing parenthetical
     s = re.sub(r"\s+\d[\w.]*$", "", s).strip()       # drop trailing version
     if not s:

@@ -179,10 +179,10 @@ class TestChartDataDriven(unittest.TestCase):
 
     def test_bar_chart_is_synthetic_data_sensitive(self):
         base = self.charts.vram_distribution(self.subs, self.schema)
-        doubled = self.subs + self.subs  # 24 submissions
+        doubled = self.subs + self.subs
         grown = self.charts.vram_distribution(doubled, self.schema)
         self.assertNotEqual(base, grown, "duplicating the data must change the chart")
-        self.assertIn("24 submissions",
+        self.assertIn(f"{2 * len(self.subs)} submissions",
                       re.search(r"<title[^>]*>(.*?)</title>", grown, re.DOTALL).group(1))
 
     def test_bar_chart_renders_empty_dataset(self):
@@ -195,8 +195,10 @@ class TestChartDataDriven(unittest.TestCase):
     def test_donut_has_one_segment_per_backend(self):
         from tools.site.utils import normalize_backend
         from collections import Counter
+        # Empty backends (unreported) are not chart segments.
         counts = Counter(normalize_backend(s.get("backend", ""), self.schema)
                          for s in self.subs)
+        counts.pop("", None)
         svg, legend = self.charts.backend_donut(self.subs, self.schema)
         segments = len(re.findall(r"<path class=\"seg-\d\"|<circle class=\"seg-\d\"", svg))
         self.assertEqual(segments, len(counts),
@@ -276,6 +278,9 @@ class TestChartPlacementInRealPages(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         _TempSite.build()
+        from tools.site import utils
+        cls.data = load_json("data/submissions.json")
+        cls.subs = utils.real_submissions(cls.data)
 
     @classmethod
     def tearDownClass(cls):
@@ -290,12 +295,14 @@ class TestChartPlacementInRealPages(unittest.TestCase):
         self.assertIn("By the numbers", index)
 
     def test_real_dataset_values_appear_in_generated_charts(self):
-        # t1 has 6 of the 12 real submissions — the bar must say so.
+        # The chart title/desc must reflect the real dataset's size and t1 share.
         matrix = _TempSite.page("matrix.html")
         svg = _svgs(matrix)[0]
-        self.assertIn("12 submissions across 6 tiers",
+        total = len(self.subs)
+        t1 = sum(1 for s in self.subs if s.get("tier") == "t1")
+        self.assertIn(f"{total} submissions across",
                       re.search(r"<title[^>]*>(.*?)</title>", svg, re.DOTALL).group(1))
-        self.assertIn("≤16GB: 6",
+        self.assertIn(f"≤16GB: {t1}",
                       re.search(r"<desc[^>]*>(.*?)</desc>", svg, re.DOTALL).group(1))
 
 

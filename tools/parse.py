@@ -171,6 +171,20 @@ def apply_aliases(data):
             del data[alias]
     return data
 
+def _unbracket(v):
+    """Strip a user's surrounding-bracket styling from a canonical value.
+
+    Some contributors wrap genuine values in brackets (``[llama-cpp]``,
+    ``[8192]``). The canonical fields are normalized display values, so the
+    decoration comes off; the verbatim text is preserved in ``raw``.
+    """
+    s = str(v if v is not None else "").strip()
+    if len(s) >= 2 and s.startswith("[") and s.endswith("]"):
+        inner = s[1:-1].strip()
+        if inner:
+            return inner
+    return s
+
 # ---------------------------------------------------------------------------
 # Multi-model block splitting
 # ---------------------------------------------------------------------------
@@ -187,32 +201,52 @@ def split_on_separator(block):
         return [block]
     return [p.strip() for p in SEPARATOR_RE.split(block) if p.strip()]
 
+# Canonical field names (incl. aliases) recognized for inline-field recovery.
+KNOWN_FIELDS = (
+    'tier', 'hardware', 'backend', 'os_driver', 'model_name', 'quant_package',
+    'weight_precision', 'download_url', 'primary_use_case', 'stable_context_tested',
+    'context_length', 'kv_cache_setting', 'engine_mode', 'throughput_tps', 'tps',
+    'prefill_tps', 'ttft_cold', 'cold_load_ttft', 'power', 'power_draw', 'setup_notes',
+)
+_INLINE_FIELD_RE = re.compile(r'\s+(?=(?:' + '|'.join(KNOWN_FIELDS) + r'):\s)')
+
+def split_inline_fields(block):
+    """Recover submissions written on a single line.
+
+    Some contributors write every field on one line, comma-separated
+    (``model_name: a, quant_package: b, download_url: c, ...``). Insert a
+    newline before each known field name followed by a colon so the block
+    parser sees proper key/value lines. Field names inside values (e.g. a
+    model name containing "thinking:") are untouched — only the canonical
+    field set triggers a split.
+    """
+    return _INLINE_FIELD_RE.sub('\n', block)
+
+# Marker patterns. Bracketed form is the standard template; bare form covers
+# user variants (e.g. markers wrapped in <div class="math">) where the marker
+# sits alone on a line without brackets.
+SUBMISSION_PATTERNS = (
+    (r'\[COMMUNITY-SUBMISSION\](.*?)\[\/COMMUNITY-SUBMISSION\]', 'full'),
+    (r'(?m)^\s*COMMUNITY-SUBMISSION\s*$(.*?)^\s*/?COMMUNITY-SUBMISSION\s*$', 'full'),
+    (r'\[QUICK-SUBMIT\](.*?)\[\/QUICK-SUBMIT\]', 'quick'),
+    (r'(?m)^\s*QUICK-SUBMIT\s*$(.*?)^\s*/?QUICK-SUBMIT\s*$', 'quick'),
+)
+
 def extract_submissions_from_post(post):
     """Extract all submission blocks from a post's cooked HTML."""
     text = strip_html(post.get("cooked", ""))
     submissions = []
 
-    # Full submissions
-    for match in re.finditer(r'\[COMMUNITY-SUBMISSION\](.*?)\[\/COMMUNITY-SUBMISSION\]', text, re.DOTALL):
-        block = match.group(1).strip()
-        if not block:
-            continue
-        for sub_block in split_on_separator(block):
-            submissions.append({
-                "type": "full",
-                "data": apply_aliases(parse_submission_block(sub_block))
-            })
-
-    # Quick submits
-    for match in re.finditer(r'\[QUICK-SUBMIT\](.*?)\[\/QUICK-SUBMIT\]', text, re.DOTALL):
-        block = match.group(1).strip()
-        if not block:
-            continue
-        for sub_block in split_on_separator(block):
-            submissions.append({
-                "type": "quick",
-                "data": apply_aliases(parse_submission_block(sub_block))
-            })
+    for pattern, sub_type in SUBMISSION_PATTERNS:
+        for match in re.finditer(pattern, text, re.DOTALL):
+            block = match.group(1).strip()
+            if not block:
+                continue
+            for sub_block in split_on_separator(block):
+                submissions.append({
+                    "type": sub_type,
+                    "data": apply_aliases(parse_submission_block(split_inline_fields(sub_block)))
+                })
 
     return submissions
 
@@ -230,11 +264,24 @@ TEMPLATE_MARKERS = {
 }
 CORE_FIELDS = ('tier', 'hardware', 'backend', 'model_name')
 
+def _looks_like_placeholder(v):
+    """A bracketed value is an unfilled template placeholder when it is an
+    option list (contains a pipe) or an example/placeholder phrase. Genuine
+    values that users simply wrapped in brackets (e.g. ``[llama-cpp]``,
+    ``[DeepSeek-R1:671b-0528_q8_0]``) do NOT look like placeholders.
+    """
+    inner = v.strip()
+    if not inner.startswith('['):
+        return False
+    body = inner.strip('[]').strip()
+    low = body.lower()
+    return ('|' in body) or ('e.g.' in low) or (low.startswith('example'))
+
 def is_template_submission(data_dict):
     """Return True if the submission is clearly an unfilled template."""
     for field, markers in TEMPLATE_MARKERS.items():
         v = str(data_dict.get(field, '') or '')
-        if v.startswith('[') or any(m in v for m in markers):
+        if any(m in v for m in markers) or _looks_like_placeholder(v):
             return True
     # All core fields empty -> nothing was actually filled in.
     if not any(str(data_dict.get(f, '') or '').strip() for f in CORE_FIELDS):
@@ -327,29 +374,29 @@ def main():
                 # Parsed/normalized fields
                 "tier": normalize_tier(sub["data"].get("tier", "")),
                 "hardware": {
-                    "description": sub["data"].get("hardware", ""),
+                    "description": _unbracket(sub["data"].get("hardware", "")),
                     "vendor": infer_vendor(sub["data"].get("hardware", ""))
                 },
-                "backend": sub["data"].get("backend", ""),
+                "backend": _unbracket(sub["data"].get("backend", "")),
                 "model": {
-                    "name": sub["data"].get("model_name", ""),
-                    "url": sub["data"].get("download_url", "")
+                    "name": _unbracket(sub["data"].get("model_name", "")),
+                    "url": _unbracket(sub["data"].get("download_url", ""))
                 },
-                "quant": sub["data"].get("quant_package", ""),
-                "weight_precision": sub["data"].get("weight_precision", ""),
-                "use_cases": sub["data"].get("primary_use_case", ""),
+                "quant": _unbracket(sub["data"].get("quant_package", "")),
+                "weight_precision": _unbracket(sub["data"].get("weight_precision", "")),
+                "use_cases": _unbracket(sub["data"].get("primary_use_case", "")),
                 "context": {
-                    "stable": sub["data"].get("stable_context_tested", ""),
-                    "kv_cache": sub["data"].get("kv_cache_setting", "")
+                    "stable": _unbracket(sub["data"].get("stable_context_tested", "")),
+                    "kv_cache": _unbracket(sub["data"].get("kv_cache_setting", ""))
                 },
                 "performance": {
-                    "decode_tps": sub["data"].get("throughput_tps", ""),
-                    "prefill_tps": sub["data"].get("prefill_tps", ""),
-                    "ttft_cold": sub["data"].get("ttft_cold", ""),
-                    "power_w": sub["data"].get("power_draw", "")
+                    "decode_tps": _unbracket(sub["data"].get("throughput_tps", "")),
+                    "prefill_tps": _unbracket(sub["data"].get("prefill_tps", "")),
+                    "ttft_cold": _unbracket(sub["data"].get("ttft_cold", "")),
+                    "power_w": _unbracket(sub["data"].get("power_draw", ""))
                 },
-                "engine_mode": sub["data"].get("engine_mode", ""),
-                "notes": sub["data"].get("setup_notes", ""),
+                "engine_mode": _unbracket(sub["data"].get("engine_mode", "")),
+                "notes": _unbracket(sub["data"].get("setup_notes", "")),
                 # Curation fields (from tags.json)
                 "confidence": "community-reported",
                 "lifecycle": "current",

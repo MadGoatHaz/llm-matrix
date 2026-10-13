@@ -19,9 +19,12 @@ Output:
 """
 
 import argparse
+import html
 import json
+import re
 import shutil
 import sys
+import time
 import urllib.request
 from pathlib import Path
 
@@ -50,6 +53,129 @@ def fetch_url(url):
     with urllib.request.urlopen(req, timeout=30) as resp:
         data = json.loads(resp.read().decode("utf-8"))
     return data
+
+
+def fetch_html(url):
+    """Fetch a page (text) with a browser User-Agent."""
+    print(f"Fetching: {url}")
+    req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(req, timeout=30) as resp:
+        return resp.read().decode("utf-8")
+
+
+def topic_id_from_url(url):
+    """Extract the numeric topic ID from a topic URL (/t/{id}.json or
+    /t/{slug}/{id}.json). Returns None for non-topic URLs (e.g. /c/... categories).
+    """
+    m = re.search(r"/t/(?:[^/]+/)?(\d+)\.json?$", url)
+    return m.group(1) if m else None
+
+
+def extract_preloaded_topic(page, topic_id):
+    """Extract the topic payload Discourse embeds in a deep-link page.
+
+    Topic pages carry a hidden hydration div:
+
+        <div class="hidden" id="data-preloaded"
+             data-preloaded="{&quot;topic_<id>&quot;:&quot;{...}&quot;...}">
+
+    whose value is HTML-escaped JSON mapping "topic_<id>" to a JSON-encoded
+    topic payload. That payload's ``post_stream.posts`` is a 20-post window
+    positioned around the deep-linked post — wider than the first-20 window
+    of the plain ``/t/{id}.json`` endpoint.
+
+    Returns the parsed topic dict, or None when the div is absent/unparseable.
+    """
+    m = re.search(r'id="data-preloaded"\s+data-preloaded="([^"]*)"', page)
+    if not m:
+        return None
+    try:
+        outer = json.loads(html.unescape(m.group(1)))
+    except ValueError:
+        return None
+    key = f"topic_{topic_id}"
+    if key not in outer:
+        return None
+    try:
+        return json.loads(outer[key])
+    except ValueError:
+        return None
+
+
+def backfill_missing_posts(url, data):
+    """Fetch posts beyond a topic payload's first-20 window.
+
+    Discourse's ``/t/{id}.json`` returns only the first 20 posts, while
+    ``post_stream.stream`` lists every post ID. This forum blocks the
+    ``post_ids`` endpoint (404) and ignores ``post_ids`` query params, so we
+    page through deep-link pages (``/t/{id}/{post_number}``) instead: each one
+    embeds a 20-post window in its ``data-preloaded`` div. Posts we don't have
+    yet are merged in, and the window slides forward until the stream is
+    complete (deleted post numbers are skipped; capped at 15 windows).
+
+    Mutates ``data`` in place (posts sorted by post_number).
+    Returns the number of posts added.
+    """
+    topic_id = topic_id_from_url(url)
+    if topic_id is None:
+        return 0
+    post_stream = data.get("post_stream")
+    if not post_stream:
+        return 0
+
+    posts = post_stream.get("posts", [])
+    stream = post_stream.get("stream", [])
+    have = {p.get("id") for p in posts}
+    missing = [pid for pid in stream if pid not in have]
+    if not missing:
+        return 0
+    missing_set = set(missing)
+    print(f"  {len(missing)} post(s) beyond the first-20 window; "
+          f"backfilling via deep-link pages...")
+
+    base = url[:-5] if url.endswith(".json") else url
+    added = 0
+    next_num = max((p.get("post_number", 0) for p in posts), default=0) + 1
+    stalled = 0
+    for _ in range(15):
+        if not missing_set:
+            break
+        page = None
+        try:
+            page = fetch_html(f"{base}/{next_num}")
+        except Exception as e:
+            print(f"  (deep-link {next_num}: {e})")
+        payload = extract_preloaded_topic(page, topic_id) if page else None
+        window = payload.get("post_stream", {}).get("posts", []) if payload else []
+
+        window_max = next_num
+        new_here = 0
+        for p in window:
+            window_max = max(window_max, p.get("post_number", 0))
+            if p.get("id") in missing_set:
+                posts.append(p)
+                missing_set.discard(p.get("id"))
+                added += 1
+                new_here += 1
+        if new_here:
+            print(f"  \u21bb window @ {next_num}: +{new_here} post(s)")
+            stalled = 0
+        else:
+            stalled += 1
+        # Slide past the window we just covered (or past a dead number).
+        next_num = max(window_max, next_num) + 1
+        if stalled >= 3:
+            print(f"  (stalled 3 deep-link pages in a row; stopping)")
+            break
+        time.sleep(1)  # be polite to the forum
+
+    if missing_set:
+        print(f"  \u26a0\ufe0f {len(missing_set)} post id(s) still not retrieved "
+              f"(deleted or unreachable): {sorted(missing_set)}")
+    if added:
+        posts.sort(key=lambda p: p.get("post_number", 0))
+        post_stream["posts"] = posts
+    return added
 
 
 def import_file(filepath):
@@ -100,6 +226,7 @@ def backfill_latest(source_path):
 
 def _single_pull(label_src, data):
     """Legacy single-URL/file path: save as main + backfill latest + summarize."""
+    backfill_missing_posts(label_src, data)
     out_path, lbl, count, size = save_thread({"id": "main", "url": label_src}, data)
     backfill_latest(out_path)
     print(f"\n\u2713 Saved: {out_path}")
@@ -147,6 +274,7 @@ def main():
         print(f"\n[{tid}] {thread['name']}")
         try:
             data = fetch_url(thread["url"])
+            backfill_missing_posts(thread["url"], data)
             out_path, label, count, size = save_thread(thread, data)
             results.append((tid, thread["name"], label, count, size, out_path.name, None))
         except Exception as e:

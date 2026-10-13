@@ -172,8 +172,9 @@ class TestShareableFilters(unittest.TestCase):
             "post_2_madgoat_2": ("Agentic Coding", ""),
             # the only hybrid-flagged submission
             "post_2_madgoat_3": ("Agentic Coding", "Hybrid (VRAM+RAM+SSD)"),
-            # empty use_cases -> empty attribute
-            "post_6_burhan_0": ("", ""),
+            # "Document Q&A, Deep Research, Brainstorming, Coding" ->
+            # primary category (first in schema order) is Agentic Coding
+            "post_6_burhan_0": ("Agentic Coding", "Hybrid (VRAM+RAM)"),
         }
         for sub_id, (uc, mode) in cases.items():
             with self.subTest(sub=sub_id):

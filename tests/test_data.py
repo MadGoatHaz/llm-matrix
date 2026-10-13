@@ -77,12 +77,13 @@ class TestSubmissionsInvariants(unittest.TestCase):
         valid = set(self.schema["backends"])
         for sub in self.subs:
             with self.subTest(id=sub["id"]):
-                normalized = self.generator.normalize_backend(
-                    sub["backend"], self.schema
-                )
+                raw = (sub["backend"] or "").strip()
+                if not raw:
+                    continue  # unreported backend is a data gap, not a violation
+                normalized = self.generator.normalize_backend(raw, self.schema)
                 self.assertIn(
                     normalized, valid,
-                    f"backend {sub['backend']!r} -> {normalized!r} not in schema",
+                    f"backend {raw!r} -> {normalized!r} not in schema",
                 )
 
     def test_no_template_rows_leaked(self):

@@ -2,7 +2,7 @@
   "source": "Crucible: LLM Bench",
   "thread_id": "crucible",
   "url": "https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531",
-  "count": 5,
+  "count": 7,
   "items": [
     {
       "post_number": 1,
@@ -42,6 +42,22 @@
       "date": "2026-10-06",
       "title": "",
       "preview": "Thank you for sharing your tool. MadGoat: The \u201cpractical sweet spot\u201d \u2014 not just where aggregate throughput plateaus, but the maximum number of users where each one still gets a comfortable \u2265 30 tokens/sec. May you consider for this aspect a dispersion behaviour, either in tk/s or more praticaly in l",
+      "has_benchmark_data": true
+    },
+    {
+      "post_number": 22,
+      "username": "MadGoat",
+      "date": "2026-10-11",
+      "title": "",
+      "preview": "\u2013 v0.1.4 is out \u2013 Big one, mostly under the hood. Short version: I went after measurement integrity , and the main culprit turned out to be reasoning models quietly breaking several of the older numbers. What\u2019s new in 0.1.4 : Reasoning models handled \u2014 thinking is suppressed where the backend allows",
+      "has_benchmark_data": true
+    },
+    {
+      "post_number": 23,
+      "username": "MadGoat",
+      "date": "2026-10-12",
+      "title": "",
+      "preview": "\u2014 v0.1.5 is out: Reasoning, Done Right The foundational one. Last release suppressed a reasoning model\u2019s thinking to keep the capability tests fair \u2014 until you hit a server that ignores that (a lot of newer \u201cconfig-only\u201d ones do, and Qwen3.5+ won\u2019t honor /no_think ), which silently turned good model",
       "has_benchmark_data": true
     }
   ]

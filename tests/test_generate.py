@@ -15,6 +15,7 @@ Assertions (per PLAN.md §5.4 structural checks):
 """
 
 import json
+import re
 import shutil
 import sys
 import tempfile
@@ -190,6 +191,21 @@ class TestGoldenRegression(unittest.TestCase):
                     f"missing golden baseline tests/golden/{name}",
                 )
 
+    # The dataset's generated_at is re-stamped on every parse run (the
+    # weekly pull includes one), so data.json's bytes drift on a routine
+    # refresh even when the generator is unchanged. Normalize that single
+    # volatile timestamp on both sides before comparing; everything else
+    # stays a strict byte-for-byte check.
+    _GENERATED_AT_RE = re.compile(
+        r'"generated_at":\s*"\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?'
+        r'(?:Z|[+-]\d{2}:\d{2})?"'
+    )
+
+    def _normalize(self, b: bytes) -> bytes:
+        t = b.decode("utf-8", "replace")
+        t = self._GENERATED_AT_RE.sub('"generated_at": "TIMESTAMP"', t)
+        return t.encode("utf-8")
+
     def test_all_outputs_match_golden_baselines(self):
         from tools.site import main as site_main
 
@@ -202,14 +218,25 @@ class TestGoldenRegression(unittest.TestCase):
         golden = ROOT / "tests" / "golden"
         for name in self.GOLDEN:
             with self.subTest(page=name):
-                new_bytes = (self.tmp / name).read_bytes()
-                gold_bytes = (golden / name).read_bytes()
+                new_bytes = self._normalize((self.tmp / name).read_bytes())
+                gold_bytes = self._normalize((golden / name).read_bytes())
                 self.assertEqual(
                     new_bytes,
                     gold_bytes,
-                    f"{name} is not byte-identical to the golden baseline "
-                    "(refactor regression)",
+                    f"{name} is not identical to the golden baseline "
+                    "(refactor regression; generated_at normalized)",
                 )
+
+    def test_golden_data_json_timestamp_is_iso8601(self):
+        # The one normalized field must still be a well-formed timestamp in
+        # the committed baseline (guards the normalization from going blind).
+        gold = (ROOT / "tests" / "golden" / "data.json").read_text("utf-8")
+        m = re.search(r'"generated_at":\s*"([^"]+)"', gold)
+        self.assertIsNotNone(m, "golden data.json missing generated_at")
+        self.assertRegex(
+            m.group(1),
+            r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})?$",
+        )
 
 
 if __name__ == "__main__":

@@ -216,6 +216,10 @@
           "type": "boolean",
           "description": "Curator flag: feature this entry on the homepage."
         },
+        "highlight_reason": {
+          "type": "string",
+          "description": "Optional curator note explaining why the entry is highlighted (present only when 'highlight' is true)."
+        },
         "tags": {
           "type": "array",
           "items": {

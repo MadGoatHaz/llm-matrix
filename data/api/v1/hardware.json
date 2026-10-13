@@ -3,7 +3,7 @@
   "source": "Show Off Your AI Rig",
   "thread_id": "rigs",
   "url": "https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709",
-  "count": 4,
+  "count": 12,
   "items": [
     {
       "post_number": 2,
@@ -35,6 +35,70 @@
       "date": "2026-09-11",
       "title": "",
       "preview": "SgtAwesomesauce: Have you built an optimized stack for it? You might want to take a look at this repo, if you\u2019re just throwing llama.cpp at it and crossing your fingers, AMD stacks really need a bunch of custom patches and optimizations, especially for the older stuff. That\u2019s how I went from 20t/s o",
+      "has_hardware": true
+    },
+    {
+      "post_number": 24,
+      "username": "digitalscream",
+      "date": "2026-09-13",
+      "title": "",
+      "preview": "Nothing special here\u2026excuse the cabling - this is kind of my workbench, so I determined that excessive cable management isn\u2019t practical. Therefore I\u2019ve done no cable management. 2026-09-13 09.50.43 1920\u00d72560 725 KB 2026-09-13 09.48.58 1920\u00d72560 802 KB 2026-09-13 09.48.37 1920\u00d71440 469 KB Nothing par",
+      "has_hardware": true
+    },
+    {
+      "post_number": 25,
+      "username": "nutral",
+      "date": "2026-09-13",
+      "title": "",
+      "preview": "I still have the same computer i built last year in a Mitx case. (a 5090 for 2700 euro and 128gb of ddr5 for 500 euro) It is annoying that i can\u2019t do anything while running models on it. It runs vllm with qwen3.8 27b about 80-100 t/s image 1920\u00d71440 372 KB image 1920\u00d71440 683 KB",
+      "has_hardware": true
+    },
+    {
+      "post_number": 27,
+      "username": "Mr_Phuzzy",
+      "date": "2026-09-15",
+      "title": "",
+      "preview": "I have been considering sharing this for a little while, this thread coming up on the Summary email was the final push I needed. I built this server up from parts I have been collecting from around Covid-times, from a combination of chance finds and eBay/AliExpress surprise deals. Host: Briareus (as",
+      "has_hardware": true
+    },
+    {
+      "post_number": 28,
+      "username": "digitalscream",
+      "date": "2026-09-22",
+      "title": "",
+      "preview": "So\u2026minor upgrade here\u2026 2026-09-22 07.11.23 1920\u00d71440 538 KB Threadripper 3960x, the idea being to un-bottleneck the GPUs. Going from x8/x8 has made a massive difference to inference performance - token generation hasn\u2019t changed at all, but prefill on Swift 27B has gone from ~3200t/s to ~4800t/s with",
+      "has_hardware": true
+    },
+    {
+      "post_number": 29,
+      "username": "digitalscream",
+      "date": "2026-10-02",
+      "title": "",
+      "preview": "FFS. 2026-10-02 09.12.06 1920\u00d72560 999 KB The HX1500i blew up, so\u2026RM1000x in the case, and RM850x hanging around outside to power one of the GPUs (scavenged from a couple of other machines I\u2019ve got lying around). Currently thinking about making my own enclosure for the machine, set up such that the ",
+      "has_hardware": true
+    },
+    {
+      "post_number": 35,
+      "username": "flockman",
+      "date": "2026-10-02",
+      "title": "",
+      "preview": "I\u2019ll throw my system here for your amusement: image 1440\u00d7808 230 KB -A 2200 Watt asus workstation psu (bought it simply because it had 4 VHPWR slots) -AM4 X570 D4U 2L-2T/BCM motherboard -5950X 16C/32T -128GB of DDR4 -A passive pcie to mcio card hooked up to a PLX88096 Aliexpress special -Quad R9700\u2019",
+      "has_hardware": true
+    },
+    {
+      "post_number": 36,
+      "username": "quadrapole",
+      "date": "2026-10-03",
+      "title": "",
+      "preview": "IMG20261002235050_BURST000_COVER 1920\u00d73413 970 KB 13900kf on z790 taichi carrea 256gb ddr5 5800mhz 3x rtx 6000 pro ws 2x 4tb team group nvme and 2x 2tb wd sn850 black MSI ai1600ts All in a lian li evo dynamic xl case",
+      "has_hardware": true
+    },
+    {
+      "post_number": 37,
+      "username": "digitalscream",
+      "date": "2026-10-03",
+      "title": "",
+      "preview": "quadrapole: 3x rtx 6000 pro ws Where\u2019s the third one? And are you having issues with a lack of PCIE lanes between them?",
       "has_hardware": true
     }
   ]

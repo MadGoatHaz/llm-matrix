@@ -8,13 +8,16 @@ Runs a battery of checks over the committed data files against
   1. valid-json            — every committed ``.json`` file parses.
   2. required-fields       — each submission carries the full canonical key set.
   3. enum-conformance      — tier / vendor / backend / confidence / lifecycle /
-                             engine_mode are all schema-legal (backend via the
-                             generator's single-source-of-truth normalizer).
+                            engine_mode are all schema-legal (backend via the
+                            generator's single-source-of-truth normalizer).
+                            Empty values are missing data, not violations —
+                            they surface in the data-gap check.
   4. duplicates            — no duplicate submission ids; repeated post+model
-                             pairs are flagged (informational).
+                            pairs are flagged (informational).
   5. vram-reasonable       — VRAM is sensible: a tier's ceiling is > 0 and
-                             <= 1000 GB, and no explicit "N GB" hardware figure
-                             is 0 or > 1000 GB.
+                            <= 1000 GB, and no explicit "N GB" hardware figure
+                            is 0 or > 1000 GB (figures in system-memory
+                            context, e.g. "Xeon CPU (1024 GB)", are skipped).
   6. referential-integrity — post ids are integers and the schema still
                              references the ``main`` thread that ``parse.py``
                              depends on.
@@ -76,6 +79,12 @@ MAX_VRAM_GB = 1000
 _GB_RE = re.compile(r"(\d+)\s*(?:GB|GiB|GiB|gib|GIB)\b", re.IGNORECASE)
 _URL_RE = re.compile(r"^https?://")
 
+# Words that mark a "N GB" figure as *system* memory (not VRAM) when they
+# appear in the short context immediately before the figure.
+_SYSTEM_MEM_CONTEXT_RE = re.compile(
+    r"(?i)\b(cpu|ram|memory|mem|ddr|epyc|xeon|ryzen|apu)\b"
+)
+
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -133,6 +142,11 @@ def check_enum_conformance(subs, schema):
     ``normalize_backend`` before being checked against the schema set — the
     same rule the test suite applies, so a free-text backend is only a problem
     if it genuinely names an unknown engine.
+
+    Empty values are *missing data*, not contract breaks: an absent backend or
+    an un-normalizable tier (``None``) is surfaced by the data-gap check and
+    never hard-fails the gate, so one unusual community entry can't stall the
+    weekly push. A *non-empty* invalid value (e.g. tier ``t9``) still fails.
     """
     valid_tiers = {t["id"] for t in schema["tiers"]}
     valid_vendors = set(schema["hardware_vendors"])
@@ -144,14 +158,17 @@ def check_enum_conformance(subs, schema):
     violations = []
     for s in subs:
         sid = s.get("id", "?")
-        if s.get("tier") not in valid_tiers:
-            violations.append(f"{sid}: tier {s.get('tier')!r}")
+        tier = s.get("tier")
+        if tier is not None and tier not in valid_tiers:
+            violations.append(f"{sid}: tier {tier!r}")
         vendor = (s.get("hardware") or {}).get("vendor")
         if vendor not in valid_vendors:
             violations.append(f"{sid}: vendor {vendor!r}")
-        backend = normalize_backend(s.get("backend", ""), schema)
-        if backend not in valid_backends:
-            violations.append(f"{sid}: backend {s.get('backend')!r} -> {backend!r}")
+        backend_raw = (s.get("backend") or "").strip()
+        if backend_raw:
+            backend = normalize_backend(backend_raw, schema)
+            if backend not in valid_backends:
+                violations.append(f"{sid}: backend {backend_raw!r} -> {backend!r}")
         if s.get("confidence") not in valid_confidence:
             violations.append(f"{sid}: confidence {s.get('confidence')!r}")
         if s.get("lifecycle") not in valid_lifecycle:
@@ -199,8 +216,12 @@ def check_vram_reasonable(subs, schema):
     string. A tier like ``t1`` is ``≤16GB`` = ``[0, 16]`` — a 0 *floor* is
     legitimate (small cards live there), so only the ceiling is bounded: it
     must be ``> 0`` and ``<= MAX_VRAM_GB``. An explicit ``0GB`` or ``5000GB``
-    in the hardware text is a genuine error; system RAM like ``128GB`` is well
-    below the ceiling and passes.
+    in the hardware text is a genuine error.
+
+    System memory is not VRAM: a ``N GB`` figure whose immediate context
+    names a CPU/RAM component ("Xeon CPU (1024 GB)", "128GB DDR4") is
+    skipped — hosts with a terabyte of system RAM (model spill-out rigs)
+    are legitimate and must not trip the VRAM ceiling.
     """
     tier_ranges = {t["id"]: t["range"] for t in schema["tiers"]}
     problems = []
@@ -215,6 +236,9 @@ def check_vram_reasonable(subs, schema):
         hw = (s.get("hardware") or {}).get("description", "")
         for m in _GB_RE.finditer(hw):
             n = int(m.group(1))
+            lookback = hw[max(0, m.start() - 25):m.start()]
+            if _SYSTEM_MEM_CONTEXT_RE.search(lookback):
+                continue  # system memory / CPU figure, not VRAM
             if n == 0:
                 problems.append(f"{sid}: hardware lists 0GB")
             elif n > MAX_VRAM_GB:
@@ -258,6 +282,12 @@ def check_data_gaps(subs, schema):
     notes.append(f"{apple} Apple/MLX submissions (biggest demographic gap)")
     empty_mode = sum(1 for s in subs if not (s.get("engine_mode") or "").strip())
     notes.append(f"{empty_mode}/{len(subs)} engine_mode empty")
+    empty_backend = sum(1 for s in subs if not (s.get("backend") or "").strip())
+    none_tier = sum(1 for s in subs if s.get("tier") is None)
+    if empty_backend:
+        notes.append(f"{empty_backend}/{len(subs)} backend empty")
+    if none_tier:
+        notes.append(f"{none_tier}/{len(subs)} tier un-normalizable")
     unnormalized = sum(
         1 for s in subs
         if (s.get("use_cases") or "").strip() and not match_use_cases(s.get("use_cases"), schema)
