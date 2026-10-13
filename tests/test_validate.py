@@ -11,6 +11,9 @@ gate for *code*). These tests lock in its behavior:
 * absurd VRAM (0 GB or > 1000 GB) fails, sensible values pass;
 * broken referential integrity (non-integer post id, missing ``main`` thread)
   fails;
+* the A1 wipe guard: an empty dataset hard-fails (``minimum-submissions``)
+  and a count below half the last validated baseline hard-fails
+  (``submission-drop``);
 * the end-to-end exit-code contract: valid data -> 0, invalid data -> 1.
 
 Every test runs the validator's pure functions over in-memory submissions, so
@@ -77,7 +80,9 @@ class TestValidatorOnRealData(unittest.TestCase):
         self.assertIn("SUMMARY:", report)
 
     def test_main_returns_zero_on_valid_data(self):
-        self.assertEqual(self.mod.main(), 0)
+        # update_baseline=False keeps the validator side-effect-free: this
+        # test runs against the real tree and must not stamp last_seen.json.
+        self.assertEqual(self.mod.main(update_baseline=False), 0)
 
 
 class TestIndividualChecks(unittest.TestCase):
@@ -216,6 +221,38 @@ class TestIndividualChecks(unittest.TestCase):
         self.assertIn("Apple", results[0]["detail"])
 
 
+def make_workspace(submissions, last_seen=None):
+    """A temp workspace mirroring the repo layout, with the given rows.
+
+    ``last_seen`` is written verbatim as ``data/last_seen.json`` (default:
+    ``{}`` — no A1 baseline, so the submission-drop check is skipped, the
+    same contract a true first run has). The real repo's last_seen.json is
+    deliberately NOT copied in: its ``previous_count`` would make the
+    synthetic rows look like a data-loss event.
+    """
+    tmp = Path(tempfile.mkdtemp(prefix="las_validate_"))
+    (tmp / "data").mkdir()
+    (tmp / "tools").mkdir()
+    for rel in ("data/benchmarks.json", "data/hardware.json",
+                "data/category_threads.json", "tools/schema.json",
+                "tools/tags.json"):
+        dst = tmp / rel
+        dst.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(ROOT / rel, dst)
+    (tmp / "data" / "last_seen.json").write_text(
+        json.dumps(last_seen if last_seen is not None else {}, indent=2),
+        encoding="utf-8")
+    payload = {
+        "generated_at": "2026-01-01T00:00:00", "schema_version": "2.1",
+        "source_thread": "https://forum.level1techs.com/t/256443",
+        "total_submissions": len(submissions), "skipped_templates": 0,
+        "submissions": submissions,
+    }
+    (tmp / "data" / "submissions.json").write_text(
+        json.dumps(payload, indent=2), encoding="utf-8")
+    return tmp
+
+
 class TestExitCodeContract(unittest.TestCase):
     """End-to-end: valid data exits 0, invalid data exits 1."""
 
@@ -223,29 +260,8 @@ class TestExitCodeContract(unittest.TestCase):
     def setUpClass(cls):
         cls.mod = load_tool("tools/validate.py")
 
-    def _workspace(self, submissions):
-        """A temp workspace mirroring the repo layout, with the given rows."""
-        tmp = Path(tempfile.mkdtemp(prefix="las_validate_"))
-        (tmp / "data").mkdir()
-        (tmp / "tools").mkdir()
-        for rel in ("data/benchmarks.json", "data/hardware.json",
-                    "data/category_threads.json", "data/last_seen.json",
-                    "tools/schema.json", "tools/tags.json"):
-            dst = tmp / rel
-            dst.parent.mkdir(parents=True, exist_ok=True)
-            shutil.copy2(ROOT / rel, dst)
-        payload = {
-            "generated_at": "2026-01-01T00:00:00", "schema_version": "2.1",
-            "source_thread": "https://forum.level1techs.com/t/256443",
-            "total_submissions": len(submissions), "skipped_templates": 0,
-            "submissions": submissions,
-        }
-        (tmp / "data" / "submissions.json").write_text(
-            json.dumps(payload, indent=2), encoding="utf-8")
-        return tmp
-
     def test_valid_dataset_exits_zero(self):
-        tmp = self._workspace([make_sub()])
+        tmp = make_workspace([make_sub()])
         try:
             _, valid = self.mod.validate(data_dir=tmp / "data", workspace=tmp,
                                          schema_path=tmp / "tools" / "schema.json")
@@ -254,13 +270,109 @@ class TestExitCodeContract(unittest.TestCase):
             shutil.rmtree(tmp, ignore_errors=True)
 
     def test_invalid_dataset_is_not_valid(self):
-        tmp = self._workspace([make_sub(tier="t9",
-                                        hardware={"description": "x 9999GB",
-                                                  "vendor": "Nope"})])
+        tmp = make_workspace([make_sub(tier="t9",
+                                       hardware={"description": "x 9999GB",
+                                                 "vendor": "Nope"})])
         try:
             _, valid = self.mod.validate(data_dir=tmp / "data", workspace=tmp,
                                          schema_path=tmp / "tools" / "schema.json")
             self.assertFalse(valid)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+
+class TestWipeGuardChecks(unittest.TestCase):
+    """A1 wipe guard: an empty or collapsed dataset must hard-fail.
+
+    Two lines of defense in case pull.py's sanity gate is bypassed (or the
+    data is damaged after the pull):
+
+    * ``minimum-submissions`` — 0 entries is a hard failure (before A1 the
+      validator passed *vacuously* on an empty list and the pipeline shipped
+      a blank site);
+    * ``submission-drop`` — a count below half the last validated baseline
+      (``previous_count`` in ``data/last_seen.json``) is a hard failure,
+      even when every surviving row is individually well-formed.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.mod = load_tool("tools/validate.py")
+
+    # --- line 1: minimum-submissions ----------------------------------------
+    def test_zero_submissions_hard_fails(self):
+        results = self.mod.check_minimum_submissions([])
+        self.assertEqual(results[0]["name"], "minimum-submissions")
+        self.assertEqual(results[0]["status"], "fail")
+        self.assertIn("0 entries", results[0]["detail"])
+
+    def test_nonempty_dataset_passes(self):
+        results = self.mod.check_minimum_submissions([make_sub()])
+        self.assertEqual(results[0]["status"], "pass")
+
+    # --- line 2: submission-drop ---------------------------------------------
+    def test_drop_below_half_fails(self):
+        results = self.mod.check_submission_drop([make_sub()],
+                                                {"previous_count": 26})
+        self.assertEqual(results[0]["name"], "submission-drop")
+        self.assertEqual(results[0]["status"], "fail")
+        self.assertIn("dropped from 26 to 1", results[0]["detail"])
+
+    def test_drop_to_exactly_half_passes(self):
+        # The contract is a strict "less than 50%" — landing exactly on
+        # half is worth noting, not a data-loss event.
+        subs = [make_sub(),
+                make_sub(id="post_2_other_0",
+                         source={"post_number": 2, "post_id": 201,
+                                 "username": "other", "submitted_at": ""},
+                         model={"name": "Other", "url": ""})]
+        results = self.mod.check_submission_drop(subs, {"previous_count": 4})
+        self.assertEqual(results[0]["status"], "pass")
+
+    def test_growth_passes(self):
+        results = self.mod.check_submission_drop([make_sub()] * 3,
+                                                {"previous_count": 2})
+        self.assertEqual(results[0]["status"], "pass")
+
+    def test_no_baseline_skips(self):
+        # First run / pre-A1 state file: nothing to compare against.
+        results = self.mod.check_submission_drop(
+            [make_sub()], {"post_stream": {"posts": []}})
+        self.assertEqual(results[0]["status"], "pass")
+        self.assertIn("no previous baseline", results[0]["detail"])
+        results = self.mod.check_submission_drop([make_sub()], {})
+        self.assertEqual(results[0]["status"], "pass")
+
+    # --- end-to-end through validate() ---------------------------------------
+    def test_empty_dataset_fails_end_to_end(self):
+        tmp = make_workspace([], {})
+        try:
+            _, valid = self.mod.validate(data_dir=tmp / "data", workspace=tmp,
+                                         schema_path=tmp / "tools" / "schema.json")
+            self.assertFalse(valid)
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_collapsed_dataset_fails_end_to_end(self):
+        # 1 well-formed row vs a baseline of 26: every per-row check passes,
+        # only the drop guard sees the loss.
+        tmp = make_workspace([make_sub()], {"previous_count": 26})
+        try:
+            results, valid = self.mod.validate(data_dir=tmp / "data",
+                                               workspace=tmp,
+                                               schema_path=tmp / "tools" / "schema.json")
+            self.assertFalse(valid)
+            fails = [r for r in results if r["status"] == "fail"]
+            self.assertEqual([r["name"] for r in fails], ["submission-drop"])
+        finally:
+            shutil.rmtree(tmp, ignore_errors=True)
+
+    def test_baseline_matches_passes_end_to_end(self):
+        tmp = make_workspace([make_sub()], {"previous_count": 1})
+        try:
+            _, valid = self.mod.validate(data_dir=tmp / "data", workspace=tmp,
+                                         schema_path=tmp / "tools" / "schema.json")
+            self.assertTrue(valid)
         finally:
             shutil.rmtree(tmp, ignore_errors=True)
 

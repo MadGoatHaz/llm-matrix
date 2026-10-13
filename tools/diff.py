@@ -31,6 +31,23 @@ def load_json(path):
 def get_posts(data):
     return {p["id"]: p for p in data.get("post_stream", {}).get("posts", [])}
 
+def refresh_baseline(prev_count=None):
+    """Refresh data/last_seen.json from the fresh pull (data/raw/latest.json).
+
+    A1 wipe guard: the ``previous_count`` baseline (the last *validated*
+    submission count, stamped by validate.py after a clean pass) is carried
+    over the refresh so the next run's submission-drop check can compare
+    against the last known-good state. With no baseline to carry (first run,
+    or a pre-A1 state file) the copy is byte-identical to before.
+    """
+    shutil.copy2(LATEST, LAST_SEEN)
+    if prev_count is None:
+        return
+    data = load_json(LAST_SEEN)
+    data["previous_count"] = prev_count
+    with open(LAST_SEEN, "w") as f:
+        json.dump(data, f, indent=2)
+
 def extract_submissions(cooked):
     """Find all submission blocks in cooked HTML.
 
@@ -65,6 +82,10 @@ def main():
     latest = load_json(LATEST)
     prev = load_json(LAST_SEEN)
 
+    # A1: the drop-guard baseline to carry over the refresh (None on a
+    # first run or a pre-A1 state file).
+    prev_count = prev.get("previous_count") if isinstance(prev, dict) else None
+
     if prev is None:
         print("=== FIRST RUN — No previous state ===\n")
         print("All posts are new. Here's what's in the thread:\n")
@@ -74,7 +95,7 @@ def main():
             marker = f" [{len(subs)} submission(s)]" if subs else ""
             print(f"  #{post['post_number']:>2} {post['username']:<20} {post['created_at'][:10]}{marker}")
         # Save as baseline
-        shutil.copy2(LATEST, LAST_SEEN)
+        refresh_baseline(prev_count)
         print(f"\n✓ Saved baseline state to {LAST_SEEN}")
         return
 
@@ -132,8 +153,8 @@ def main():
     if not new_posts and not updated_posts and not removed_posts:
         print("  (no changes)")
 
-    # Update last_seen
-    shutil.copy2(LATEST, LAST_SEEN)
+    # Update last_seen (carrying the A1 drop-guard baseline across)
+    refresh_baseline(prev_count)
     print(f"\n✓ State updated. Next diff will be against this snapshot.")
 
 if __name__ == "__main__":

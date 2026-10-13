@@ -78,7 +78,6 @@ The project's goal is to be the definitive "go-to" reference for the local AI co
 ├── tools/
 │   ├── README.md               # Tools documentation
 │   ├── diff.py                 # Compares data/raw/latest.json against data/last_seen.json; shows new/updated/removed posts
-│   ├── generate.py             # (Legacy) Single-page dashboard generator; superseded by generate_site.py
 │   ├── generate_site.py        # Generates the 5-page website (index, matrix, community, guides, about) + data.json
 │   ├── parse.py                # Extracts [COMMUNITY-SUBMISSION] blocks from main thread → data/submissions.json
 │   ├── parse_thread.py         # Parses secondary threads (crucible→benchmarks, rigs→hardware, category→threads)

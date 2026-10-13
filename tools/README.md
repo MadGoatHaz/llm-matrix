@@ -42,7 +42,6 @@ git add . && git commit -m "Weekly rollup $(date +%Y-%m-%d)" && git push
 | `tools/generate_site.py` | Thin entry point for the site generator — delegates to the `tools/site/` package (see below) |
 | `tools/site/` | **The site generator package** (P1-0): `template.py` (shared page shell — OG tags, nav, footer), `utils.py` (data loading, normalization, aggregation), `markdown.py` (the single `markdown` dep + front-matter), `guides.py` (guide renderer), `api.py` (the versioned data API writer), `pages/` (one pure renderer per page: homepage, matrix, community, guides index, about, recommend, compare, submit, api) |
 | `tools/validate.py` | Data-quality gate: checks `submissions.json` against `schema.json` (required fields, enum conformance, known gaps) — runs in CI, exits non-zero on hard errors |
-| `tools/generate.py` | **Legacy** — the original single-page dashboard + Post #3 viewport generator. Superseded by `generate_site.py`; kept for reference only, do not use |
 | `tools/schema.json` | **You edit this.** Valid tiers, vendors, backends, quants, use cases, engine modes, monitored threads (v2.1) |
 | `tools/tags.json` | **You edit this.** Manual curation: highlights, confidence overrides, forum feedback |
 

@@ -28,6 +28,18 @@ import time
 import urllib.request
 from pathlib import Path
 
+
+class WipeGuardError(RuntimeError):
+    """A1 wipe guard: a fetch would destroy more thread data than it brings.
+
+    Raised by :func:`save_thread` when the on-disk thread mirror already has
+    a non-empty ``post_stream`` and the new fetch carries 0 posts (or fewer
+    than half the previous count) — the signature of a deleted/moderated
+    thread, an API change returning empty, or a partial network response.
+    The mirror is left untouched and the process must exit non-zero so the
+    pipeline stops instead of pushing an empty site to production.
+    """
+
 WORKSPACE = Path(__file__).parent.parent
 RAW_DIR = WORKSPACE / "data" / "raw"
 SCHEMA = WORKSPACE / "tools" / "schema.json"
@@ -218,14 +230,34 @@ def save_thread(thread, data):
     way in (see :func:`tools.site.utils.scrub_placeholders`); genuine values
     and all non-submission content are untouched.
 
+    A1 wipe guard: if the mirror already exists with a non-empty
+    ``post_stream`` and the new fetch carries 0 posts (or fewer than half
+    the previous count), the write is REFUSED and a :class:`WipeGuardError`
+    is raised. A deleted/moderated thread, an API change, or a partial
+    network response must never silently erase the dataset.
+
     Returns (path, label, count, size_bytes).
     """
+    tid = thread["id"]
+    out_path = RAW_DIR / f"{tid}_latest.json"
+    new_count = len(data.get("post_stream", {}).get("posts", []))
+    if out_path.exists():
+        try:
+            existing = load_json(out_path)
+        except (ValueError, OSError):
+            existing = {}
+        prev_count = len(existing.get("post_stream", {}).get("posts", []))
+        if prev_count > 0 and new_count < prev_count / 2:
+            print(f"\u26a0 Refusing to overwrite {tid} — new fetch has "
+                  f"{new_count} posts vs {prev_count} previously. This looks "
+                  f"like a data loss event. Not saving.")
+            raise WipeGuardError(
+                f"{tid}: new fetch has {new_count} posts vs {prev_count} "
+                f"previously (wipe guard) — {out_path.name} left untouched")
     for post in data.get("post_stream", {}).get("posts", []):
         cooked = post.get("cooked")
         if cooked:
             post["cooked"] = scrub_placeholders(cooked)
-    tid = thread["id"]
-    out_path = RAW_DIR / f"{tid}_latest.json"
     with open(out_path, "w") as f:
         json.dump(data, f, indent=2)
     label, count, size = summarize(data)
@@ -264,10 +296,18 @@ def main():
 
     # ---- Legacy fallbacks: explicit --file or non-default --url ----
     if args.file:
-        _single_pull(args.file, import_file(args.file))
+        try:
+            _single_pull(args.file, import_file(args.file))
+        except WipeGuardError:
+            # A1: the warning was already printed in save_thread; stop the
+            # pipeline with a non-zero exit so nothing downstream runs.
+            sys.exit(1)
         return
     if args.url != DEFAULT_URL:
-        _single_pull(args.url, fetch_url(args.url))
+        try:
+            _single_pull(args.url, fetch_url(args.url))
+        except WipeGuardError:
+            sys.exit(1)
         return
 
     # ---- Multi-thread mode: read monitored_threads from schema.json ----
@@ -287,6 +327,7 @@ def main():
         threads = selected
 
     results = []
+    guard_tripped = False
     for thread in threads:
         tid = thread["id"]
         print(f"\n[{tid}] {thread['name']}")
@@ -295,6 +336,11 @@ def main():
             backfill_missing_posts(thread["url"], data)
             out_path, label, count, size = save_thread(thread, data)
             results.append((tid, thread["name"], label, count, size, out_path.name, None))
+        except WipeGuardError as e:
+            # A1: a thin/empty fetch was refused — the good mirror stays
+            # intact and the pipeline must stop (non-zero exit below).
+            guard_tripped = True
+            results.append((tid, thread["name"], None, 0, 0, None, str(e)))
         except Exception as e:
             results.append((tid, thread["name"], None, 0, 0, None, str(e)))
 
@@ -311,6 +357,13 @@ def main():
         else:
             print(f"  \u2713 {tid:<10} {count:>4} {label:<6} {size / 1024:8.1f} KB  {fname}")
     print("=" * 64)
+
+    if guard_tripped:
+        print("\n\u2717 Wipe guard tripped — at least one thread fetch looks like a "
+              "data loss event.")
+        print("  The good mirror(s) were left untouched. Stopping the pipeline "
+              "(non-zero exit) so nothing is parsed, validated, or pushed.")
+        sys.exit(1)
 
 
 if __name__ == "__main__":

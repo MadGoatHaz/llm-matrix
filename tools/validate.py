@@ -6,6 +6,13 @@ Runs a battery of checks over the committed data files against
 ``tools/schema.json`` and prints a clear pass/fail report:
 
   1. valid-json            — every committed ``.json`` file parses.
+  1a. minimum-submissions — the dataset is not empty (A1 wipe guard,
+                            line 1: a deleted/moderated thread or an API
+                            change must never produce an empty site).
+  1b. submission-drop     — the count did not collapse below half the
+                            last validated baseline (A1 wipe guard, line
+                            2; the baseline is ``previous_count`` in
+                            ``data/last_seen.json``).
   2. required-fields       — each submission carries the full canonical key set.
   3. enum-conformance      — tier / vendor / confidence / lifecycle /
                             engine_mode are all schema-legal. The backend is
@@ -29,9 +36,14 @@ Runs a battery of checks over the committed data files against
 A check that fails is a hard **error** (exit code 1); the data-gap check and
 the backend-enum check are informational (**warnings**) and never affect the
 exit code — only truly broken data (missing required fields, invalid JSON,
-bad tier/vendor/confidence/lifecycle, absurd VRAM, broken references) blocks
-the pipeline. This is stdlib-only, consistent with the rest of the data
-pipeline.
+bad tier/vendor/confidence/lifecycle, absurd VRAM, broken references, an
+empty or collapsed dataset) blocks the pipeline. This is stdlib-only,
+consistent with the rest of the data pipeline.
+
+On a clean pass, ``main()`` stamps the current submission count into
+``data/last_seen.json`` as ``previous_count`` — the baseline the next run's
+``submission-drop`` check compares against. The baseline only ever moves to a
+*validated* count, so a wiped dataset can never become the reference point.
 
 Run:
     python tools/validate.py
@@ -137,6 +149,46 @@ def check_json_files(workspace=WORKSPACE):
         except Exception as exc:  # noqa: BLE001 - report any parse failure
             results.append(_check(f"valid-json: {rel}", "fail", str(exc)))
     return results
+
+
+def check_minimum_submissions(subs):
+    """A1 wipe guard, line 1: an empty dataset is a hard failure.
+
+    ``submissions.json`` with 0 entries means the pull/parse chain lost the
+    thread data (deleted/moderated thread, an API change returning empty,
+    a partial network response). An empty site must never be pushed to
+    production — before this check, the validator passed *vacuously* on an
+    empty list and the pipeline shipped a blank site.
+    """
+    if not subs:
+        return [_check("minimum-submissions", "fail",
+                       "submissions.json has 0 entries — possible data loss")]
+    return [_check("minimum-submissions", "pass",
+                   f"{len(subs)} submissions present")]
+
+
+def check_submission_drop(subs, last_seen):
+    """A1 wipe guard, line 2: the count must not collapse vs the baseline.
+
+    The baseline is ``previous_count`` in ``data/last_seen.json`` — the last
+    *validated* submission count (stamped by :func:`main` after a clean
+    pass, carried across baseline refreshes by ``diff.py``). If the current
+    count is below half of it, the dataset likely suffered a loss event
+    (moderation sweep, partial fetch, parser regression) — hard fail, even
+    when the surviving rows are individually well-formed. A missing baseline
+    (first run, pre-A1 state file) skips the comparison.
+    """
+    prev = last_seen.get("previous_count") if isinstance(last_seen, dict) else None
+    if not isinstance(prev, int) or prev <= 0:
+        return [_check("submission-drop", "pass",
+                       "no previous baseline to compare (first run)")]
+    cur = len(subs)
+    if cur < prev / 2:
+        return [_check("submission-drop", "fail",
+                       f"Submission count dropped from {prev} to {cur} — "
+                       f"possible data loss")]
+    return [_check("submission-drop", "pass",
+                   f"{cur} submissions vs previous baseline {prev}")]
 
 
 def check_required_fields(subs):
@@ -355,6 +407,16 @@ def validate(data_dir=DATA_DIR, workspace=WORKSPACE, schema_path=SCHEMA):
     data = load_json(Path(data_dir) / "submissions.json")
     subs = data.get("submissions", [])
 
+    # A1 wipe guard (lines 1 + 2). last_seen.json is in DATA_FILES, so a
+    # missing/corrupt file already fails above; load it defensively here so
+    # the drop check degrades to "no baseline" instead of raising.
+    try:
+        last_seen = load_json(Path(data_dir) / "last_seen.json")
+    except (ValueError, OSError):
+        last_seen = {}
+
+    results += check_minimum_submissions(subs)
+    results += check_submission_drop(subs, last_seen)
     results += check_required_fields(subs)
     results += check_enum_conformance(subs, schema)
     results += check_duplicates(subs)
@@ -390,11 +452,41 @@ def render_report(results):
     return "\n".join(lines)
 
 
-def main():
-    """Run the validator on the committed data; return the exit code."""
+def _stamp_previous_count(data_dir=DATA_DIR):
+    """A1: record the current submission count as the drop-guard baseline.
+
+    Called only after a clean pass, so ``data/last_seen.json``'s
+    ``previous_count`` always holds the last *validated* count — the
+    reference for the next run's ``submission-drop`` check. Re-stamping the
+    same value is a byte-identical rewrite (key order is preserved), so a
+    quiet week produces no file churn.
+    """
+    last_seen_path = Path(data_dir) / "last_seen.json"
+    if not last_seen_path.exists():
+        return
+    try:
+        last_seen = load_json(last_seen_path)
+        subs = load_json(Path(data_dir) / "submissions.json").get("submissions", [])
+        last_seen["previous_count"] = len(subs)
+        with open(last_seen_path, "w", encoding="utf-8") as f:
+            json.dump(last_seen, f, indent=2)
+    except (ValueError, OSError) as e:
+        print(f"\u26a0 Could not stamp the previous_count baseline: {e}")
+
+
+def main(update_baseline=True):
+    """Run the validator on the committed data; return the exit code.
+
+    ``update_baseline`` (default True) makes a clean pass stamp the current
+    submission count into ``data/last_seen.json`` as ``previous_count``.
+    Tests that call ``main()`` against the real tree pass False to keep the
+    validator side-effect-free.
+    """
     results, valid = validate()
     print(render_report(results))
     if valid:
+        if update_baseline:
+            _stamp_previous_count()
         print("\nRESULT: VALID — the data passes all hard checks.")
         return 0
     print("\nRESULT: INVALID — fix the failing checks above before merging.")
