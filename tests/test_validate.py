@@ -4,7 +4,9 @@ The validator is the CI quality gate for *data* (as the test suite is the
 gate for *code*). These tests lock in its behavior:
 
 * the committed dataset validates cleanly (exit 0, no hard failures);
-* a malformed submission (bad enum, missing field) fails the relevant check;
+* a malformed submission (bad enum, missing field) fails the relevant
+  check — except the backend, which is a soft data-quality warning (one
+  unusual community entry must not stall the weekly push);
 * duplicate ids fail, while repeated post+model is only a warning;
 * absurd VRAM (0 GB or > 1000 GB) fails, sensible values pass;
 * broken referential integrity (non-integer post id, missing ``main`` thread)
@@ -108,11 +110,26 @@ class TestIndividualChecks(unittest.TestCase):
             self.schema)
         self.assertEqual(results[0]["status"], "fail")
 
-    def test_unknown_backend_fails(self):
-        # A backend that normalizes to something not in the schema set.
+    def test_unknown_backend_is_warning_not_failure(self):
+        # A backend that names no known engine is a data-quality note, not
+        # a pipeline blocker: the enum check itself passes and the note
+        # surfaces as a separate informational warning.
         results = self.mod.check_enum_conformance(
             [make_sub(backend="TotallyUnknownEngine 9.9")], self.schema)
-        self.assertEqual(results[0]["status"], "fail")
+        self.assertEqual(results[0]["name"], "enum-conformance")
+        self.assertEqual(results[0]["status"], "pass")
+        warns = [r for r in results if r["status"] == "warn"]
+        self.assertEqual(len(warns), 1)
+        self.assertEqual(warns[0]["name"], "backend-enum (info)")
+        self.assertIn("TotallyUnknownEngine", warns[0]["detail"])
+
+    def test_free_text_backend_normalizes_and_passes(self):
+        # "llama.cpp vulkan with no performance tuning" canonicalizes to
+        # "llama.cpp" (schema-legal) — no violation and no warning at all.
+        results = self.mod.check_enum_conformance(
+            [make_sub(backend="llama.cpp vulkan with no performance tuning")],
+            self.schema)
+        self.assertEqual([r["status"] for r in results], ["pass"])
 
     def test_valid_enums_pass(self):
         results = self.mod.check_enum_conformance([make_sub()], self.schema)

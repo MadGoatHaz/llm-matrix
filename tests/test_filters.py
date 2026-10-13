@@ -164,24 +164,32 @@ class TestShareableFilters(unittest.TestCase):
                               f"{sub['id']}: data-mode should be {mode!r}")
 
     def test_known_free_text_normalizations(self):
+        # Data-driven: every rendered row's data-use-case / data-mode must
+        # match what the generator normalizes from its free text, and the
+        # dataset must contain at least one genuinely free-text use case so
+        # the normalization path is exercised. (The old hardcoded
+        # post_2_madgoat_* rows were deleted from the forum thread.)
         text = self._page("matrix.html")
-        cases = {
-            # "LLM-assisted coding / technical documentation" -> Agentic Coding
-            "post_2_madgoat_1": ("Agentic Coding", ""),
-            # "Coding, Security Research (DoS attack tracking)" -> Agentic Coding first
-            "post_2_madgoat_2": ("Agentic Coding", ""),
-            # the only hybrid-flagged submission
-            "post_2_madgoat_3": ("Agentic Coding", "Hybrid (VRAM+RAM+SSD)"),
-            # "Document Q&A, Deep Research, Brainstorming, Coding" ->
-            # primary category (first in schema order) is Agentic Coding
-            "post_6_burhan_0": ("Agentic Coding", "Hybrid (VRAM+RAM)"),
-        }
-        for sub_id, (uc, mode) in cases.items():
-            with self.subTest(sub=sub_id):
-                m = re.search(r'<tr id="' + re.escape(sub_id) + r'"[^>]*>', text)
-                self.assertIsNotNone(m)
-                self.assertIn(f'data-use-case="{uc}"', m.group(0))
-                self.assertIn(f'data-mode="{mode}"', m.group(0))
+        schema = load_json("tools/schema.json")
+        checked = free_text = 0
+        for sub in self._real_subs():
+            m = re.search(r'<tr id="' + re.escape(sub["id"]) + r'"[^>]*>', text)
+            if m is None:
+                continue
+            uc = self._utils.match_use_cases(sub.get("use_cases"), schema)
+            expected_uc = uc[0] if uc else ""
+            expected_mode = self._utils.clean_value(sub.get("engine_mode"))
+            with self.subTest(sub=sub["id"]):
+                self.assertIn(f'data-use-case="{expected_uc}"', m.group(0))
+                self.assertIn(f'data-mode="{expected_mode}"', m.group(0))
+            checked += 1
+            raw_uc = (sub.get("use_cases") or "").strip()
+            if raw_uc and raw_uc not in set(schema["use_cases"]):
+                free_text += 1
+        self.assertGreater(checked, 0, "no matrix rows rendered")
+        self.assertGreater(
+            free_text, 0,
+            "dataset must contain a free-text use case to normalize")
 
     # --- Empty state ---------------------------------------------------------
     def test_empty_state_region_with_clear_button(self):
@@ -349,18 +357,24 @@ class TestAdvancedFiltering(unittest.TestCase):
                 self.assertRegex(date, r"^\d{4}-\d{2}-\d{2}$")
 
     def test_sort_hints_match_known_rows(self):
+        # Data-driven: each rendered row's data-sort-* hints must equal the
+        # values the generator computes from that row's own data (VRAM from
+        # the notes/hardware/tier chain, size from the model name, speed
+        # from the decode figure, date from submitted_at). (The old
+        # hardcoded post_2_madgoat_* rows were deleted from the thread.)
         text = self._page("matrix.html")
-        # "MoE A3B — fits 12.7GB incl. KV" + 35B-A3B name
-        tag = re.search(r'<tr id="post_2_madgoat_1"[^>]*>', text).group(0)
-        self.assertIn('data-sort-vram="12.7"', tag)
-        self.assertIn('data-sort-size="35"', tag)
-        # 27B dense at 48GB hardware
-        tag = re.search(r'<tr id="post_2_madgoat_2"[^>]*>', text).group(0)
-        self.assertIn('data-sort-size="27"', tag)
-        self.assertIn('data-sort-vram="48"', tag)
-        # size unknown (125B only in notes) -> empty hint
-        tag = re.search(r'<tr id="post_2_madgoat_3"[^>]*>', text).group(0)
-        self.assertIn('data-sort-size=""', tag)
+        schema = load_json("tools/schema.json")
+        checked = 0
+        for sub in self._utils.real_submissions(load_json("data/submissions.json")):
+            m = re.search(r'<tr id="' + re.escape(sub["id"]) + r'"[^>]*>', text)
+            if m is None:
+                continue
+            with self.subTest(sub=sub["id"]):
+                for attr in re.findall(r'data-sort-\w+="[^"]*"',
+                                       self._utils.row_sort_attrs(sub, schema)):
+                    self.assertIn(attr, m.group(0))
+            checked += 1
+        self.assertGreater(checked, 0, "no matrix rows rendered")
 
     # --- main.js implements the extended contract ----------------------------
     def test_main_js_extended_url_contract(self):

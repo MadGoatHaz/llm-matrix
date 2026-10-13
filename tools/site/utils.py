@@ -317,29 +317,101 @@ BACKEND_ALIASES = {
 }
 
 
+def _clean_backend_text(raw: Any) -> tuple[str, str]:
+    """Split a raw backend value into (core text, parenthetical detail).
+
+    Drops the user's surrounding-bracket styling and separates a trailing
+    parenthetical ("vLLM (custom framework)" -> ("vLLM", "custom
+    framework")) so the core can be matched against the schema while the
+    descriptive detail is preserved (``split_backend`` hands it to the
+    caller, parse.py moves it into the submission's notes).
+    """
+    s = str(raw).strip()
+    if s.startswith("[") and s.endswith("]"):       # drop user's bracket styling
+        s = s[1:-1].strip()
+    if "(" in s:
+        core, _, tail = s.partition("(")
+        core = core.strip()
+        tail = tail.rstrip(")").strip()
+    else:
+        core, tail = s, ""
+    core = re.sub(r"\s+\d[\w.]*$", "", core).strip()  # drop trailing version
+    return core, tail
+
+
+def _match_backend(s: str, schema: dict) -> tuple[str, str] | None:
+    """Match a cleaned backend core against the schema's known backends.
+
+    Returns ``(canonical_name, matched_text)`` using, in order:
+
+    1. known aliases ("llamacpp" -> "llama.cpp");
+    2. a case-insensitive exact match ("radiance" -> "Radiance");
+    3. a case-insensitive substring match, longest backend name first
+       (so "llama.cpp" is found inside "llama.cpp vulkan with no
+       performance tuning", and a longer name always wins a tie).
+
+    ``None`` when the text names no known backend.
+    """
+    if not s:
+        return None
+    alias = BACKEND_ALIASES.get(s.lower())
+    if alias:
+        return alias, s
+    for sb in schema.get("backends", []):
+        if sb.lower() == s.lower():
+            return sb, s
+    for sb in sorted(schema.get("backends", []), key=len, reverse=True):
+        idx = s.lower().find(sb.lower())
+        if idx != -1:
+            return sb, s[idx:idx + len(sb)]
+    return None
+
+
 def normalize_backend(raw: Any, schema: dict) -> str:
     """Canonical backend name for filter attributes.
 
     'vLLM (magiccodingman/vllm-radiance, adaptive MTP=8)' -> 'vLLM'
     'Strata 0.1.42' -> 'Strata'
     'llamacpp' -> 'llama.cpp'
+    'llama.cpp vulkan with no performance tuning' -> 'llama.cpp'
     """
     if not raw:
         return ""
-    s = str(raw).strip()
-    if s.startswith("[") and s.endswith("]"):       # drop user's bracket styling
-        s = s[1:-1].strip()
-    s = re.sub(r"\(.*$", "", s).strip()              # drop trailing parenthetical
-    s = re.sub(r"\s+\d[\w.]*$", "", s).strip()       # drop trailing version
-    if not s:
-        return ""
-    alias = BACKEND_ALIASES.get(s.lower())
-    if alias:
-        return alias
-    for sb in schema.get("backends", []):
-        if sb.lower() == s.lower():
-            return sb
-    return s
+    core, _detail = _clean_backend_text(raw)
+    m = _match_backend(core, schema)
+    return m[0] if m else core
+
+
+def split_backend(raw: Any, schema: dict) -> tuple[str, str]:
+    """``(canonical backend, leftover detail)`` for a raw backend value.
+
+    The detail is the descriptive text a contributor tacked onto the
+    backend name — what parse.py moves into the submission's notes:
+
+    'llama.cpp vulkan with no performance tuning'
+        -> ('llama.cpp', 'vulkan with no performance tuning')
+    'ollama on a mac'         -> ('Ollama', 'on a mac')
+    'vllm with tensor parallelism' -> ('vLLM', 'with tensor parallelism')
+    'LM Studio'               -> ('LM Studio', '')
+    'radiance 1.3.0'          -> ('Radiance', '')  (a version is not detail)
+    'vLLM (custom framework, see below)'
+        -> ('vLLM', 'custom framework, see below')
+    'TotallyUnknownEngine 9.9' -> ('TotallyUnknownEngine', '') — no known
+        backend matched, so the cleaned text is kept as-is and the detail
+        is empty; the caller decides how to flag it (parse.py warns).
+    """
+    if not raw:
+        return "", ""
+    core, detail = _clean_backend_text(raw)
+    m = _match_backend(core, schema)
+    if m is None:
+        return core, ""
+    canonical, matched = m
+    idx = core.lower().find(matched.lower())
+    remainder = (core[:idx] + " " + core[idx + len(matched):]).strip()
+    remainder = re.sub(r"\s+", " ", remainder).strip(" ,;:|-—")
+    parts = [p for p in (remainder, detail) if p]
+    return canonical, " ".join(parts)
 
 
 def compute_stats(subs: list[dict], schema: dict) -> dict:

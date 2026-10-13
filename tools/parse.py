@@ -39,6 +39,16 @@ SCHEMA = WORKSPACE / "tools" / "schema.json"
 TAGS = WORKSPACE / "tools" / "tags.json"
 OUTPUT = DATA_DIR / "submissions.json"
 
+# Reuse the site generator's backend normalizer (the single source of truth,
+# shared with validate.py) so parsed submissions store schema-legal backend
+# values; free-text detail (e.g. "vulkan with no performance tuning") is
+# moved into the submission's notes.
+_REPO_ROOT = str(WORKSPACE)
+if _REPO_ROOT not in sys.path:
+    sys.path.insert(0, _REPO_ROOT)
+
+from tools.site.utils import split_backend  # noqa: E402
+
 # ---------------------------------------------------------------------------
 # Loading helpers
 # ---------------------------------------------------------------------------
@@ -379,6 +389,7 @@ def main():
     submissions = []
     warnings = []
     skipped_templates = 0
+    valid_backends = set(schema.get("backends", []))
 
     for post in posts:
         post_num = post.get("post_number", 0)
@@ -391,6 +402,15 @@ def main():
             if is_template_submission(sub["data"]):
                 skipped_templates += 1
                 continue
+
+            # Normalize the backend to a schema-legal value; any free-text
+            # detail the contributor tacked onto the name (e.g. "vulkan with
+            # no performance tuning") is moved into the notes field.
+            backend, backend_detail = split_backend(
+                _unbracket(sub["data"].get("backend", "")), schema)
+            notes = _unbracket(sub["data"].get("setup_notes", ""))
+            if backend_detail:
+                notes = f"{notes} | {backend_detail}" if notes else backend_detail
 
             entry = {
                 "id": f"post_{post_num}_{username.lower()}_{i}",
@@ -408,7 +428,7 @@ def main():
                     "description": _unbracket(sub["data"].get("hardware", "")),
                     "vendor": infer_vendor(sub["data"].get("hardware", ""))
                 },
-                "backend": _unbracket(sub["data"].get("backend", "")),
+                "backend": backend,
                 "model": {
                     "name": _unbracket(sub["data"].get("model_name", "")),
                     "url": _unbracket(sub["data"].get("download_url", ""))
@@ -427,7 +447,7 @@ def main():
                     "power_w": _unbracket(sub["data"].get("power_draw", ""))
                 },
                 "engine_mode": _unbracket(sub["data"].get("engine_mode", "")),
-                "notes": _unbracket(sub["data"].get("setup_notes", "")),
+                "notes": notes,
                 # Curation fields (from tags.json)
                 "confidence": "community-reported",
                 "lifecycle": "current",
@@ -454,6 +474,11 @@ def main():
                 warnings.append(f"Post #{post_num} ({username}): Could not normalize tier from '{sub['data'].get('tier', 'N/A')}'")
             if not entry["backend"]:
                 warnings.append(f"Post #{post_num} ({username}): No backend specified")
+            elif entry["backend"] not in valid_backends:
+                # A backend that names no known engine is kept as-is (data
+                # quality note, not a hard failure — one unusual entry must
+                # not block the pipeline).
+                warnings.append(f"Post #{post_num} ({username}): backend '{entry['backend']}' matched no known backend (kept as-is)")
 
     # Write output. `submissions` contains only real (non-template) entries,
     # so total_submissions and all stats below reflect real data only.

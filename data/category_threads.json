@@ -11,9 +11,53 @@
       "posts_count": 2,
       "created_at": "2024-05-01",
       "last_posted_at": "2025-07-12",
-      "views": 1554,
+      "views": 1557,
       "like_count": 0,
       "url": "https://forum.level1techs.com/t/about-the-machine-learning-llms-ai-category/210527"
+    },
+    {
+      "id": 258397,
+      "title": "175+t/s on RDNA4 with 180B Models: Testing Radiance on many R9700s (and R9600Ds): Some Qualitative Breakout Fun",
+      "slug": "175-t-s-on-rdna4-with-180b-models-testing-radiance-on-many-r9700s-and-r9600ds-some-qualitative-breakout-fun",
+      "posts_count": 6,
+      "created_at": "2026-10-11",
+      "last_posted_at": "2026-10-13",
+      "views": 157,
+      "like_count": 9,
+      "url": "https://forum.level1techs.com/t/175-t-s-on-rdna4-with-180b-models-testing-radiance-on-many-r9700s-and-r9600ds-some-qualitative-breakout-fun/258397"
+    },
+    {
+      "id": 256443,
+      "title": "The Local LLM Matrix: Best Models & Quants by VRAM Tier (<=16GB \u2013 256GB+)",
+      "slug": "the-local-llm-matrix-best-models-quants-by-vram-tier-16gb-256gb",
+      "posts_count": 32,
+      "created_at": "2026-09-18",
+      "last_posted_at": "2026-10-13",
+      "views": 1893,
+      "like_count": 39,
+      "url": "https://forum.level1techs.com/t/the-local-llm-matrix-best-models-quants-by-vram-tier-16gb-256gb/256443"
+    },
+    {
+      "id": 258505,
+      "title": "Qwen 3.8/Swift 1.5 Flash Next is nuts",
+      "slug": "qwen-3-8-swift-1-5-flash-next-is-nuts",
+      "posts_count": 2,
+      "created_at": "2026-10-13",
+      "last_posted_at": "2026-10-13",
+      "views": 44,
+      "like_count": 3,
+      "url": "https://forum.level1techs.com/t/qwen-3-8-swift-1-5-flash-next-is-nuts/258505"
+    },
+    {
+      "id": 258459,
+      "title": "Has anyone tried to run upstream GLM-5.3 Flash on 3x DGX Spark?",
+      "slug": "has-anyone-tried-to-run-upstream-glm-5-3-flash-on-3x-dgx-spark",
+      "posts_count": 4,
+      "created_at": "2026-10-12",
+      "last_posted_at": "2026-10-13",
+      "views": 75,
+      "like_count": 0,
+      "url": "https://forum.level1techs.com/t/has-anyone-tried-to-run-upstream-glm-5-3-flash-on-3x-dgx-spark/258459"
     },
     {
       "id": 255535,
@@ -22,7 +66,7 @@
       "posts_count": 30,
       "created_at": "2026-09-09",
       "last_posted_at": "2026-10-13",
-      "views": 893,
+      "views": 910,
       "like_count": 28,
       "url": "https://forum.level1techs.com/t/local-llm-based-coding-on-hpc-equipment/255535"
     },
@@ -33,31 +77,9 @@
       "posts_count": 6,
       "created_at": "2026-10-12",
       "last_posted_at": "2026-10-13",
-      "views": 131,
-      "like_count": 3,
+      "views": 155,
+      "like_count": 4,
       "url": "https://forum.level1techs.com/t/turnstone-judging-with-strix-halo-npu/258407"
-    },
-    {
-      "id": 258459,
-      "title": "Has anyone tried to run upstream GLM-5.3 Flash on 3x DGX Spark?",
-      "slug": "has-anyone-tried-to-run-upstream-glm-5-3-flash-on-3x-dgx-spark",
-      "posts_count": 1,
-      "created_at": "2026-10-12",
-      "last_posted_at": "2026-10-12",
-      "views": 41,
-      "like_count": 0,
-      "url": "https://forum.level1techs.com/t/has-anyone-tried-to-run-upstream-glm-5-3-flash-on-3x-dgx-spark/258459"
-    },
-    {
-      "id": 256443,
-      "title": "The Local LLM Matrix: Best Models & Quants by VRAM Tier (<=16GB \u2013 256GB+)",
-      "slug": "the-local-llm-matrix-best-models-quants-by-vram-tier-16gb-256gb",
-      "posts_count": 28,
-      "created_at": "2026-09-18",
-      "last_posted_at": "2026-10-12",
-      "views": 1795,
-      "like_count": 33,
-      "url": "https://forum.level1techs.com/t/the-local-llm-matrix-best-models-quants-by-vram-tier-16gb-256gb/256443"
     },
     {
       "id": 258040,
@@ -66,20 +88,9 @@
       "posts_count": 14,
       "created_at": "2026-10-08",
       "last_posted_at": "2026-10-12",
-      "views": 287,
+      "views": 294,
       "like_count": 7,
       "url": "https://forum.level1techs.com/t/nvidia-v100-vs-amd-395/258040"
-    },
-    {
-      "id": 258397,
-      "title": "175+t/s on RDNA4 with 180B Models: Testing Radiance on many R9700s (and R9600Ds): Some Qualitative Breakout Fun",
-      "slug": "175-t-s-on-rdna4-with-180b-models-testing-radiance-on-many-r9700s-and-r9600ds-some-qualitative-breakout-fun",
-      "posts_count": 3,
-      "created_at": "2026-10-11",
-      "last_posted_at": "2026-10-12",
-      "views": 135,
-      "like_count": 8,
-      "url": "https://forum.level1techs.com/t/175-t-s-on-rdna4-with-180b-models-testing-radiance-on-many-r9700s-and-r9600ds-some-qualitative-breakout-fun/258397"
     },
     {
       "id": 257531,
@@ -88,7 +99,7 @@
       "posts_count": 24,
       "created_at": "2026-10-01",
       "last_posted_at": "2026-10-12",
-      "views": 482,
+      "views": 487,
       "like_count": 13,
       "url": "https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531"
     },
@@ -99,7 +110,7 @@
       "posts_count": 1,
       "created_at": "2026-10-12",
       "last_posted_at": "2026-10-12",
-      "views": 43,
+      "views": 49,
       "like_count": 1,
       "url": "https://forum.level1techs.com/t/gotcha-of-the-day-preserve-reasoning-on-local-backends-vs-framework-overrides/258410"
     },
@@ -110,7 +121,7 @@
       "posts_count": 2,
       "created_at": "2026-10-11",
       "last_posted_at": "2026-10-12",
-      "views": 105,
+      "views": 108,
       "like_count": 1,
       "url": "https://forum.level1techs.com/t/language-model-on-a-19-graphics-card/258400"
     },
@@ -121,7 +132,7 @@
       "posts_count": 14,
       "created_at": "2026-07-20",
       "last_posted_at": "2026-10-11",
-      "views": 612,
+      "views": 627,
       "like_count": 9,
       "url": "https://forum.level1techs.com/t/creating-an-agent-harness-and-self-hosting-part-2-my-hardware-setup/252909"
     },
@@ -132,7 +143,7 @@
       "posts_count": 7,
       "created_at": "2026-09-07",
       "last_posted_at": "2026-10-11",
-      "views": 473,
+      "views": 480,
       "like_count": 5,
       "url": "https://forum.level1techs.com/t/i-didnt-know-it-was-impossible-i-just-needed-it-400k-context-on-qwen-3-6-moe-35b-on-a-single-16gb-gpu-rtx-5060-ti-at-25-t-s/255275"
     },
@@ -143,7 +154,7 @@
       "posts_count": 2,
       "created_at": "2026-10-11",
       "last_posted_at": "2026-10-11",
-      "views": 99,
+      "views": 101,
       "like_count": 0,
       "url": "https://forum.level1techs.com/t/running-llms-on-a-repurposed-kintex-7-pcie-card-opentpu/258369"
     },
@@ -154,7 +165,7 @@
       "posts_count": 25,
       "created_at": "2026-08-26",
       "last_posted_at": "2026-10-11",
-      "views": 3068,
+      "views": 3074,
       "like_count": 23,
       "url": "https://forum.level1techs.com/t/making-qwen-3-8-27b-fast-on-strix-halo-gfx1151/254422"
     },
@@ -165,7 +176,7 @@
       "posts_count": 8,
       "created_at": "2026-10-10",
       "last_posted_at": "2026-10-10",
-      "views": 212,
+      "views": 219,
       "like_count": 7,
       "url": "https://forum.level1techs.com/t/how-can-i-learn-to-have-my-own-local-llm-agent/258290"
     },
@@ -176,7 +187,7 @@
       "posts_count": 20,
       "created_at": "2026-03-06",
       "last_posted_at": "2026-10-10",
-      "views": 1315,
+      "views": 1316,
       "like_count": 36,
       "url": "https://forum.level1techs.com/t/the-rig-3-0/247047"
     },
@@ -187,7 +198,7 @@
       "posts_count": 5,
       "created_at": "2026-10-10",
       "last_posted_at": "2026-10-10",
-      "views": 119,
+      "views": 123,
       "like_count": 8,
       "url": "https://forum.level1techs.com/t/displayport-as-gpu-p2p-fabric/258266"
     },
@@ -198,7 +209,7 @@
       "posts_count": 8,
       "created_at": "2026-07-26",
       "last_posted_at": "2026-10-10",
-      "views": 455,
+      "views": 456,
       "like_count": 3,
       "url": "https://forum.level1techs.com/t/will-6-cores-be-enough-to-run-a-homelab-and-local-ai-agents-at-the-same-time/253146"
     },
@@ -209,7 +220,7 @@
       "posts_count": 35,
       "created_at": "2026-07-21",
       "last_posted_at": "2026-10-10",
-      "views": 2183,
+      "views": 2185,
       "like_count": 17,
       "url": "https://forum.level1techs.com/t/bang-for-buck-ai-performance/252951"
     },
@@ -220,7 +231,7 @@
       "posts_count": 59,
       "created_at": "2026-07-10",
       "last_posted_at": "2026-10-09",
-      "views": 2081,
+      "views": 2096,
       "like_count": 25,
       "url": "https://forum.level1techs.com/t/i-need-an-ai-sanity-check-9700-pro-x2/252453"
     },
@@ -242,7 +253,7 @@
       "posts_count": 5,
       "created_at": "2026-09-03",
       "last_posted_at": "2026-10-09",
-      "views": 446,
+      "views": 449,
       "like_count": 4,
       "url": "https://forum.level1techs.com/t/intel-has-brought-local-llm-tools-to-the-normie-masses/255027"
     },
@@ -253,7 +264,7 @@
       "posts_count": 15,
       "created_at": "2026-10-07",
       "last_posted_at": "2026-10-09",
-      "views": 435,
+      "views": 441,
       "like_count": 18,
       "url": "https://forum.level1techs.com/t/getting-the-feeling-of-getting-behind-because-of-not-wanting-to-rely-on-ai/257974"
     },
@@ -264,7 +275,7 @@
       "posts_count": 16,
       "created_at": "2026-09-20",
       "last_posted_at": "2026-10-09",
-      "views": 688,
+      "views": 694,
       "like_count": 13,
       "url": "https://forum.level1techs.com/t/creating-a-custom-homelab-machine-for-llm-usage-on-a-budget/256645"
     },
@@ -275,7 +286,7 @@
       "posts_count": 24,
       "created_at": "2026-06-24",
       "last_posted_at": "2026-10-09",
-      "views": 1207,
+      "views": 1213,
       "like_count": 18,
       "url": "https://forum.level1techs.com/t/open-source-models-for-coding/251758"
     },
@@ -286,7 +297,7 @@
       "posts_count": 1,
       "created_at": "2026-10-09",
       "last_posted_at": "2026-10-09",
-      "views": 115,
+      "views": 118,
       "like_count": 5,
       "url": "https://forum.level1techs.com/t/github-storytold-photocraft-an-open-source-clean-room-reimplementation-of/258151"
     },
@@ -297,7 +308,7 @@
       "posts_count": 1,
       "created_at": "2026-10-08",
       "last_posted_at": "2026-10-08",
-      "views": 84,
+      "views": 85,
       "like_count": 0,
       "url": "https://forum.level1techs.com/t/llm-homelab-patchwork-need-advice/258130"
     },
@@ -308,7 +319,7 @@
       "posts_count": 377,
       "created_at": "2026-05-24",
       "last_posted_at": "2026-10-07",
-      "views": 11061,
+      "views": 11091,
       "like_count": 594,
       "url": "https://forum.level1techs.com/t/someone-needs-to-figure-out-how-to-adapt-mi250-gpus-to-pcie/250596"
     },
@@ -319,20 +330,9 @@
       "posts_count": 3,
       "created_at": "2026-10-05",
       "last_posted_at": "2026-10-07",
-      "views": 139,
+      "views": 140,
       "like_count": 0,
       "url": "https://forum.level1techs.com/t/harnesses-orchestration-and-multi-agent-tools/257778"
-    },
-    {
-      "id": 257348,
-      "title": "Anthropic literally wrote an ad for GLM 5.3",
-      "slug": "anthropic-literally-wrote-an-ad-for-glm-5-3",
-      "posts_count": 4,
-      "created_at": "2026-09-29",
-      "last_posted_at": "2026-10-06",
-      "views": 301,
-      "like_count": 2,
-      "url": "https://forum.level1techs.com/t/anthropic-literally-wrote-an-ad-for-glm-5-3/257348"
     }
   ]
 }

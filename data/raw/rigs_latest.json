@@ -14,7 +14,7 @@
         "reply_count": 0,
         "reply_to_post_number": null,
         "quote_count": 0,
-        "incoming_link_count": 30,
+        "incoming_link_count": 31,
         "reads": 174,
         "readers_count": 173,
         "score": 239.6,
@@ -2472,19 +2472,23 @@
   "timeline_lookup": [
     [
       1,
+      33
+    ],
+    [
+      9,
       32
     ],
     [
-      11,
+      23,
       31
     ],
     [
-      23,
+      24,
       30
     ],
     [
       27,
-      28
+      29
     ],
     [
       28,
@@ -2495,12 +2499,8 @@
       11
     ],
     [
-      31,
+      36,
       10
-    ],
-    [
-      40,
-      9
     ]
   ],
   "tags": [],

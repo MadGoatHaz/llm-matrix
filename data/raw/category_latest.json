@@ -19,9 +19,22 @@
       "trust_level": 2
     },
     {
-      "id": 144463,
-      "username": "Patrick_M",
-      "avatar_template": "/user_avatar/forum.level1techs.com/patrick_m/{size}/521995_2.png",
+      "id": 2606,
+      "username": "wendell",
+      "avatar_template": "/user_avatar/forum.level1techs.com/wendell/{size}/88205_2.png",
+      "admin": true,
+      "trust_level": 4
+    },
+    {
+      "id": 104016,
+      "username": "Mora",
+      "avatar_template": "/user_avatar/forum.level1techs.com/mora/{size}/82583_2.png",
+      "trust_level": 3
+    },
+    {
+      "id": 165685,
+      "username": "Buildingstuff",
+      "avatar_template": "/user_avatar/forum.level1techs.com/buildingstuff/{size}/718402_2.png",
       "trust_level": 2
     },
     {
@@ -34,6 +47,42 @@
       "id": 164915,
       "username": "MadGoat",
       "avatar_template": "/user_avatar/forum.level1techs.com/madgoat/{size}/707158_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 158054,
+      "username": "Burhan",
+      "avatar_template": "/user_avatar/forum.level1techs.com/burhan/{size}/519786_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 164240,
+      "username": "Kif",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/k/c2a13f/{size}.png",
+      "trust_level": 1
+    },
+    {
+      "id": 160556,
+      "username": "manoreken2",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/m/45deac/{size}.png",
+      "trust_level": 2
+    },
+    {
+      "id": 166361,
+      "username": "emily1312",
+      "avatar_template": "/letter_avatar_proxy/v4/letter/e/e19b73/{size}.png",
+      "trust_level": 0
+    },
+    {
+      "id": 160994,
+      "username": "mashie",
+      "avatar_template": "/user_avatar/forum.level1techs.com/mashie/{size}/575991_2.png",
+      "trust_level": 2
+    },
+    {
+      "id": 144463,
+      "username": "Patrick_M",
+      "avatar_template": "/user_avatar/forum.level1techs.com/patrick_m/{size}/521995_2.png",
       "trust_level": 2
     },
     {
@@ -55,34 +104,15 @@
       "trust_level": 1
     },
     {
-      "id": 2606,
-      "username": "wendell",
-      "avatar_template": "/user_avatar/forum.level1techs.com/wendell/{size}/88205_2.png",
-      "admin": true,
-      "trust_level": 4
-    },
-    {
       "id": 126422,
       "username": "eduncan911",
       "avatar_template": "/user_avatar/forum.level1techs.com/eduncan911/{size}/261568_2.png",
       "trust_level": 2
     },
     {
-      "id": 166361,
-      "username": "emily1312",
-      "avatar_template": "/letter_avatar_proxy/v4/letter/e/e19b73/{size}.png",
-      "trust_level": 0
-    },
-    {
-      "id": 158054,
-      "username": "Burhan",
-      "avatar_template": "/user_avatar/forum.level1techs.com/burhan/{size}/519786_2.png",
-      "trust_level": 2
-    },
-    {
-      "id": 160556,
-      "username": "manoreken2",
-      "avatar_template": "/letter_avatar_proxy/v4/letter/m/45deac/{size}.png",
+      "id": 138881,
+      "username": "DS_DV",
+      "avatar_template": "/user_avatar/forum.level1techs.com/ds_dv/{size}/370215_2.png",
       "trust_level": 2
     },
     {
@@ -90,12 +120,6 @@
       "username": "s1ugh34d",
       "avatar_template": "/user_avatar/forum.level1techs.com/s1ugh34d/{size}/433290_2.png",
       "trust_level": 3
-    },
-    {
-      "id": 138881,
-      "username": "DS_DV",
-      "avatar_template": "/user_avatar/forum.level1techs.com/ds_dv/{size}/370215_2.png",
-      "trust_level": 2
     },
     {
       "id": 128232,
@@ -108,18 +132,6 @@
       "username": "TCat1Cat",
       "avatar_template": "/user_avatar/forum.level1techs.com/tcat1cat/{size}/714798_2.png",
       "trust_level": 1
-    },
-    {
-      "id": 104016,
-      "username": "Mora",
-      "avatar_template": "/user_avatar/forum.level1techs.com/mora/{size}/82583_2.png",
-      "trust_level": 3
-    },
-    {
-      "id": 165685,
-      "username": "Buildingstuff",
-      "avatar_template": "/user_avatar/forum.level1techs.com/buildingstuff/{size}/718402_2.png",
-      "trust_level": 2
     },
     {
       "id": 165767,
@@ -186,12 +198,6 @@
       "username": "godbrain",
       "avatar_template": "/user_avatar/forum.level1techs.com/godbrain/{size}/721793_2.png",
       "trust_level": 1
-    },
-    {
-      "id": 160994,
-      "username": "mashie",
-      "avatar_template": "/user_avatar/forum.level1techs.com/mashie/{size}/575991_2.png",
-      "trust_level": 2
     },
     {
       "id": 165031,
@@ -491,12 +497,6 @@
       "username": "Shiny81",
       "avatar_template": "/letter_avatar_proxy/v4/letter/s/4491bb/{size}.png",
       "trust_level": 0
-    },
-    {
-      "id": 145174,
-      "username": "Marandil",
-      "avatar_template": "/user_avatar/forum.level1techs.com/marandil/{size}/428656_2.png",
-      "trust_level": 2
     }
   ],
   "primary_groups": [
@@ -584,7 +584,7 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 1554,
+        "views": 1557,
         "like_count": 0,
         "has_summary": false,
         "last_poster_username": "eastcoastpete",
@@ -606,6 +606,241 @@
             "extras": "latest",
             "description": "Most Recent Poster",
             "user_id": 152179,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "175+t/s on RDNA4 with 180B Models: Testing Radiance on many R9700s (and R9600Ds): Some Qualitative Breakout Fun",
+        "id": 258397,
+        "title": "175+t/s on RDNA4 with 180B Models: Testing Radiance on many R9700s (and R9600Ds): Some Qualitative Breakout Fun",
+        "slug": "175-t-s-on-rdna4-with-180b-models-testing-radiance-on-many-r9700s-and-r9600ds-some-qualitative-breakout-fun",
+        "posts_count": 6,
+        "reply_count": 2,
+        "highest_post_number": 6,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/original/4X/6/c/9/6c9e0f42958f8703fdee0ef93ca5b210d04a1640.jpeg",
+        "created_at": "2026-10-11T21:13:38.321Z",
+        "last_posted_at": "2026-10-13T15:15:20.935Z",
+        "bumped": true,
+        "bumped_at": "2026-10-13T15:15:20.935Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 157,
+        "like_count": 9,
+        "has_summary": false,
+        "last_poster_username": "digitalscream",
+        "category_id": 155,
+        "op_like_count": 7,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 2606,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 104016,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 165685,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 159356,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "The Local LLM Matrix: Best Models &amp; Quants by VRAM Tier (&lt;=16GB \u2013 256GB+)",
+        "id": 256443,
+        "title": "The Local LLM Matrix: Best Models & Quants by VRAM Tier (<=16GB \u2013 256GB+)",
+        "slug": "the-local-llm-matrix-best-models-quants-by-vram-tier-16gb-256gb",
+        "posts_count": 32,
+        "reply_count": 13,
+        "highest_post_number": 33,
+        "image_url": null,
+        "created_at": "2026-09-18T03:01:58.484Z",
+        "last_posted_at": "2026-10-13T12:45:58.600Z",
+        "bumped": true,
+        "bumped_at": "2026-10-13T12:45:58.600Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 1893,
+        "like_count": 39,
+        "has_summary": false,
+        "last_poster_username": "manoreken2",
+        "category_id": 155,
+        "op_like_count": 3,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 164915,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 158054,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 159356,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": null,
+            "description": "Frequent Poster",
+            "user_id": 164240,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 160556,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Qwen 3.8/Swift 1.5 Flash Next is nuts",
+        "id": 258505,
+        "title": "Qwen 3.8/Swift 1.5 Flash Next is nuts",
+        "slug": "qwen-3-8-swift-1-5-flash-next-is-nuts",
+        "posts_count": 2,
+        "reply_count": 0,
+        "highest_post_number": 2,
+        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/9/2/8/928715137ebeff86fdaff9afa52888696e1bf113_2_1024x593.jpeg",
+        "created_at": "2026-10-13T12:31:53.264Z",
+        "last_posted_at": "2026-10-13T12:43:08.430Z",
+        "bumped": true,
+        "bumped_at": "2026-10-13T12:43:08.430Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [],
+        "tags_descriptions": {},
+        "views": 44,
+        "like_count": 3,
+        "has_summary": false,
+        "last_poster_username": "digitalscream",
+        "category_id": 155,
+        "op_like_count": 2,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": "latest single",
+            "description": "Original Poster, Most Recent Poster",
+            "user_id": 159356,
+            "primary_group_id": null,
+            "flair_group_id": null
+          }
+        ]
+      },
+      {
+        "fancy_title": "Has anyone tried to run upstream GLM-5.3 Flash on 3x DGX Spark?",
+        "id": 258459,
+        "title": "Has anyone tried to run upstream GLM-5.3 Flash on 3x DGX Spark?",
+        "slug": "has-anyone-tried-to-run-upstream-glm-5-3-flash-on-3x-dgx-spark",
+        "posts_count": 4,
+        "reply_count": 1,
+        "highest_post_number": 4,
+        "image_url": null,
+        "created_at": "2026-10-12T18:57:34.722Z",
+        "last_posted_at": "2026-10-13T11:41:43.054Z",
+        "bumped": true,
+        "bumped_at": "2026-10-13T11:41:43.054Z",
+        "archetype": "regular",
+        "unseen": false,
+        "pinned": false,
+        "unpinned": null,
+        "visible": true,
+        "closed": false,
+        "archived": false,
+        "bookmarked": null,
+        "liked": null,
+        "tags": [
+          "ai",
+          "nvidia"
+        ],
+        "tags_descriptions": {},
+        "views": 75,
+        "like_count": 0,
+        "has_summary": false,
+        "last_poster_username": "mashie",
+        "category_id": 155,
+        "op_like_count": 0,
+        "pinned_globally": false,
+        "featured_link": null,
+        "has_accepted_answer": false,
+        "can_vote": false,
+        "posters": [
+          {
+            "extras": null,
+            "description": "Original Poster",
+            "user_id": 166361,
+            "primary_group_id": null,
+            "flair_group_id": null
+          },
+          {
+            "extras": "latest",
+            "description": "Most Recent Poster",
+            "user_id": 160994,
             "primary_group_id": null,
             "flair_group_id": null
           }
@@ -641,7 +876,7 @@
           "local-ai"
         ],
         "tags_descriptions": {},
-        "views": 893,
+        "views": 910,
         "like_count": 28,
         "has_summary": false,
         "last_poster_username": "Patrick_M",
@@ -713,8 +948,8 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 131,
-        "like_count": 3,
+        "views": 155,
+        "like_count": 4,
         "has_summary": false,
         "last_poster_username": "Drake_93",
         "category_id": 155,
@@ -748,125 +983,6 @@
         ]
       },
       {
-        "fancy_title": "Has anyone tried to run upstream GLM-5.3 Flash on 3x DGX Spark?",
-        "id": 258459,
-        "title": "Has anyone tried to run upstream GLM-5.3 Flash on 3x DGX Spark?",
-        "slug": "has-anyone-tried-to-run-upstream-glm-5-3-flash-on-3x-dgx-spark",
-        "posts_count": 1,
-        "reply_count": 0,
-        "highest_post_number": 1,
-        "image_url": null,
-        "created_at": "2026-10-12T18:57:34.722Z",
-        "last_posted_at": "2026-10-12T18:57:34.769Z",
-        "bumped": true,
-        "bumped_at": "2026-10-12T18:57:34.769Z",
-        "archetype": "regular",
-        "unseen": false,
-        "pinned": false,
-        "unpinned": null,
-        "visible": true,
-        "closed": false,
-        "archived": false,
-        "bookmarked": null,
-        "liked": null,
-        "tags": [
-          "ai",
-          "nvidia"
-        ],
-        "tags_descriptions": {},
-        "views": 41,
-        "like_count": 0,
-        "has_summary": false,
-        "last_poster_username": "emily1312",
-        "category_id": 155,
-        "op_like_count": 0,
-        "pinned_globally": false,
-        "featured_link": null,
-        "has_accepted_answer": false,
-        "can_vote": false,
-        "posters": [
-          {
-            "extras": "latest single",
-            "description": "Original Poster, Most Recent Poster",
-            "user_id": 166361,
-            "primary_group_id": null,
-            "flair_group_id": null
-          }
-        ]
-      },
-      {
-        "fancy_title": "The Local LLM Matrix: Best Models &amp; Quants by VRAM Tier (&lt;=16GB \u2013 256GB+)",
-        "id": 256443,
-        "title": "The Local LLM Matrix: Best Models & Quants by VRAM Tier (<=16GB \u2013 256GB+)",
-        "slug": "the-local-llm-matrix-best-models-quants-by-vram-tier-16gb-256gb",
-        "posts_count": 28,
-        "reply_count": 10,
-        "highest_post_number": 29,
-        "image_url": null,
-        "created_at": "2026-09-18T03:01:58.484Z",
-        "last_posted_at": "2026-10-12T14:19:57.750Z",
-        "bumped": true,
-        "bumped_at": "2026-10-12T14:19:57.750Z",
-        "archetype": "regular",
-        "unseen": false,
-        "pinned": false,
-        "unpinned": null,
-        "visible": true,
-        "closed": false,
-        "archived": false,
-        "bookmarked": null,
-        "liked": null,
-        "tags": [],
-        "tags_descriptions": {},
-        "views": 1795,
-        "like_count": 33,
-        "has_summary": false,
-        "last_poster_username": "MadGoat",
-        "category_id": 155,
-        "op_like_count": 3,
-        "pinned_globally": false,
-        "featured_link": null,
-        "has_accepted_answer": false,
-        "can_vote": false,
-        "posters": [
-          {
-            "extras": "latest",
-            "description": "Original Poster, Most Recent Poster",
-            "user_id": 164915,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": null,
-            "description": "Frequent Poster",
-            "user_id": 158054,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": null,
-            "description": "Frequent Poster",
-            "user_id": 160556,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": null,
-            "description": "Frequent Poster",
-            "user_id": 143381,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": null,
-            "description": "Frequent Poster",
-            "user_id": 159356,
-            "primary_group_id": null,
-            "flair_group_id": null
-          }
-        ]
-      },
-      {
         "fancy_title": "Nvidia v100 vs AMD 395",
         "id": 258040,
         "title": "Nvidia v100 vs AMD 395",
@@ -890,7 +1006,7 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 287,
+        "views": 294,
         "like_count": 7,
         "has_summary": false,
         "last_poster_username": "eduncan911",
@@ -939,64 +1055,6 @@
         ]
       },
       {
-        "fancy_title": "175+t/s on RDNA4 with 180B Models: Testing Radiance on many R9700s (and R9600Ds): Some Qualitative Breakout Fun",
-        "id": 258397,
-        "title": "175+t/s on RDNA4 with 180B Models: Testing Radiance on many R9700s (and R9600Ds): Some Qualitative Breakout Fun",
-        "slug": "175-t-s-on-rdna4-with-180b-models-testing-radiance-on-many-r9700s-and-r9600ds-some-qualitative-breakout-fun",
-        "posts_count": 3,
-        "reply_count": 0,
-        "highest_post_number": 3,
-        "image_url": "https://level1techs.us-east-1.linodeobjects.com/original/4X/6/c/9/6c9e0f42958f8703fdee0ef93ca5b210d04a1640.jpeg",
-        "created_at": "2026-10-11T21:13:38.321Z",
-        "last_posted_at": "2026-10-12T08:26:29.164Z",
-        "bumped": true,
-        "bumped_at": "2026-10-12T08:26:29.164Z",
-        "archetype": "regular",
-        "unseen": false,
-        "pinned": false,
-        "unpinned": null,
-        "visible": true,
-        "closed": false,
-        "archived": false,
-        "bookmarked": null,
-        "liked": null,
-        "tags": [],
-        "tags_descriptions": {},
-        "views": 135,
-        "like_count": 8,
-        "has_summary": false,
-        "last_poster_username": "Buildingstuff",
-        "category_id": 155,
-        "op_like_count": 7,
-        "pinned_globally": false,
-        "featured_link": null,
-        "has_accepted_answer": false,
-        "can_vote": false,
-        "posters": [
-          {
-            "extras": null,
-            "description": "Original Poster",
-            "user_id": 2606,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": null,
-            "description": "Frequent Poster",
-            "user_id": 104016,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": "latest",
-            "description": "Most Recent Poster",
-            "user_id": 165685,
-            "primary_group_id": null,
-            "flair_group_id": null
-          }
-        ]
-      },
-      {
         "fancy_title": "Crucible LLM :: Bench your LLM and server. Is it fast enough\u2026 for everyone?",
         "id": 257531,
         "title": "Crucible LLM :: Bench your LLM and server. Is it fast enough\u2026 for everyone?",
@@ -1025,7 +1083,7 @@
           "llm"
         ],
         "tags_descriptions": {},
-        "views": 482,
+        "views": 487,
         "like_count": 13,
         "has_summary": false,
         "last_poster_username": "mohan226",
@@ -1100,7 +1158,7 @@
           "local-ai"
         ],
         "tags_descriptions": {},
-        "views": 43,
+        "views": 49,
         "like_count": 1,
         "has_summary": false,
         "last_poster_username": "JWNoctis",
@@ -1149,7 +1207,7 @@
           "old_hardware"
         ],
         "tags_descriptions": {},
-        "views": 105,
+        "views": 108,
         "like_count": 1,
         "has_summary": false,
         "last_poster_username": "Agent9",
@@ -1200,7 +1258,7 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 612,
+        "views": 627,
         "like_count": 9,
         "has_summary": false,
         "last_poster_username": "patw",
@@ -1272,7 +1330,7 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 473,
+        "views": 480,
         "like_count": 5,
         "has_summary": false,
         "last_poster_username": "f41n",
@@ -1344,7 +1402,7 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 99,
+        "views": 101,
         "like_count": 0,
         "has_summary": false,
         "last_poster_username": "wendell",
@@ -1399,7 +1457,7 @@
           "llm"
         ],
         "tags_descriptions": {},
-        "views": 3068,
+        "views": 3074,
         "like_count": 23,
         "has_summary": false,
         "last_poster_username": "peteru",
@@ -1475,7 +1533,7 @@
           "homeserver"
         ],
         "tags_descriptions": {},
-        "views": 212,
+        "views": 219,
         "like_count": 7,
         "has_summary": false,
         "last_poster_username": "f41n",
@@ -1551,7 +1609,7 @@
           "nvidia"
         ],
         "tags_descriptions": {},
-        "views": 1315,
+        "views": 1316,
         "like_count": 36,
         "has_summary": false,
         "last_poster_username": "thr3e",
@@ -1623,7 +1681,7 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 119,
+        "views": 123,
         "like_count": 8,
         "has_summary": false,
         "last_poster_username": "daemond",
@@ -1700,7 +1758,7 @@
           "proxmox"
         ],
         "tags_descriptions": {},
-        "views": 455,
+        "views": 456,
         "like_count": 3,
         "has_summary": false,
         "last_poster_username": "Jimster480",
@@ -1776,7 +1834,7 @@
           "ram"
         ],
         "tags_descriptions": {},
-        "views": 2183,
+        "views": 2185,
         "like_count": 17,
         "has_summary": false,
         "last_poster_username": "JWNoctis",
@@ -1851,7 +1909,7 @@
           "amdgpu"
         ],
         "tags_descriptions": {},
-        "views": 2081,
+        "views": 2096,
         "like_count": 25,
         "has_summary": true,
         "last_poster_username": "JWNoctis",
@@ -1970,7 +2028,7 @@
           "intel"
         ],
         "tags_descriptions": {},
-        "views": 446,
+        "views": 449,
         "like_count": 4,
         "has_summary": false,
         "last_poster_username": "Sudo_Apt",
@@ -2031,7 +2089,7 @@
           "sysadmin"
         ],
         "tags_descriptions": {},
-        "views": 435,
+        "views": 441,
         "like_count": 18,
         "has_summary": false,
         "last_poster_username": "drjonz",
@@ -2106,7 +2164,7 @@
           "homelab"
         ],
         "tags_descriptions": {},
-        "views": 688,
+        "views": 694,
         "like_count": 13,
         "has_summary": false,
         "last_poster_username": "FinOxy",
@@ -2178,7 +2236,7 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 1207,
+        "views": 1213,
         "like_count": 18,
         "has_summary": false,
         "last_poster_username": "Jimster480",
@@ -2253,7 +2311,7 @@
           "adobe"
         ],
         "tags_descriptions": {},
-        "views": 115,
+        "views": 118,
         "like_count": 5,
         "has_summary": false,
         "last_poster_username": "bedHedd",
@@ -2301,7 +2359,7 @@
           "homeserver"
         ],
         "tags_descriptions": {},
-        "views": 84,
+        "views": 85,
         "like_count": 0,
         "has_summary": false,
         "last_poster_username": "drjonz",
@@ -2347,7 +2405,7 @@
           "amdgpu"
         ],
         "tags_descriptions": {},
-        "views": 11061,
+        "views": 11091,
         "like_count": 594,
         "has_summary": true,
         "last_poster_username": "Shiny81",
@@ -2419,7 +2477,7 @@
         "liked": null,
         "tags": [],
         "tags_descriptions": {},
-        "views": 139,
+        "views": 140,
         "like_count": 0,
         "has_summary": false,
         "last_poster_username": "s1ugh34d",
@@ -2448,71 +2506,6 @@
             "extras": "latest",
             "description": "Most Recent Poster",
             "user_id": 143381,
-            "primary_group_id": null,
-            "flair_group_id": null
-          }
-        ]
-      },
-      {
-        "fancy_title": "Anthropic literally wrote an ad for GLM 5.3",
-        "id": 257348,
-        "title": "Anthropic literally wrote an ad for GLM 5.3",
-        "slug": "anthropic-literally-wrote-an-ad-for-glm-5-3",
-        "posts_count": 4,
-        "reply_count": 0,
-        "highest_post_number": 4,
-        "image_url": "https://level1techs.us-east-1.linodeobjects.com/optimized/4X/6/d/4/6d4a0d28992ade92d6fa63646fd9c9d318245c6c_2_1024x537.jpeg",
-        "created_at": "2026-09-29T20:24:17.188Z",
-        "last_posted_at": "2026-10-06T10:03:05.208Z",
-        "bumped": true,
-        "bumped_at": "2026-10-06T10:03:05.208Z",
-        "archetype": "regular",
-        "unseen": false,
-        "pinned": false,
-        "unpinned": null,
-        "visible": true,
-        "closed": false,
-        "archived": false,
-        "bookmarked": null,
-        "liked": null,
-        "tags": [],
-        "tags_descriptions": {},
-        "views": 301,
-        "like_count": 2,
-        "has_summary": false,
-        "last_poster_username": "nicman23",
-        "category_id": 155,
-        "op_like_count": 1,
-        "pinned_globally": false,
-        "featured_link": null,
-        "has_accepted_answer": false,
-        "can_vote": false,
-        "posters": [
-          {
-            "extras": null,
-            "description": "Original Poster",
-            "user_id": 145174,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": null,
-            "description": "Frequent Poster",
-            "user_id": 128093,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": null,
-            "description": "Frequent Poster",
-            "user_id": 164942,
-            "primary_group_id": null,
-            "flair_group_id": null
-          },
-          {
-            "extras": "latest",
-            "description": "Most Recent Poster",
-            "user_id": 139319,
             "primary_group_id": null,
             "flair_group_id": null
           }

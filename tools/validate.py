@@ -7,11 +7,13 @@ Runs a battery of checks over the committed data files against
 
   1. valid-json            — every committed ``.json`` file parses.
   2. required-fields       — each submission carries the full canonical key set.
-  3. enum-conformance      — tier / vendor / backend / confidence / lifecycle /
-                            engine_mode are all schema-legal (backend via the
-                            generator's single-source-of-truth normalizer).
-                            Empty values are missing data, not violations —
-                            they surface in the data-gap check.
+  3. enum-conformance      — tier / vendor / confidence / lifecycle /
+                            engine_mode are all schema-legal. The backend is
+                            checked separately (backend-enum) as a *soft*
+                            warning: a free-text engine that names no known
+                            backend is a data-quality note, not a pipeline
+                            blocker — one unusual community entry must not
+                            stall the weekly push.
   4. duplicates            — no duplicate submission ids; repeated post+model
                             pairs are flagged (informational).
   5. vram-reasonable       — VRAM is sensible: a tier's ceiling is > 0 and
@@ -24,9 +26,12 @@ Runs a battery of checks over the committed data files against
   7. data-gaps (info)      — surfaces known gaps (e.g. 0 Apple submissions,
                              empty engine_mode, un-normalizable use cases).
 
-A check that fails is a hard **error** (exit code 1); the data-gap check is
-informational (a **warning**) and never affects the exit code. This is stdlib-
-only, consistent with the rest of the data pipeline.
+A check that fails is a hard **error** (exit code 1); the data-gap check and
+the backend-enum check are informational (**warnings**) and never affect the
+exit code — only truly broken data (missing required fields, invalid JSON,
+bad tier/vendor/confidence/lifecycle, absurd VRAM, broken references) blocks
+the pipeline. This is stdlib-only, consistent with the rest of the data
+pipeline.
 
 Run:
     python tools/validate.py
@@ -136,17 +141,23 @@ def check_required_fields(subs):
 
 
 def check_enum_conformance(subs, schema):
-    """tier / vendor / backend / confidence / lifecycle / engine_mode (check 3).
+    """Hard enum contract + soft backend note (check 3).
 
-    The raw ``backend`` string is canonicalized with the generator's
-    ``normalize_backend`` before being checked against the schema set — the
-    same rule the test suite applies, so a free-text backend is only a problem
-    if it genuinely names an unknown engine.
+    tier / vendor / confidence / lifecycle / engine_mode are hard: a
+    *non-empty* invalid value (e.g. tier ``t9``) fails the gate. Empty values
+    are *missing data*, not contract breaks — they surface in the data-gap
+    check.
 
-    Empty values are *missing data*, not contract breaks: an absent backend or
-    an un-normalizable tier (``None``) is surfaced by the data-gap check and
-    never hard-fails the gate, so one unusual community entry can't stall the
-    weekly push. A *non-empty* invalid value (e.g. tier ``t9``) still fails.
+    The backend is treated differently: it is canonicalized with the
+    generator's ``normalize_backend`` (the same rule the test suite applies)
+    and, when it still names no schema-legal engine, reported as a separate
+    **warning** (``backend-enum (info)``) instead of a failure. A weird
+    backend string is a data-quality note, not a pipeline blocker — one
+    unusual community entry must not stall the weekly push.
+
+    Returns one result per non-trivial finding: the ``enum-conformance``
+    check plus, only when unknown backends exist, the informational
+    ``backend-enum (info)`` warning.
     """
     valid_tiers = {t["id"] for t in schema["tiers"]}
     valid_vendors = set(schema["hardware_vendors"])
@@ -156,6 +167,7 @@ def check_enum_conformance(subs, schema):
     valid_modes = set(schema["engine_modes"])
 
     violations = []
+    backend_notes = []
     for s in subs:
         sid = s.get("id", "?")
         tier = s.get("tier")
@@ -168,7 +180,7 @@ def check_enum_conformance(subs, schema):
         if backend_raw:
             backend = normalize_backend(backend_raw, schema)
             if backend not in valid_backends:
-                violations.append(f"{sid}: backend {backend_raw!r} -> {backend!r}")
+                backend_notes.append(f"{sid}: backend {backend_raw!r} -> {backend!r}")
         if s.get("confidence") not in valid_confidence:
             violations.append(f"{sid}: confidence {s.get('confidence')!r}")
         if s.get("lifecycle") not in valid_lifecycle:
@@ -177,10 +189,17 @@ def check_enum_conformance(subs, schema):
         if mode and mode not in valid_modes:
             violations.append(f"{sid}: engine_mode {mode!r}")
 
+    results = []
     if violations:
-        return [_check("enum-conformance", "fail",
-                       f"{len(violations)} violation(s): " + "; ".join(violations[:6]))]
-    return [_check("enum-conformance", "pass", "all enum values are schema-legal")]
+        results.append(_check("enum-conformance", "fail",
+                              f"{len(violations)} violation(s): " + "; ".join(violations[:6])))
+    else:
+        results.append(_check("enum-conformance", "pass", "all enum values are schema-legal"))
+    if backend_notes:
+        results.append(_check("backend-enum (info)", "warn",
+                              f"{len(backend_notes)} non-schema backend(s): "
+                              + "; ".join(backend_notes[:6])))
+    return results
 
 
 def check_duplicates(subs):

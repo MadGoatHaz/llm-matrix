@@ -11,7 +11,9 @@ wrong (PLAN.md P3-2):
 * ``is_template_submission`` — unfilled templates detected and skipped;
 * ``infer_vendor`` — hardware string -> vendor;
 * ``normalize_tier`` — most-specific-first matching (no substring false
-  positives such as bare ``16`` matching ``16-24``).
+  positives such as bare ``16`` matching ``16-24``);
+* ``split_backend`` — free-text backend -> (canonical enum value, leftover
+  detail for notes), with longest-match-first substring matching.
 
 Every test is a pure function over string inputs — no network, no clock, no
 filesystem — so the suite stays deterministic and CI-ready.
@@ -19,7 +21,7 @@ filesystem — so the suite stays deterministic and CI-ready.
 
 import unittest
 
-from tests.util import load_tool
+from tests.util import load_json, load_tool
 
 
 class TestParseSubmissionBlock(unittest.TestCase):
@@ -439,6 +441,61 @@ class TestNormalizeTier(unittest.TestCase):
     def test_empty_and_unknown_return_none(self):
         self.assertIsNone(self.parse.normalize_tier(""))
         self.assertIsNone(self.parse.normalize_tier("some gibberish"))
+
+
+class TestBackendNormalization(unittest.TestCase):
+    """Free-text backend values normalize to a schema-legal enum value, with
+    the descriptive remainder preserved (parse.py moves it into notes)."""
+
+    @classmethod
+    def setUpClass(cls):
+        cls.parse = load_tool("tools/parse.py")
+        cls.schema = load_json("tools/schema.json")
+
+    def test_free_text_after_known_backend(self):
+        backend, detail = self.parse.split_backend(
+            "llama.cpp vulkan with no performance tuning", self.schema)
+        self.assertEqual(backend, "llama.cpp")
+        self.assertEqual(detail, "vulkan with no performance tuning")
+
+    def test_case_insensitive_match_keeps_schema_casing(self):
+        backend, detail = self.parse.split_backend("ollama on a mac", self.schema)
+        self.assertEqual(backend, "Ollama")
+        self.assertEqual(detail, "on a mac")
+        backend, detail = self.parse.split_backend(
+            "vllm with tensor parallelism", self.schema)
+        self.assertEqual(backend, "vLLM")
+        self.assertEqual(detail, "with tensor parallelism")
+
+    def test_already_valid_values_pass_through(self):
+        self.assertEqual(self.parse.split_backend("LM Studio", self.schema),
+                         ("LM Studio", ""))
+        self.assertEqual(self.parse.split_backend("llama.cpp", self.schema),
+                         ("llama.cpp", ""))
+
+    def test_aliases_still_resolve(self):
+        self.assertEqual(self.parse.split_backend("llama-cpp", self.schema),
+                         ("llama.cpp", ""))
+
+    def test_version_and_parenthetical_handling(self):
+        # A trailing version is not detail; a parenthetical is.
+        self.assertEqual(self.parse.split_backend("radiance 1.3.0", self.schema),
+                         ("Radiance", ""))
+        backend, detail = self.parse.split_backend(
+            "vLLM (custom framework, see below)", self.schema)
+        self.assertEqual(backend, "vLLM")
+        self.assertEqual(detail, "custom framework, see below")
+
+    def test_unknown_backend_is_kept_not_invented(self):
+        # No known engine matches -> the cleaned text is kept as-is (the
+        # caller flags a warning) and nothing is fabricated.
+        backend, detail = self.parse.split_backend(
+            "TotallyUnknownEngine 9.9", self.schema)
+        self.assertEqual(backend, "TotallyUnknownEngine")
+        self.assertEqual(detail, "")
+
+    def test_empty_backend(self):
+        self.assertEqual(self.parse.split_backend("", self.schema), ("", ""))
 
 
 if __name__ == "__main__":
