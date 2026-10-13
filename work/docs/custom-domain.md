@@ -1,10 +1,24 @@
 # Custom Domain — Setup Guide
 
-**Status:** Infrastructure is in place (`CNAME` committed at the repo root).
-The domain `localaistack.com` is a **placeholder** — purchasing the domain and
-pointing DNS at it is an operator task (outside the repo). This document is the
-complete, step-by-step guide for doing that, plus the small code changes that
-follow once the domain is live.
+> ## ⚠️ WARNING — Read this first
+>
+> **DO NOT add a `CNAME` file to the repo until your domain's DNS is fully
+> configured (A record → 185.199.108.153, CNAME → `username.github.io`).
+> Adding `CNAME` before DNS is ready will BREAK your site.**
+>
+> When a `CNAME` file is present, GitHub Pages stops serving the default
+> `https://username.github.io/repo/` URL and redirects **all** traffic to the
+> custom domain. If that domain's DNS does not yet point at GitHub Pages,
+> visitors get a blank page / connection error instead of the site. The
+> `CNAME` must be added **only after** the DNS records below are live and
+> verified.
+
+**Status:** No `CNAME` is committed at the repo root — the site is served
+exclusively at `https://madgoathaz.github.io/llm-matrix/`. The domain
+`localaistack.com` is a **placeholder** — purchasing the domain, pointing DNS
+at it, *and only then* adding the `CNAME` file is an operator task (outside the
+repo). This document is the complete, step-by-step guide for doing that, plus
+the small code changes that follow once the domain is live.
 
 ---
 
@@ -13,7 +27,8 @@ follow once the domain is live.
 GitHub Pages serves a custom domain from two things:
 
 1. **A `CNAME` file at the repo root** — one domain per line, no `https://`,
-   no trailing slash. Ours is committed: `CNAME` → `localaistack.com`.
+   no trailing slash. Ours is **not** committed yet (the target domain is
+   `localaistack.com`); it is added *only after* step 2's DNS is live.
 2. **Your DNS** — pointing the domain at GitHub Pages' edge IPs.
 
 Once both are in place, GitHub Pages **automatically provisions a TLS
@@ -31,8 +46,10 @@ featured link do not break.
 ### 1. Buy the domain
 
 Any registrar works (Porkbun, Cloudflare, Namecheap, Google Domains, …).
-`localaistack.com` is the placeholder in `CNAME` — if you register a
-different domain, edit `CNAME` to match **before** doing the DNS steps:
+`localaistack.com` is the intended domain. **No `CNAME` file exists in the
+repo yet** — it is created (with your final domain) only *after* the DNS
+records in step 2 are live. If you register a different domain, use that
+domain in the `CNAME` file you add later:
 
 ```
 localaistack.com
@@ -90,10 +107,15 @@ curl -I https://madgoathaz.github.io/llm-matrix/
 # → HTTP/2 200
 ```
 
-### 4. Update the code to the real domain (one small commit)
+### 4. Add the `CNAME` + update the code to the real domain (one small commit)
 
-The site's absolute URLs currently point at the GitHub Pages URL. When the
-custom domain is live, update **three constants** and re-generate:
+DNS is now verified live, so it is safe to point GitHub Pages at the domain.
+**Create the `CNAME` file at the repo root** with your domain (one bare line,
+trailing newline) — this is the moment the default URL starts redirecting, so
+only do it once `curl -I https://<domain>/` returns 200 from step 3.
+
+The site's absolute URLs currently point at the GitHub Pages URL. With the
+domain live, update **three constants** and re-generate:
 
 | File | Constant | Old value | New value |
 |------|----------|-----------|-----------|
@@ -157,11 +179,12 @@ it serves both. If you want a true 301 (search engines, one canonical URL):
 
 ## Checklist
 
-- [ ] Domain purchased (or `CNAME` updated to the real domain)
+- [ ] Domain purchased
 - [ ] 4× A records for the apex → 185.199.108.1 / .109.1 / .110.1 / .111.1
 - [ ] CNAME `www` → apex domain (if using www)
 - [ ] Stale DNS records removed
-- [ ] `curl -I https://<domain>/` → 200 with valid TLS
+- [ ] `curl -I https://<domain>/` → 200 with valid TLS (DNS fully live)
+- [ ] `CNAME` file created at repo root (**only after** the above is verified)
 - [ ] `curl -I https://madgoathaz.github.io/llm-matrix/` → 200 (still live)
 - [ ] `SITE_URL` / `og:url` / `og:image` updated + `make golden` + `make check` green
 - [ ] Forum featured link updated

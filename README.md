@@ -33,7 +33,6 @@ Every page is **generated** by `tools/generate_site.py` (the `tools/site/` packa
 | Path | Contents |
 |------|----------|
 | `*.html`, `data.json` | The generated site (committed so GitHub Pages can serve it) |
-| `CNAME` | The custom domain (`localaistack.com` — placeholder until purchased; see [`work/docs/custom-domain.md`](work/docs/custom-domain.md)) |
 | `CONTRIBUTING.md` | The contribution guide: submitting data, running the pipeline, code style, PR process |
 | `css/style.css` | The design system: CSS tokens + components (authored) |
 | `js/` | Client behavior: `main.js` (nav, filters, sorting, detail panel), `recommend.js`, `compare.js`, `commands.js`, `submit.js` — all vanilla, zero dependencies |
@@ -77,7 +76,7 @@ GitHub Pages serves every file with `Access-Control-Allow-Origin: *`, so any sit
 
 ## Custom Domain
 
-The site runs on GitHub Pages at [`madgoathaz.github.io/llm-matrix`](https://madgoathaz.github.io/llm-matrix/). A `CNAME` file at the repo root carries the (placeholder) custom domain `localaistack.com` — purchasing the domain and pointing DNS at GitHub Pages is a maintainer task, fully documented step-by-step in [`work/docs/custom-domain.md`](work/docs/custom-domain.md).
+The site runs on GitHub Pages at [`madgoathaz.github.io/llm-matrix`](https://madgoathaz.github.io/llm-matrix/). **No `CNAME` file is present in the repo** — the site is served exclusively at the GitHub Pages URL. Migrating to a custom domain (e.g., `localaistack.com`) is a maintainer task: the `CNAME` must be added *only after* the domain's DNS is fully pointed at GitHub Pages, otherwise the site breaks. The full step-by-step guide (with a prominent warning) lives in [`work/docs/custom-domain.md`](work/docs/custom-domain.md).
 
 ## Contributing
 
