@@ -13,7 +13,8 @@ The site is fully static — there is no backend. The "API" is the dataset itsel
 - <code>data.json</code> — the canonical submissions dataset (what the site's own tools use)
 - <code>data/api/v1/submissions.json</code> — the same payload at its **versioned** path
 - <code>data/api/v1/schema.json</code> — the **JSON Schema** (draft 2020-12) that formally defines the shape
-- <code>data/api/v1/benchmarks.json</code> / <code>data/api/v1/hardware.json</code> — the secondary community datasets
+- <code>data/api/v1/benchmarks.json</code> / <code>data/api/v1/hardware.json</code> — the secondary community datasets (structured since v1.4)
+- <code>data/api/v1/benchmarks_schema.json</code> / <code>data/api/v1/hardware_schema.json</code> — their JSON Schemas
 
 The full contract — every field, the versioning policy, the changelog — is documented in the <a href="https://github.com/MadGoatHaz/llm-matrix/blob/main/data/api/README.md" target="_blank" rel="noopener">API README</a> in the repo.
 
@@ -48,6 +49,15 @@ Each submission in <code>submissions[]</code> carries the 20-key canonical shape
 ```
 
 (abbreviated — the <a href="../data/api/v1/schema.json">schema</a> defines every field, type, and closed enum precisely.)
+
+## The secondary datasets
+
+Two more community threads are published the same way, now as **structured** data (v1.4):
+
+- <code>data/api/v1/benchmarks.json</code> — the **Crucible** benchmarking thread: each item carries <code>model</code>, <code>hardware</code>, <code>backend</code>, <code>performance</code> (decode / prefill / VRAM / TTFT), <code>context_length</code>, and <code>power_w</code> — all <code>null</code> when the post doesn't state them.
+- <code>data/api/v1/hardware.json</code> — the **"Show Off Your AI Rig"** thread: each item carries <code>gpu</code> (model + count), <code>vram_total_gb</code>, <code>cpu</code>, <code>ram_gb</code>, <code>storage</code>, <code>os</code>, and <code>workload</code> (what it runs, with verbatim speed snippets).
+
+The extraction is deliberately conservative: quoted content is excluded (a reply quoting someone else's rig doesn't credit the replier), questions and hypotheticals aren't specs, and nothing is guessed — a field that isn't in the post stays <code>null</code>. Every item keeps its 300-char <code>preview</code> as the fallback, and a <code>structured</code> flag tells you which items carry real data. Both payloads validate against their schemas (<code>benchmarks_schema.json</code> / <code>hardware_schema.json</code>), and each structured value is verbatim from the source post — the <code>notes</code> field carries the sentence it came from.
 
 ## Versioning
 

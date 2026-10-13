@@ -7,10 +7,18 @@ consume:
 * ``data.json``                    — the canonical dataset at the site root
   (what the client-side tools fetch), now carrying a ``version`` field.
 * ``data/api/v1/submissions.json`` — the same payload at its versioned path.
-* ``data/api/v1/benchmarks.json``  — the Crucible benchmark-thread dataset.
-* ``data/api/v1/hardware.json``    — the "Show Off Your AI Rig" dataset.
+* ``data/api/v1/benchmarks.json``  — the Crucible benchmark-thread dataset
+  (structured items since v1.4: model / hardware / backend / performance /
+  context / power, extracted conservatively by ``tools/parse_thread.py``;
+  every item keeps a 300-char preview fallback).
+* ``data/api/v1/hardware.json``    — the "Show Off Your AI Rig" dataset
+  (structured items since v1.4: gpu / vram / cpu / ram / storage / os /
+  workload; multi-machine posts yield one record per machine).
 * ``data/api/v1/schema.json``      — the JSON Schema for the submissions
   payload. **Authored, not generated** — the generator never overwrites it.
+* ``data/api/v1/benchmarks_schema.json`` / ``hardware_schema.json`` —
+  the JSON Schemas for the two secondary payloads. Also authored, not
+  generated (v1.4).
 
 **Versioning policy.** ``API_VERSION`` is ``major.minor``. A *breaking*
 change to any published shape bumps the major and moves the files to a new
@@ -28,7 +36,14 @@ from pathlib import Path
 from . import utils
 
 #: The current data API version (major.minor).
-API_VERSION = "1.3"
+#: 1.4 (2026-10-13): the secondary datasets (benchmarks/hardware) were
+#: upgraded from preview-only snapshots to structured entries — new
+#: fields published, plus the two authored secondary schemas. The
+#: secondary item keys that existed in v1.0-v1.3 (username / title /
+#: has_benchmark_data / has_hardware) were never part of the documented
+#: contract (the README specified only the envelope), so this publishes
+#: as additive under the same v1/ path.
+API_VERSION = "1.4"
 
 #: The published, versioned data directory (relative to the repo root).
 API_DIR = "data/api"

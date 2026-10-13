@@ -2,103 +2,447 @@
   "source": "Show Off Your AI Rig",
   "thread_id": "rigs",
   "url": "https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709",
-  "count": 12,
+  "count": 22,
   "items": [
     {
+      "id": "rigs_post_2_0",
+      "post_id": 4116228,
       "post_number": 2,
-      "username": "MadGoat",
+      "contributor": "MadGoat",
       "date": "2026-09-10",
-      "title": "",
-      "preview": "I\u2019ll start it off: aigoat@aigoat OS: EndeavourOS x86_64 Host: Relion 2908GT (0100) Kernel: Linux 7.2.4-arch1-2 CPU: Intel(R) Xeon(R) E5-2697A v4 (32) @ 3.60 GHz GPU 1: ASPEED Technology, Inc. ASPEED Graphics Family GPU 2: NVIDIA RTX A4000 GPU 3: NVIDIA RTX A4000 GPU 4: NVIDIA RTX A4000 GPU 5: NVIDIA",
-      "has_hardware": true
+      "gpu": {
+        "model": "NVIDIA RTX A4000",
+        "count": 8
+      },
+      "vram_total_gb": null,
+      "cpu": "Intel Xeon E5-2697A v4",
+      "ram_gb": 125.76,
+      "storage": "1.73 TiB (btrfs)",
+      "os": "EndeavourOS",
+      "workload": "Vishva007/Qwen3.8-27B-W4A16-AutoRound-GPTQ via vLLM | 650k context",
+      "notes": null,
+      "preview": "I'll start it off: aigoat@aigoat OS: EndeavourOS x86_64 Host: Relion 2908GT (0100) Kernel: Linux 7.2.4-arch1-2 CPU: Intel(R) Xeon(R) E5-2697A v4 (32) @ 3.60 GHz GPU 1: ASPEED Technology, Inc. ASPEED Graphics Family GPU 2: NVIDIA RTX A4000 GPU 3: NVIDIA RTX A4000 GPU 4: NVIDIA RTX A4000 GPU 5: NVIDIA",
+      "structured": true
     },
     {
+      "id": "rigs_post_2_1",
+      "post_id": 4116228,
+      "post_number": 2,
+      "contributor": "MadGoat",
+      "date": "2026-09-10",
+      "gpu": {
+        "model": "NVIDIA Quadro RTX 5000",
+        "count": 2
+      },
+      "vram_total_gb": null,
+      "cpu": "AMD Ryzen 5 5600X",
+      "ram_gb": 31.21,
+      "storage": "883.03 GiB (btrfs)",
+      "os": "EndeavourOS",
+      "workload": "Qwen3.8-27b q4 unsloth gguf via llama.cpp | ~50ish tps via llama.cpp, not tea bag",
+      "notes": null,
+      "preview": "I'll start it off: aigoat@aigoat OS: EndeavourOS x86_64 Host: Relion 2908GT (0100) Kernel: Linux 7.2.4-arch1-2 CPU: Intel(R) Xeon(R) E5-2697A v4 (32) @ 3.60 GHz GPU 1: ASPEED Technology, Inc. ASPEED Graphics Family GPU 2: NVIDIA RTX A4000 GPU 3: NVIDIA RTX A4000 GPU 4: NVIDIA RTX A4000 GPU 5: NVIDIA",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_3_0",
+      "post_id": 4116229,
+      "post_number": 3,
+      "contributor": "SgtAwesomesauce",
+      "date": "2026-09-10",
+      "gpu": {
+        "model": "AMD V620",
+        "count": 4
+      },
+      "vram_total_gb": null,
+      "cpu": "EPYC Rome 7532",
+      "ram_gb": 128.0,
+      "storage": "~5TB storage",
+      "os": null,
+      "workload": "Qwen3.8-flash-next via vLLM | Gets me ~70TPS of single-request inference and ~90TPS peak for 2-3 simultaneous streams",
+      "notes": null,
+      "preview": "Oh, you wanna see my m e ath lab? Epyc Rome 7532 128GB DDR4 Various NVMe totaling ~5TB of storage 4x AMD V620 All in an open air crypto-mining bench. No, this does not trip breakers, but it comes close. Current stack is a LiteLLM frontend to vLLM (I'll do a write-up on how I optimized vLLM soon), se",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_4_0",
+      "post_id": 4116230,
+      "post_number": 4,
+      "contributor": "patw",
+      "date": "2026-09-11",
+      "gpu": {
+        "model": "5060 Ti",
+        "count": 2
+      },
+      "vram_total_gb": 32.0,
+      "cpu": "5700X",
+      "ram_gb": 64.0,
+      "storage": null,
+      "os": "Ubuntu 26.04",
+      "workload": "Qwen 3.8 27b via llama.cpp | 256k context",
+      "notes": null,
+      "preview": "Pretty boring compared to some of the posts here. Dual 5060ti 16g, 64 gig ddr4, 5700X on an MSI board, Meshify C case Ubuntu 26.04 (desktop even), llama.cpp (llama-server) Qwen 3.8 27b, Q4 weights, Q8 kv, sampler settings for coding, full 256k context. This machine runs a scheduled ralph loop, 12 ho",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_8_0",
+      "post_id": 4116252,
+      "post_number": 8,
+      "contributor": "oolmfoo",
+      "date": "2026-09-11",
+      "gpu": {
+        "model": "3080",
+        "count": 2
+      },
+      "vram_total_gb": 40.0,
+      "cpu": "2x AMD EPYC 7532",
+      "ram_gb": 512.0,
+      "storage": null,
+      "os": null,
+      "workload": null,
+      "notes": null,
+      "preview": "Have this for a while, I'm just too busy to tinker with it. 2x AMD EPYC 7532 512 GB DDR4 3200 Some storage 2x 3080 20GB (Total 40GB)",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_11_0",
+      "post_id": 4116593,
+      "post_number": 11,
+      "contributor": "mattlach",
+      "date": "2026-09-11",
+      "gpu": {
+        "model": "AMD Instinct MI210",
+        "count": 1
+      },
+      "vram_total_gb": 64.0,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": "Proxmox",
+      "workload": null,
+      "notes": null,
+      "preview": "I wound up popping an AMD Instinct MI210 (64GB HBM2, 1600GB/s) into my existing main Proxmox node, and passing it through to a VM. So it is less of an \"AI rig\" and more of a large hypervisor that also has a VM that does AI stuff, as one of its uses. Turns out that despite having a proper server with",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_14_0",
+      "post_id": 4116597,
       "post_number": 14,
-      "username": "mattlach",
+      "contributor": "mattlach",
       "date": "2026-09-11",
-      "title": "",
-      "preview": "SgtAwesomesauce: The tech priests require art. MadGoat: You\u2019re gonna leave us hanging without proof of this described handy work? I can\u2019t be the left to be the only one showing off my superior cardboard skills\u2026 I\u2019ll be sure to take a pic the next time I have to open it up. But it ain\u2019t pretty. I pro",
-      "has_hardware": true
+      "gpu": {
+        "model": null,
+        "count": null
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": null,
+      "notes": null,
+      "preview": "SgtAwesomesauce: The tech priests require art. MadGoat: You're gonna leave us hanging without proof of this described handy work? I can't be the left to be the only one showing off my superior cardboard skills... I'll be sure to take a pic the next time I have to open it up. But it ain't pretty. I p",
+      "structured": false
     },
     {
+      "id": "rigs_post_17_0",
+      "post_id": 4116600,
+      "post_number": 17,
+      "contributor": "SgtAwesomesauce",
+      "date": "2026-09-11",
+      "gpu": {
+        "model": null,
+        "count": null
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": null,
+      "notes": null,
+      "preview": "Hey, I'm thoroughly jealous of the MI210. That's a lot of GB/s Plus, if it's jank, might break, and runs hot, it's worthy of respect in my book.",
+      "structured": false
+    },
+    {
+      "id": "rigs_post_18_0",
+      "post_id": 4116603,
+      "post_number": 18,
+      "contributor": "mattlach",
+      "date": "2026-09-11",
+      "gpu": {
+        "model": null,
+        "count": null
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": "Gemma4:26b | It is, and it comes in handy sometimes (2500 tokens/s pre-fill and 80 tokens/s eval on Gemma4:26b) but it is a little bit more impressive at Q8_0 usually evaluates at about 25-30 tokens/s, which is less exciting than I had hope",
+      "notes": null,
+      "preview": "SgtAwesomesauce: Hey, I'm thoroughly jealous of the MI210. That's a lot of GB/s It is, and it comes in handy sometimes (2500 tokens/s pre-fill and 80 tokens/s eval on Gemma4:26b) but it is a little bit more impressive on paper than it is in reality (something I didn't realize until after I bought it",
+      "structured": false
+    },
+    {
+      "id": "rigs_post_19_0",
+      "post_id": 4116608,
       "post_number": 19,
-      "username": "SgtAwesomesauce",
+      "contributor": "SgtAwesomesauce",
       "date": "2026-09-11",
-      "title": "",
-      "preview": "mattlach: It turns out AMD\u2019s ecosystem is nowhere near as optimized as Nvidia\u2019s, so when it comes to efficiency, I rarely get more than 60% of the theoretical max throughput, which is a bit of a bummer. But it is still quite nice. Have you built an optimized stack for it? You might want to take a lo",
-      "has_hardware": true
+      "gpu": {
+        "model": "V620",
+        "count": 4
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": "Qwen3.8-flash-next | That's how I went from 20t/s on my stack to up to 90 /mi210-llm-stack My 4x v620s does about 1200TPS prefill with qwen3.8-flash-next",
+      "notes": null,
+      "preview": "mattlach: It turns out AMD's ecosystem is nowhere near as optimized as Nvidia's, so when it comes to efficiency, I rarely get more than 60% of the theoretical max throughput, which is a bit of a bummer. But it is still quite nice. Have you built an optimized stack for it? You might want to take a lo",
+      "structured": true
     },
     {
+      "id": "rigs_post_20_0",
+      "post_id": 4116610,
       "post_number": 20,
-      "username": "mattlach",
+      "contributor": "mattlach",
       "date": "2026-09-11",
-      "title": "",
-      "preview": "SgtAwesomesauce: Have you built an optimized stack for it? You might want to take a look at this repo, if you\u2019re just throwing llama.cpp at it and crossing your fingers, AMD stacks really need a bunch of custom patches and optimizations, especially for the older stuff. That\u2019s how I went from 20t/s o",
-      "has_hardware": true
+      "gpu": {
+        "model": null,
+        "count": null
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": null,
+      "notes": null,
+      "preview": "SgtAwesomesauce: Have you built an optimized stack for it? You might want to take a look at this repo, if you're just throwing llama.cpp at it and crossing your fingers, AMD stacks really need a bunch of custom patches and optimizations, especially for the older stuff. That's how I went from 20t/s o",
+      "structured": false
     },
     {
+      "id": "rigs_post_22_0",
+      "post_id": 4116695,
+      "post_number": 22,
+      "contributor": "mashie",
+      "date": "2026-09-11",
+      "gpu": {
+        "model": "DGX Spark",
+        "count": 4
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": "DeepSeek v4.1 Flash",
+      "notes": null,
+      "preview": "My setup. 4xDGX Sparks running as 2+2 while sorting out the switches. Can't wait to fire up DeepSeek v4.1 Flash on these in the near future.",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_24_0",
+      "post_id": 4117146,
       "post_number": 24,
-      "username": "digitalscream",
+      "contributor": "digitalscream",
       "date": "2026-09-13",
-      "title": "",
-      "preview": "Nothing special here\u2026excuse the cabling - this is kind of my workbench, so I determined that excessive cable management isn\u2019t practical. Therefore I\u2019ve done no cable management. 2026-09-13 09.50.43 1920\u00d72560 725 KB 2026-09-13 09.48.58 1920\u00d72560 802 KB 2026-09-13 09.48.37 1920\u00d71440 469 KB Nothing par",
-      "has_hardware": true
+      "gpu": {
+        "model": "R9700",
+        "count": 2
+      },
+      "vram_total_gb": null,
+      "cpu": "5700X",
+      "ram_gb": 128.0,
+      "storage": "2TB MLC",
+      "os": null,
+      "workload": "Qwen 3.8 27B FP8 via vllm-radiance | Roughly 3200t/s prefill, 80t/s general generation, 120t/s code gen",
+      "notes": null,
+      "preview": "Nothing special here...excuse the cabling - this is kind of my workbench, so I determined that excessive cable management isn't practical. Therefore I've done no cable management. 2026-09-13 2026-09-13 2026-09-13 Nothing particularly special - a pair of R9700s in PCIE 4.0 x8/x8, 5700X, 128GB DDR4, a",
+      "structured": true
     },
     {
+      "id": "rigs_post_25_0",
+      "post_id": 4117152,
       "post_number": 25,
-      "username": "nutral",
+      "contributor": "nutral",
       "date": "2026-09-13",
-      "title": "",
-      "preview": "I still have the same computer i built last year in a Mitx case. (a 5090 for 2700 euro and 128gb of ddr5 for 500 euro) It is annoying that i can\u2019t do anything while running models on it. It runs vllm with qwen3.8 27b about 80-100 t/s image 1920\u00d71440 372 KB image 1920\u00d71440 683 KB",
-      "has_hardware": true
+      "gpu": {
+        "model": "5090",
+        "count": 1
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": 128.0,
+      "storage": null,
+      "os": null,
+      "workload": "Qwen3.8 27b via vLLM | It runs vllm with qwen3.8 27b about 80-100 t/s",
+      "notes": null,
+      "preview": "I still have the same computer i built last year in a Mitx case. (a 5090 for 2700 euro and 128gb of ddr5 for 500 euro) It is annoying that i can't do anything while running models on it. It runs vllm with qwen3.8 27b about 80-100 t/s",
+      "structured": true
     },
     {
+      "id": "rigs_post_27_0",
+      "post_id": 4117623,
       "post_number": 27,
-      "username": "Mr_Phuzzy",
+      "contributor": "Mr_Phuzzy",
       "date": "2026-09-15",
-      "title": "",
+      "gpu": {
+        "model": "Radeon VII",
+        "count": 1
+      },
+      "vram_total_gb": null,
+      "cpu": "Dual Xeon Gold 6230",
+      "ram_gb": 768.0,
+      "storage": null,
+      "os": "Proxmox",
+      "workload": "Qwen3.6-35B-A3B via llama.cpp",
+      "notes": "also RX 5700 | 150W idle / 400W under load",
       "preview": "I have been considering sharing this for a little while, this thread coming up on the Summary email was the final push I needed. I built this server up from parts I have been collecting from around Covid-times, from a combination of chance finds and eBay/AliExpress surprise deals. Host: Briareus (as",
-      "has_hardware": true
+      "structured": true
     },
     {
+      "id": "rigs_post_28_0",
+      "post_id": 4120571,
       "post_number": 28,
-      "username": "digitalscream",
+      "contributor": "digitalscream",
       "date": "2026-09-22",
-      "title": "",
-      "preview": "So\u2026minor upgrade here\u2026 2026-09-22 07.11.23 1920\u00d71440 538 KB Threadripper 3960x, the idea being to un-bottleneck the GPUs. Going from x8/x8 has made a massive difference to inference performance - token generation hasn\u2019t changed at all, but prefill on Swift 27B has gone from ~3200t/s to ~4800t/s with",
-      "has_hardware": true
+      "gpu": {
+        "model": null,
+        "count": null
+      },
+      "vram_total_gb": null,
+      "cpu": "Threadripper 3960X",
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": "Swift 27B via llama.cpp | 64k context | on Swift 27B has gone from ~3200t/s to ~4800t/s with empty context, and stays above 3400t/s even at 64k context",
+      "notes": null,
+      "preview": "So...minor upgrade here... 2026-09-22 Threadripper 3960x, the idea being to un-bottleneck the GPUs. Going from x8/x8 has made a massive difference to inference performance - token generation hasn't changed at all, but prefill on Swift 27B has gone from ~3200t/s to ~4800t/s with empty context, and st",
+      "structured": true
     },
     {
+      "id": "rigs_post_29_0",
+      "post_id": 4124338,
       "post_number": 29,
-      "username": "digitalscream",
+      "contributor": "digitalscream",
       "date": "2026-10-02",
-      "title": "",
-      "preview": "FFS. 2026-10-02 09.12.06 1920\u00d72560 999 KB The HX1500i blew up, so\u2026RM1000x in the case, and RM850x hanging around outside to power one of the GPUs (scavenged from a couple of other machines I\u2019ve got lying around). Currently thinking about making my own enclosure for the machine, set up such that the ",
-      "has_hardware": true
+      "gpu": {
+        "model": null,
+        "count": null
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": null,
+      "notes": null,
+      "preview": "FFS. 2026-10-02 The HX1500i blew up, so...RM1000x in the case, and RM850x hanging around outside to power one of the GPUs (scavenged from a couple of other machines I've got lying around). Currently thinking about making my own enclosure for the machine, set up such that the GPUs each have their own",
+      "structured": false
     },
     {
+      "id": "rigs_post_32_0",
+      "post_id": 4124564,
+      "post_number": 32,
+      "contributor": "mashie",
+      "date": "2026-10-02",
+      "gpu": {
+        "model": "DGX Spark",
+        "count": 4
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": "DeepSeek v4.1 Flash",
+      "notes": null,
+      "preview": "Deepseek v4.1 Flash is alive and kicking. The setup to do it is now looking like this: 4x DGX Spark 2x MikroTik CRS504 100Gbit switches powered be PoE in custom enclosures. Yes, I still need to do a bit more cable management.",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_35_0",
+      "post_id": 4124637,
       "post_number": 35,
-      "username": "flockman",
+      "contributor": "flockman",
       "date": "2026-10-02",
-      "title": "",
-      "preview": "I\u2019ll throw my system here for your amusement: image 1440\u00d7808 230 KB -A 2200 Watt asus workstation psu (bought it simply because it had 4 VHPWR slots) -AM4 X570 D4U 2L-2T/BCM motherboard -5950X 16C/32T -128GB of DDR4 -A passive pcie to mcio card hooked up to a PLX88096 Aliexpress special -Quad R9700\u2019",
-      "has_hardware": true
+      "gpu": {
+        "model": "R9700",
+        "count": 4
+      },
+      "vram_total_gb": null,
+      "cpu": "5950X",
+      "ram_gb": 128.0,
+      "storage": "2x 4TB Samsung + 6x 2TB Samsung",
+      "os": "Proxmox",
+      "workload": "Qwen flash-next via vLLM | with 1M total context cache and a C8 of 300 tk/s and a C1 at 80 tk/s",
+      "notes": "2200W PSU",
+      "preview": "I'll throw my system here for your amusement: -A 2200 Watt asus workstation psu (bought it simply because it had 4 VHPWR slots) -AM4 X570 D4U 2L-2T/BCM motherboard -5950X 16C/32T -128GB of DDR4 -A passive pcie to mcio card hooked up to a PLX88096 Aliexpress special -Quad R9700's via sff-8654 8i to m",
+      "structured": true
     },
     {
+      "id": "rigs_post_36_0",
+      "post_id": 4124759,
       "post_number": 36,
-      "username": "quadrapole",
+      "contributor": "quadrapole",
       "date": "2026-10-03",
-      "title": "",
-      "preview": "IMG20261002235050_BURST000_COVER 1920\u00d73413 970 KB 13900kf on z790 taichi carrea 256gb ddr5 5800mhz 3x rtx 6000 pro ws 2x 4tb team group nvme and 2x 2tb wd sn850 black MSI ai1600ts All in a lian li evo dynamic xl case",
-      "has_hardware": true
+      "gpu": {
+        "model": "RTX 6000 Pro WS",
+        "count": 3
+      },
+      "vram_total_gb": null,
+      "cpu": "13900KF",
+      "ram_gb": 256.0,
+      "storage": "2x 4TB Team Group + 2x 2TB WD",
+      "os": null,
+      "workload": null,
+      "notes": null,
+      "preview": "13900kf on z790 taichi carrea 256gb ddr5 5800mhz 3x rtx 6000 pro ws 2x 4tb team group nvme and 2x 2tb wd sn850 black MSI ai1600ts All in a lian li evo dynamic xl case",
+      "structured": true
     },
     {
+      "id": "rigs_post_37_0",
+      "post_id": 4124774,
       "post_number": 37,
-      "username": "digitalscream",
+      "contributor": "digitalscream",
       "date": "2026-10-03",
-      "title": "",
-      "preview": "quadrapole: 3x rtx 6000 pro ws Where\u2019s the third one? And are you having issues with a lack of PCIE lanes between them?",
-      "has_hardware": true
+      "gpu": {
+        "model": null,
+        "count": null
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": null,
+      "notes": null,
+      "preview": "quadrapole: 3x rtx 6000 pro ws Where's the third one? And are you having issues with a lack of PCIE lanes between them?",
+      "structured": false
+    },
+    {
+      "id": "rigs_post_40_0",
+      "post_id": 4124968,
+      "post_number": 40,
+      "contributor": "ulzeraj",
+      "date": "2026-10-03",
+      "gpu": {
+        "model": "M4 Max",
+        "count": 1
+      },
+      "vram_total_gb": 128.0,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": null,
+      "notes": "1W at idle",
+      "preview": "My \"ai rig\" is a boring 128GB M4 Max. On one site its kinda slow to process requests but on the bright side it literally uses measured 1W at idle.",
+      "structured": true
     }
   ]
 }
