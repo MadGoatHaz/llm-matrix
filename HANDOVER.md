@@ -1,16 +1,18 @@
 # The Local AI Stack — Project Handover
 
-> **Currency note:** this document is a point-in-time snapshot from before
-> the plan was executed. Phases 0–5 of
-> [`work/plans/PLAN.md`](work/plans/PLAN.md) are now complete (all 8
-> guides live; the recommend/compare/submit/API pages; CI + the weekly
-> automated pull; the versioned data API; WCAG 2.1 AA + performance
-> budgets; final cleanup and log compaction). Everything below marked
-> "Coming Soon" or listed as a known issue has since been resolved. For
-> the current state, read [`README.md`](README.md) and
-> [`work/plans/PLAN.md`](work/plans/PLAN.md); for the full history of
-> completed work, read [`work/MASTER_LOG.md`](work/MASTER_LOG.md) — not
-> this file.
+## Current State
+
+As of 2026-10-13: **26 submissions** from **7 contributors**, spanning
+**3 hardware vendors** and **7 backends**, **8 live guides**, full CI/CD
+(test + lint + build + auto-deploy on every push, plus a scheduled weekly
+data pull), the **recommendation engine**, the **compare tool**,
+**launch-command generation**, the **submission form**, and the
+**versioned data API (v1.3, schema v2.4)**. The site is live at
+<https://madgoathaz.github.io/llm-matrix/>.
+
+For the short version, read [`README.md`](README.md); for the philosophy,
+read [`VISION.md`](VISION.md). The detailed development history lives in
+the maintainer's internal notes (git-ignored), not in this repo.
 
 ## What This Is
 
@@ -19,7 +21,7 @@ The Local AI Stack is a community-driven resource for running AI/LLM models on p
 - **A forum thread** where community members submit their hardware setups, model choices, and performance data
 - **A static website** (GitHub Pages) that organizes, filters, and displays all that data interactively
 - **A set of Python tools** that automate the data pipeline (pull from forum → parse → generate website)
-- **A collection of educational guides** (in development) covering quantization, backends, architectures, and practical local AI knowledge
+- **A collection of 8 educational guides** (all live) covering quantization, file formats, architectures, KV cache, context extension, backends, and multi-GPU strategies
 
 The project's goal is to be the definitive "go-to" reference for the local AI community — answering "what should I run on my hardware for my use case?" with community-verified data.
 
@@ -42,18 +44,29 @@ The project's goal is to be the definitive "go-to" reference for the local AI co
 .
 ├── about.html                  # Generated: About page (project description, L1Techs connection, contribution info)
 ├── community.html              # Generated: Community page (contributor cards showing each person's submissions)
-├── data.json                   # Generated: Raw submission data for client-side use
-├── guides.html                 # Generated: Guides hub (8 "Coming Soon" guide topic cards)
-├── index.html                  # Generated: Homepage (hero, stats, community highlights, how it works, related links)
+├── data.json                   # Generated: The canonical dataset (carries the data API `version`)
+├── guides.html                 # Generated: Redirect stub → /guides/ (keeps old links working)
+├── index.html                  # Generated: Homepage (hero, stats, charts, community highlights, how it works)
 ├── matrix.html                 # Generated: Full data table with filters (tier, vendor, backend, search)
-├── og-image.png                # MISSING: 1200×630 OG image for forum onebox cards (see Known Issues #1)
-├── README.md                   # Project README (older, references pre-restructure file names)
+├── og-image.png                # 1200×630 OG image for forum onebox cards (og-image.svg is the editable source)
+├── README.md                   # Project README — the public front door
+├── VISION.md                   # What the project is and why
+│
+├── guides/                     # Generated: the 8 deep-dive guides (guides/<slug>/index.html) + the index
+├── recommend/                  # Generated: the recommendation engine page
+├── compare/                    # Generated: the side-by-side comparison page
+├── submit/                     # Generated: the static community submission form
+├── api/                        # Generated: the data API documentation page
 │
 ├── css/
 │   └── style.css               # Design system: CSS custom properties/tokens, layout, cards, tables, filters, badges, hero, mobile breakpoints
 │
 ├── js/
-│   └── main.js                 # Shared interactivity: nav toggle, active-link, table sort, search+filters, reset
+│   ├── main.js                 # Shared interactivity: nav toggle, active-link, table sort, search+filters, reset, detail panel
+│   ├── recommend.js            # The recommendation engine (client-side, island-baked data)
+│   ├── compare.js              # The compare view (winner markers + tradeoffs)
+│   ├── commands.js             # The launch-command generator
+│   └── submit.js               # The submission form assembler
 │
 ├── data/
 │   ├── benchmarks.json         # Parsed: Performance data from Crucible thread (TTFT, throughput)
@@ -85,27 +98,15 @@ The project's goal is to be the definitive "go-to" reference for the local AI co
 │   ├── schema.json             # Editable config: tiers, vendors, backends, quants, use cases, engine modes, confidence, lifecycle, monitored_threads
 │   └── tags.json               # Manual curation layer: per-submission overrides + forum feedback tracking
 │
-├── work/
-│   ├── DEV_LOG.md              # Active lease board (fresh after Phase 5 compaction)
-│   ├── MASTER_LOG.md           # Permanent record of all completed work (compacted from DEV_LOG)
-│   ├── research_prompts.md     # 8 individual self-contained research prompts for guide content (one per guide)
-│   │
-│   ├── plans/
-│   │   └── PLAN.md             # The development plan (Phases 0–5, 32 chunks)
-│   │
-│   ├── docs/
-│   │   └── custom-domain.md    # Operator guide: buying the domain and pointing it at GitHub Pages
-│   │
-│   └── scratch/                # Working space (git-ignored; kept reference files re-included)
-│       ├── qa_report.txt          # Final QA integration report (reference)
-│       ├── qa_structural_check.py # Standalone structural audit of the generated site
-│       └── .gitkeep
-│
 ├── templates/
-│   └── .gitkeep                  # Reserved for future Jinja2 templates
+│   └── .gitkeep                  # Reserved for future use
 │
 └── .gitignore
 ```
+
+The maintainer keeps a git-ignored internal workspace (development logs,
+plans, research notes, scratch space) outside the public repo — it is not
+part of the site and not referenced by any public document.
 
 ## The Data Pipeline
 
@@ -137,17 +138,21 @@ git add . && git commit -m "Weekly update $(date +%Y-%m-%d)" && git push
 - `diff.py`: Works. Shows new/updated/removed posts. Compares against `data/last_seen.json`.
 - `parse.py`: Works. Extracts submissions, filters templates, normalizes tiers, applies tag overrides. Known issue: some non-standard field names from individual users may not be captured.
 - `parse_thread.py`: Works. Extracts basic data from secondary threads (keyword-based detection for benchmarks and hardware).
-- `generate_site.py`: Works. Generates 5-page website (index, matrix, community, guides, about) + data.json. All values HTML-escaped. Template submissions filtered out.
+- `generate_site.py` / `python -m tools.site`: Works. Generates the full site (homepage, matrix, community, guides index + the 8 guides, about, recommend, compare, submit, api) + data.json + the versioned data API. All values HTML-escaped. Template submissions filtered out.
 
 ## The Website
 
 ### Pages
 | Page | File | Purpose | Status |
 |------|------|---------|--------|
-| Homepage | index.html | Landing, stats, community highlights, how it works, related links | ✅ Live |
-| Matrix | matrix.html | Full data table with filters (tier, vendor, backend, search) | ✅ Live |
+| Homepage | index.html | Landing, live stats, charts, community highlights, how it works | ✅ Live |
+| Matrix | matrix.html | Full data table with filters (tier, vendor, backend, search) + detail panels + launch commands | ✅ Live |
+| Compare | compare/index.html | Side-by-side 2–4 setups with winner markers and a tradeoff read | ✅ Live |
+| Recommend | recommend/index.html | The core tool: ranked community setups for your hardware + use case | ✅ Live |
 | Community | community.html | Contributor cards showing each person's submissions | ✅ Live |
-| Guides | guides.html | 8 guide topic cards (content "Coming Soon") | 🟡 Structure only |
+| Submit | submit/index.html | The static form that builds a ready-to-post submission block | ✅ Live |
+| Guides | guides/index.html + guides/<slug>/ | The 8 deep-dive guides | ✅ Live |
+| Data API | api/index.html | Documentation for the versioned JSON data contract | ✅ Live |
 | About | about.html | Project description, L1Techs connection, contribution info | ✅ Live |
 
 ### Design System
@@ -230,36 +235,32 @@ Manual curation layer:
 
 **When to edit**: When you want to highlight a particular submission, change its confidence level, or track a community suggestion.
 
-## The Guides (Planned Content)
+## The Guides (All Live)
 
-8 guide topics defined in `guides.html`:
+8 guides, rendered from authored markdown in `content/guides/`:
 
-| # | Guide | Status | Content Source |
-|---|-------|--------|----------------|
-| 1 | Quantization Basics | 🟡 Coming Soon | work/research_prompts.md (Prompt 1) |
-| 2 | File Formats | 🟡 Coming Soon | work/research_prompts.md (Prompt 2) |
-| 3 | Quantization Methods | 🟡 Coming Soon | work/research_prompts.md (Prompt 3) |
-| 4 | Model Architectures | 🟡 Coming Soon | work/research_prompts.md (Prompt 4) |
-| 5 | KV Cache | 🟡 Coming Soon | work/research_prompts.md (Prompt 5) |
-| 6 | Context Extension | 🟡 Coming Soon | work/research_prompts.md (Prompt 6) |
-| 7 | Backends Deep Dive | 🟡 Coming Soon | work/research_prompts.md (Prompt 7) |
-| 8 | Multi-GPU & Hybrid | 🟡 Coming Soon | work/research_prompts.md (Prompt 8) |
+| # | Guide | Slug | Status |
+|---|-------|------|--------|
+| 1 | Quantization Basics | `quantization` | ✅ Live |
+| 2 | File Formats | `file-formats` | ✅ Live |
+| 3 | Quantization Methods | `quantization-methods` | ✅ Live |
+| 4 | Model Architectures | `model-architectures` | ✅ Live |
+| 5 | KV Cache | `kv-cache` | ✅ Live |
+| 6 | Context Extension | `context-extension` | ✅ Live |
+| 7 | Backends Deep Dive | `backends` | ✅ Live |
+| 8 | Multi-GPU & Hybrid | `multi-gpu` | ✅ Live |
 
-**To write a guide:**
-1. Run the corresponding prompt from `work/research_prompts.md` with a research AI
-2. Adapt the output into web-friendly format (headings, paragraphs, tables, code blocks)
-3. Add the content as `content/guides/<slug>.md` (front matter + markdown; the guide renderer handles the rest)
-4. Re-run `tools/generate_site.py`
-5. Push
+**To add or update a guide:**
+1. Author the content as `content/guides/<slug>.md` (front matter + markdown; the guide renderer handles the rest)
+2. Dataset figures in the prose use `{{data tokens}}` (e.g. `{{submission_count}}`, `{{backend_count}}`, `{{last_updated}}`) — the renderer fills them from the live dataset at build time, so the numbers never go stale
+3. Re-run `python -m tools.site`
+4. Push
 
-## Community Insights (Research Files)
+## Research Notes
 
-The one-off research notes that informed the plan — community sentiment
-analysis, submission data analysis, dashboard UX opportunities, the original
-website architecture plan, and the early research prompts — were pruned in
-Phase 5 cleanup: their findings were folded into
-[`work/plans/PLAN.md`](work/plans/PLAN.md) and the built site. The
-originals remain recoverable from git history if ever needed.
+The one-off research notes that informed the original build were pruned
+during the final cleanup: their findings were folded into the guides and the
+built site. The originals remain recoverable from git history if ever needed.
 
 ## Git History
 
@@ -275,43 +276,35 @@ Run `git log --oneline` to see full history. Key milestones:
 - `2dcc2c7` — Multi-thread monitoring: pull + parse Crucible, AI Rigs, and ML/AI category
 - `47d14b6` — Homepage: remove Find Your Setup, enhance Community Highlights, add Related Resources
 
-## Known Issues & TODOs
+## Historical: Known Issues (All Resolved)
 
-### Immediate (affects users)
-1. **og-image.png missing** — The OG meta tag references it but the file doesn't exist. Forum onebox card shows title+description but no thumbnail. Create a 1200×630 screenshot of the dashboard and save as `og-image.png` in repo root.
-2. **Forum posts not yet updated to match website** — The "Post #1 = Hub, Post #2 = Reference" restructure was done in the files but may not be pasted into the live forum yet.
-3. **Featured Link not set** — The forum topic's featured link should be set to the dashboard URL for the onebox card.
+The original handover listed these as open work. **Every one is done** —
+they are kept here only so a future reader can see the arc:
 
-### Short-term (content)
-4. **8 guide pages are empty** — Need research content (prompts ready in work/research_prompts.md)
-5. **Community Data Viewport in Post #2** — The tables are placeholders; need to be populated by generate_site.py output
-6. **No automated CI/CD** — The weekly cycle is manual. Could add a GitHub Actions cron job.
+- ~~og-image.png missing~~ — created (1200×630, `og-image.svg` is the editable source)
+- ~~Forum posts not updated to match the website~~ — Post #1 (Hub) and Post #2 (Reference) are live in the thread
+- ~~Featured Link not set~~ — set on the forum topic
+- ~~8 guide pages empty~~ — all 8 guides are written and live
+- ~~No automated CI/CD~~ — `ci.yml` (test + lint + build + auto-deploy) and `weekly-pull.yml` (scheduled data rollup) are live
+- ~~Comparison view / recommendation engine / launch commands / submission form~~ — all built (compare/, recommend/, the 🚀 command buttons, submit/)
+- ~~Charts~~ — VRAM distribution + backend donut on the homepage and matrix
+- ~~Data-quality gaps~~ — the parser now handles unmarked blocks, prose attribution, cross-block inheritance, sentinel cleanup, and a wipe guard; `validate.py` gates every push
 
-### Medium-term (features)
-7. **Comparison view** — Select 2-4 submissions, side-by-side
-8. **Recommendation engine** — "I have [hardware] + want [use case]" → ranked matches
-9. **Launch command generator** — Click a submission → get the exact CLI command
-10. **Submission form** — Web form that generates the [COMMUNITY-SUBMISSION] text
-11. **Charts** — Speed vs VRAM scatter, context length bars
-12. **Custom domain** — llm-matrix.dev or similar
+## Remaining Gaps (Current)
 
-### Data quality
-13. **Some parsed fields are incomplete** — Non-standard user formatting causes some data loss (see parse.py known issues)
-14. **No Apple submissions** — Biggest demographic gap in the data
-15. **Template detection could be more robust** — Edge cases with partially-filled templates
+1. **No Apple/MLX submissions** — the biggest demographic gap in the data (the MLX guide section documents this openly)
+2. **Some parsed fields are incomplete** — non-standard user formatting can still lose data; the `candidates.json` review queue catches prose-only submissions for human review
+3. **Custom domain** — the site deliberately stays at `madgoathaz.github.io/llm-matrix` (linked from the forum; changing it breaks bookmarks). Migrating to a custom domain is a maintainer task and needs care with the `CNAME`
+4. **The forum thread's title** is still the original "Local LLM Matrix" name — fine for now (it's the thread's identity), but worth revisiting if the project outgrows it
 
 ## First Things to Do When Inheriting
 
-1. **Read this document** (you're doing this now)
-2. **Browse the live site**: https://madgoathaz.github.io/llm-matrix/
-3. **Read the forum thread**: https://forum.level1techs.com/t/256443
-4. **Run the pipeline once** to verify it works end-to-end
-5. **Set the forum Featured Link** to the dashboard URL (topic settings → featured link)
-6. **Create og-image.png** (1200×630 screenshot of the homepage)
-7. **Run the research prompts** (work/research_prompts.md) to generate guide content
-8. **Start writing Guide #1** (Quantization Basics) as the template for the rest
-9. **Paste the updated Post #1 and Post #2** into the forum (from forum/*.md files)
-10. **Post the bump** (forum/bump.md) to announce the update
+1. **Read this document** (you're doing this now) and [`README.md`](README.md)
+2. **Browse the live site**: <https://madgoathaz.github.io/llm-matrix/>
+3. **Read the forum thread**: <https://forum.level1techs.com/t/256443>
+4. **Run `make check`** — lint + data validation + the full test suite (the same gates CI enforces)
+5. **Run the pipeline once** (`./pull.sh --dry-run`) to verify it works end-to-end
+6. **Watch the weekly workflow** in GitHub Actions for a green run
 
 ## Philosophy & Principles
 

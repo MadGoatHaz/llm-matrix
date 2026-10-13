@@ -23,12 +23,12 @@ Each submission in <code>submissions[]</code> carries the 20-key canonical shape
 
 ```json
 {
-  "version": "1.1",
-  "generated_at": "2026-10-12T11:39:46.952962",
-  "schema_version": "2.1",
+  "version": "{{api_version}}",
+  "generated_at": "{{generated_at}}",
+  "schema_version": "{{schema_version}}",
   "source_thread": "https://forum.level1techs.com/t/256443",
-  "total_submissions": 12,
-  "skipped_templates": 2,
+  "total_submissions": {{submission_count}},
+  "skipped_templates": {{skipped_templates}},
   "submissions": [
     {
       "id": "post_2_madgoat_1",

@@ -188,8 +188,7 @@ tests all encode the contract and must move together.
 - **Repo issues (bugs, features, submissions):** [GitHub issues](https://github.com/MadGoatHaz/llm-matrix/issues)
   — the structured forms make reporting easy.
 - **The project's philosophy:** [VISION.md](VISION.md) · **Current state:**
-  [HANDOVER.md](HANDOVER.md) · **The development plan:**
-  [work/plans/PLAN.md](work/plans/PLAN.md)
+  [HANDOVER.md](HANDOVER.md)
 
 *Not an official Level1Techs project. All performance data is
 community-reported, not lab-benchmarked — and that's by design.*

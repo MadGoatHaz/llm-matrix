@@ -183,7 +183,7 @@ def render(subs: list[dict], schema: dict, stats: dict,
 {how_html}
 {related_html}'''
 
-    title = "The Local AI Stack — Community-Driven Local LLM Reference"
+    title = "The Local AI Stack — What Should You Run?"
     desc = ("Your community-driven guide to running AI models on your own hardware. "
             "Browse the matrix, explore guides, and see what the community is running.")
     return page_shell(title, desc, body, guides_menu=guides_menu)

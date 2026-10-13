@@ -1,4 +1,4 @@
-# LLM Matrix Tools
+# The Local AI Stack — Tools
 
 Local tooling for maintaining the [Local LLM Matrix](https://forum.level1techs.com/t/256443) forum thread and its companion website, [The Local AI Stack](https://madgoathaz.github.io/llm-matrix/).
 

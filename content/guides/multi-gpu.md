@@ -137,7 +137,7 @@ The 2× 3090/4090 with NVLink is the community's most-cited "big model on a budg
 | 2× MI300X (192GB) | 192 GB | Infinity Fabric | 70B FP16, 125B+ MoE FP8 | Datacenter-class |
 | 4× MI210 (128GB) | 128 GB | Infinity Fabric | 70B FP16, 125B MoE | Budget datacenter |
 
-The Matrix's AMD data is the richest in the set: 10 of 12 submissions are AMD. The two R9700 submissions (MadGoat's 27B FP8 at 120 t/s, and the vllm-radiance MTP=8 variant) show what two R9700s can do: a 27B dense model at production-grade speed, or a 125B MoE model via Strata at interactive speed. The 4× R9700 (96GB) is the "I want to run anything" setup, and the MI300X/MI210 cards are the datacenter answer when you need 128–192GB without a server-grade budget.
+The Matrix's hardware data spans {{vendor_count}} vendors across {{submission_count}} submissions, and the AMD rigs are a large part of it. The two R9700 submissions (MadGoat's 27B FP8 at 120 t/s, and the vllm-radiance MTP=8 variant) show what two R9700s can do: a 27B dense model at production-grade speed, or a 125B MoE model via Strata at interactive speed. The 4× R9700 (96GB) is the "I want to run anything" setup, and the MI300X/MI210 cards are the datacenter answer when you need 128–192GB without a server-grade budget.
 
 **The Radiance note:** AMD's answer to vLLM is the Radiance engine, which adds MTP speculative decoding on top of ROCm tensor parallel. A 2× R9700 Radiance setup with MTP=8 on a compatible model can push past 200 t/s — faster than most NVIDIA 2-GPU setups at the same model size. This is the single biggest reason the Matrix's fastest submissions are AMD.
 

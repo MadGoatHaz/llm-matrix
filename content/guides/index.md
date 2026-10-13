@@ -12,6 +12,8 @@ icon: 📚
 
 Eight guides, organized in learning-path order. Start at the top if you are new; jump to the section that matches your question if you are not.
 
+The data these guides are built on: **{{submission_count}} community submissions** from **{{contributor_count}} contributors**, across **{{vendor_count}} hardware vendors** and **{{backend_count}} backends** — last updated **{{last_updated}}**.
+
 ## Fundamentals
 
 The building blocks: what the numbers mean, what is inside the file, and how the quants are made.

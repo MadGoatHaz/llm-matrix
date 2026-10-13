@@ -41,7 +41,7 @@ extra_scripts: js/commands.js
 
 The model file is the *what*; the backend is the *how*. The same 27B model at Q4_K_M can decode at 14 t/s on a 16GB card through one backend and 54 t/s through another, depending on kernel quality, memory management, and how efficiently the engine moves data between VRAM, RAM, and SSD. The backend also determines which file formats you can use, which GPUs and operating systems it supports, and what performance features are available (continuous batching, PagedAttention, speculative decoding, prompt caching).
 
-The Matrix tracks five backends across its twelve submissions: **llama-swap** (6), **vLLM** (2), **llama.cpp** (2), **Strata** (1), and **Ollama** (1). That distribution tells you what the community is actually running. The eleven engines below are the full landscape as of late 2026.
+The Matrix tracks {{backend_count}} backends across its {{submission_count}} submissions. That distribution tells you what the community is actually running — the live per-engine breakdown is on the [Matrix](../../matrix.html). The eleven engines below are the full landscape as of late 2026.
 
 ## The master comparison
 
@@ -103,7 +103,7 @@ curl http://localhost:1234/v1/chat/completions \
   -d '{"model": "Qwen3.8-27B-Q4_K_M", "messages": [{"role": "user", "content": "Hello"}]}'
 ```
 
-**When to use:** Multiple models on one GPU with no manual swapping. OpenAI-compatible clients (Cursor, Continue, Cline). The most popular backend in the Matrix (6 of 12) because it is the practical answer to "five models on my 24GB card."
+**When to use:** Multiple models on one GPU with no manual swapping. OpenAI-compatible clients (Cursor, Continue, Cline). The practical answer to "five models on my 24GB card."
 
 **When to avoid:** One model at full speed (swap overhead is small but nonzero). Production multi-user serving (vLLM batching is superior).
 
@@ -329,6 +329,6 @@ These are the ranges the Matrix data supports. A well-tuned setup at the top of 
 
 ## How this fits the Matrix
 
-Every row in the [Matrix](../../matrix.html) carries a backend. The six llama-swap submissions are the "always-on single GPU" answer; the two vLLM submissions are the "multi-GPU production" answer; the Strata submission is the "hybrid MoE" answer; the Ollama and llama.cpp submissions are the "getting started" and "raw control" answers.
+Every row in the [Matrix](../../matrix.html) carries a backend. The llama-swap submissions are the "always-on single GPU" answer; the vLLM submissions are the "multi-GPU production" answer; the Strata submission is the "hybrid MoE" answer; the Ollama and llama.cpp submissions are the "getting started" and "raw control" answers. The full distribution — {{backend_count}} backends across {{submission_count}} submissions — is live on the matrix page.
 
 When you submit your own setup, name the backend *and* the key flags (context length, KV precision, tensor parallel size, MTP setting). That is what makes a submission useful to the next reader.

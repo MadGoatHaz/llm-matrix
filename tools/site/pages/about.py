@@ -24,8 +24,9 @@ def render(guides_menu: list[tuple[str, str]] | None = None) -> str:
 
   <div class="card">
     <h2>{utils.icon("📖")} What It Is</h2>
-    <p>A community-driven resource for running AI models on your own hardware. Born from the
-       Level1Techs forum, built for the broader local AI community.</p>
+    <p>The Local AI Stack (hosted at llm-matrix) is a community-driven resource for running AI
+       models on your own hardware. Born from the Level1Techs forum, built for the broader
+       local AI community.</p>
   </div>
 
   <div class="card">

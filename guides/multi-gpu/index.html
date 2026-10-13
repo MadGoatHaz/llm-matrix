@@ -309,7 +309,7 @@ ollama run qwen3.8-70b:q4_K_M
 </tr>
 </tbody>
 </table>
-<p>The Matrix's AMD data is the richest in the set: 10 of 12 submissions are AMD. The two R9700 submissions (MadGoat's 27B FP8 at 120 t/s, and the vllm-radiance MTP=8 variant) show what two R9700s can do: a 27B dense model at production-grade speed, or a 125B MoE model via Strata at interactive speed. The 4× R9700 (96GB) is the "I want to run anything" setup, and the MI300X/MI210 cards are the datacenter answer when you need 128–192GB without a server-grade budget.</p>
+<p>The Matrix's hardware data spans 3 vendors across 26 submissions, and the AMD rigs are a large part of it. The two R9700 submissions (MadGoat's 27B FP8 at 120 t/s, and the vllm-radiance MTP=8 variant) show what two R9700s can do: a 27B dense model at production-grade speed, or a 125B MoE model via Strata at interactive speed. The 4× R9700 (96GB) is the "I want to run anything" setup, and the MI300X/MI210 cards are the datacenter answer when you need 128–192GB without a server-grade budget.</p>
 <p><strong>The Radiance note:</strong> AMD's answer to vLLM is the Radiance engine, which adds MTP speculative decoding on top of ROCm tensor parallel. A 2× R9700 Radiance setup with MTP=8 on a compatible model can push past 200 t/s — faster than most NVIDIA 2-GPU setups at the same model size. This is the single biggest reason the Matrix's fastest submissions are AMD.</p>
 <h2 id="the-hybrid-revolution-strata">The hybrid revolution: Strata</h2>
 <div class="diagram diagram--stack">

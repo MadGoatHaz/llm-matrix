@@ -75,7 +75,7 @@
 
 <h2 id="why-the-backend-matters">Why the backend matters</h2>
 <p>The model file is the <em>what</em>; the backend is the <em>how</em>. The same 27B model at Q4_K_M can decode at 14 t/s on a 16GB card through one backend and 54 t/s through another, depending on kernel quality, memory management, and how efficiently the engine moves data between VRAM, RAM, and SSD. The backend also determines which file formats you can use, which GPUs and operating systems it supports, and what performance features are available (continuous batching, PagedAttention, speculative decoding, prompt caching).</p>
-<p>The Matrix tracks five backends across its twelve submissions: <strong>llama-swap</strong> (6), <strong>vLLM</strong> (2), <strong>llama.cpp</strong> (2), <strong>Strata</strong> (1), and <strong>Ollama</strong> (1). That distribution tells you what the community is actually running. The eleven engines below are the full landscape as of late 2026.</p>
+<p>The Matrix tracks 7 backends across its 26 submissions. That distribution tells you what the community is actually running — the live per-engine breakdown is on the <a href="../../matrix.html">Matrix</a>. The eleven engines below are the full landscape as of late 2026.</p>
 <h2 id="the-master-comparison">The master comparison</h2>
 <p>This is the table to bookmark. Every backend in the local-inference world, one row each:</p>
 <table>
@@ -209,7 +209,7 @@ curl http://localhost:1234/v1/chat/completions \
   -H &quot;Content-Type: application/json&quot; \
   -d '{&quot;model&quot;: &quot;Qwen3.8-27B-Q4_K_M&quot;, &quot;messages&quot;: [{&quot;role&quot;: &quot;user&quot;, &quot;content&quot;: &quot;Hello&quot;}]}'
 </code></pre>
-<p><strong>When to use:</strong> Multiple models on one GPU with no manual swapping. OpenAI-compatible clients (Cursor, Continue, Cline). The most popular backend in the Matrix (6 of 12) because it is the practical answer to "five models on my 24GB card."</p>
+<p><strong>When to use:</strong> Multiple models on one GPU with no manual swapping. OpenAI-compatible clients (Cursor, Continue, Cline). The practical answer to "five models on my 24GB card."</p>
 <p><strong>When to avoid:</strong> One model at full speed (swap overhead is small but nonzero). Production multi-user serving (vLLM batching is superior).</p>
 <h3 id="ollama">Ollama</h3>
 <p><strong>The "Docker for LLMs."</strong> One command to install, one command to run a model, zero configuration. Ollama pulls GGUF models from its registry, manages them locally, and exposes a simple API. It is the fastest path from "I have a GPU" to "I am chatting with a 27B model."</p>
@@ -416,7 +416,7 @@ colibri serve --model Qwen3.8-27B-Q4_K_M.gguf --port 9000
 </table>
 <p>These are the ranges the Matrix data supports. A well-tuned setup at the top of a tier beats a poorly configured one at the bottom of the next tier — the backend and its flags matter as much as the hardware.</p>
 <h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
-<p>Every row in the <a href="../../matrix.html">Matrix</a> carries a backend. The six llama-swap submissions are the "always-on single GPU" answer; the two vLLM submissions are the "multi-GPU production" answer; the Strata submission is the "hybrid MoE" answer; the Ollama and llama.cpp submissions are the "getting started" and "raw control" answers.</p>
+<p>Every row in the <a href="../../matrix.html">Matrix</a> carries a backend. The llama-swap submissions are the "always-on single GPU" answer; the vLLM submissions are the "multi-GPU production" answer; the Strata submission is the "hybrid MoE" answer; the Ollama and llama.cpp submissions are the "getting started" and "raw control" answers. The full distribution — 7 backends across 26 submissions — is live on the matrix page.</p>
 <p>When you submit your own setup, name the backend <em>and</em> the key flags (context length, KV precision, tensor parallel size, MTP setting). That is what makes a submission useful to the next reader.</p>
 
   <section class="guide-related">

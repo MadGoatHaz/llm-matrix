@@ -552,6 +552,100 @@ def compute_stats(subs: list[dict], schema: dict) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# Data tokens (C8): build-time values for authored content
+# ---------------------------------------------------------------------------
+
+#: GGUF file signatures — a quant name or a model-file name that identifies a
+#: GGUF payload, whether the evidence sits in the ``quant`` field
+#: ("GGUF Q4_K_M", "I-Nano", "UD-Q2_K_XL") or only in the model name
+#: ("…-Q8_0.gguf", "…:q4_K_M", "…_q8_0"). The patterns are deliberately
+#: narrow: the digit is glued to the ``q``/``iq``/``ud-q`` token and the
+#: token must not follow a letter or digit, so a model name like
+#: "Qwen3.8-27B" can never match (the digit there follows a "w"). A leading
+#: look-behind (not ``\b``) is used because quant tags are often glued to a
+#: word character by an underscore ("0528_q8_0").
+_GGUF_TOKEN_RE = re.compile(
+    r"(?i)(?<![a-z0-9])(gguf"
+    r"|q[2-8]_k"
+    r"|iq[2-8](?=[\s_./-]|$)"
+    r"|i-nano"
+    r"|ud-q[2-8]"
+    r"|q[2-8]_0"
+    r"|q[2-8](?=$|[\s:/.-]))"
+)
+
+#: A ``{{token}}`` marker in authored content (see :func:`fill_tokens`).
+_TOKEN_RE = re.compile(r"\{\{(\w+)\}\}")
+
+
+def is_gguf_submission(sub: dict) -> bool:
+    """True when the submission's model file is a GGUF.
+
+    Evidence is checked in the ``quant`` field first, then the model name —
+    some entries state the format only there (e.g. ``gemma-4-31B-it-
+    BF16.gguf``, Ollama-style tags like ``:q8_0``). Entries with no GGUF
+    signature in either field (FP8, W4A16, or unstated) are NOT counted:
+    the guide's "X of Y run GGUF" line must never overclaim.
+    """
+    text = " ".join((sub.get("quant", ""),
+                     sub.get("model", {}).get("name", "")))
+    return bool(_GGUF_TOKEN_RE.search(text))
+
+
+def data_tokens(subs: list[dict], schema: dict,
+               data: dict | None = None) -> dict[str, str]:
+    """The build-time token values for authored content (C8).
+
+    Guides (and the API docs page) carry ``{{token}}`` markers in their
+    markdown source; the renderer fills them at build time so the numbers
+    track the dataset instead of going stale. Values:
+
+    * ``submission_count``  — real (non-template) submissions
+    * ``backend_count``     — distinct normalized backends
+    * ``vendor_count``      — distinct hardware vendors
+    * ``contributor_count`` — distinct contributors
+    * ``last_updated``      — the most recent ``source.submitted_at`` (date),
+      falling back to the dataset's ``generated_at`` stamp
+    * ``gguf_count``        — submissions whose model file is GGUF
+    """
+    stats = compute_stats(subs, schema)
+    dates = [s.get("source", {}).get("submitted_at", "") for s in subs]
+    dates = [d for d in dates if d]
+    if not dates and data:
+        dates = [data.get("generated_at", "")]
+    last = max(dates) if dates else ""
+    return {
+        "submission_count": str(stats["submissions"]),
+        "backend_count": str(stats["backends"]),
+        "vendor_count": str(stats["vendors"]),
+        "contributor_count": str(stats["contributors"]),
+        "last_updated": last[:10] if last else "the latest pull",
+        "gguf_count": str(sum(1 for s in subs if is_gguf_submission(s))),
+    }
+
+
+def has_tokens(text: str) -> bool:
+    """True when ``text`` carries any ``{{token}}`` marker."""
+    return bool(_TOKEN_RE.search(text))
+
+
+def fill_tokens(text: str, tokens: dict[str, str]) -> str:
+    """Replace every ``{{name}}`` in ``text`` with its value.
+
+    A marker whose name is not in ``tokens`` raises :class:`ValueError`
+    naming every unknown marker — a typo in authored content must fail the
+    build loudly instead of leaking raw ``{{...}}`` into the published
+    HTML. Text without markers is returned unchanged.
+    """
+    unknown = sorted({m.group(1) for m in _TOKEN_RE.finditer(text)}
+                     - tokens.keys())
+    if unknown:
+        raise ValueError("unknown data token(s) in content: "
+                         + ", ".join("{{" + k + "}}" for k in unknown))
+    return _TOKEN_RE.sub(lambda m: str(tokens[m.group(1)]), text)
+
+
 def group_by_tier(subs: list[dict], tiers: list[dict]) -> list[tuple[str, str, list[dict]]]:
     """Ordered [(tier_id, tier_label, [subs...])] for tiers that have rows.
 

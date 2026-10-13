@@ -52,7 +52,9 @@ def render(guides_menu: list[tuple[str, str]] | None = None) -> str:
 
 
 def render_index(content_dir: Path,
-                 guides_menu: list[tuple[str, str]] | None = None) -> str:
+                  guides_menu: list[tuple[str, str]] | None = None,
+                  subs: list[dict] | None = None,
+                  schema: dict | None = None) -> str:
     """Render the guides index from ``content/guides/index.md``.
 
     The index lives at ``guides/index.html`` (depth 1). It is rendered
@@ -63,12 +65,17 @@ def render_index(content_dir: Path,
     Args:
         content_dir: The authored-content directory (``content/guides``).
         guides_menu: Optional ``(label, url)`` list for the nav dropdown.
+        subs: Real submissions — fills the ``{{data tokens}}`` (C8) in the
+            index's dataset line.
+        schema: The parsed ``schema.json`` (needed for the token values).
 
     Returns:
-        The full ``guides/index.html`` document.
+        The full ``guides/index.html`` document (depth 1).
 
     Raises:
         FileNotFoundError: if ``content/guides/index.md`` does not exist.
+        ValueError: if the index uses ``{{token}}`` markers that cannot be
+            filled (no submissions supplied, or an unknown token name).
     """
     index_path = content_dir / "index.md"
     if not index_path.exists():
@@ -77,12 +84,21 @@ def render_index(content_dir: Path,
     text = index_path.read_text(encoding="utf-8")
     meta, body = md.split_front_matter(text)
 
-    title = meta.get("title", "Guides")
+    # Branding: the index carries the canonical product name in its
+    # ``<title>`` like every other page.
+    title = f"{meta.get('title', 'Guides')} — The Local AI Stack"
     description = meta.get(
         "description",
         "The complete educational series for local LLMs.")
 
     body_html = md.render_markdown(body)
+    if utils.has_tokens(body_html):
+        if subs is None:
+            raise ValueError(
+                "the guides index uses {{data tokens}} but no submissions "
+                "were provided to fill them")
+        body_html = utils.fill_tokens(
+            body_html, utils.data_tokens(subs, schema or {}))
     # The index page uses the normal page layout (not the .guide long-form
     # wrapper), so the card-grid and guide-card styles apply directly.
     wrapped = f'\n{body_html}'

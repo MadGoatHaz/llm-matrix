@@ -21,7 +21,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "local-ai-stack"
 version = "0.1.0"
-description = "The Local AI Stack — a community-driven reference for running LLMs on personal hardware: a stdlib-only data pipeline plus a 5-page static site on GitHub Pages."
+description = "A community-driven reference for running LLMs on personal hardware — static site, data pipeline, and educational guides."
 readme = "README.md"
 requires-python = ">=3.14"
 # PEP 639 SPDX license expression (see LICENSE).

@@ -152,8 +152,11 @@ def main(workspace: str | Path | None = None,
     api.write_api(ws, data)
 
     # --- API documentation page (api/index.html, depth 1; P4-4) ---
+    # The dataset + schema feed the {{data tokens}} (C8) in content/api.md,
+    # so the example payload's version stamps and counts track the live data.
     try:
-        api_html = api_page.render(content_dir, guides_menu)
+        api_html = api_page.render(content_dir, guides_menu, data=data,
+                                   schema=schema)
         api_page_path = ws / "api" / "index.html"
         api_page_path.parent.mkdir(parents=True, exist_ok=True)
         api_page_path.write_text(api_html, encoding="utf-8")
@@ -164,7 +167,8 @@ def main(workspace: str | Path | None = None,
     # --- Guides index (guides/index.html, depth 1) ---
     content_guides = ws / "content" / "guides"
     try:
-        index_html = guides_index.render_index(content_guides, guides_menu)
+        index_html = guides_index.render_index(content_guides, guides_menu,
+                                              subs, schema)
         index_path = ws / "guides" / "index.html"
         index_path.parent.mkdir(parents=True, exist_ok=True)
         index_path.write_text(index_html, encoding="utf-8")

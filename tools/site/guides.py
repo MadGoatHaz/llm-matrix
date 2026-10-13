@@ -11,6 +11,7 @@ This module is the foundation the eight P1-1…P1-8 guides build on.
 from __future__ import annotations
 
 import re
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -137,11 +138,20 @@ def render_guide(md_path: Path, title_override: str | None = None,
             ``title``, then the file stem.
         guides_menu: Optional ``(label, url)`` list for the nav dropdown.
         subs: Real submissions; used to bake the ``#commands-config`` island
-            when the guide opts into a client tool via ``extra_scripts``.
-        schema: The parsed ``schema.json`` (backends, tiers) for the island.
+            when the guide opts into a client tool via ``extra_scripts``, and
+            to fill the ``{{data tokens}}`` (C8) so guide stats track the
+            dataset.
+        schema: The parsed ``schema.json`` (backends, tiers) for the island
+            and the token values.
 
     Returns:
         The full ``guides/<slug>/index.html`` document (depth-2 shell).
+
+    Raises:
+        ValueError: if the guide uses ``{{token}}`` markers but no
+            submissions were supplied (the numbers could not be filled), or
+            if a marker names an unknown token (a typo must fail the build
+            instead of leaking raw braces into the HTML).
     """
     text = md_path.read_text(encoding="utf-8")
     meta, body = md.split_front_matter(text)
@@ -150,6 +160,16 @@ def render_guide(md_path: Path, title_override: str | None = None,
     description = meta.get("description", "")
 
     body_html = md.render_markdown(body)
+    # C8: fill the data tokens (submission/backend/vendor/contributor counts,
+    # last update, GGUF share) after the markdown render, before the HTML
+    # output. Content without markers passes through untouched.
+    if utils.has_tokens(body_html):
+        if subs is None:
+            raise ValueError(
+                f"guide {md_path.stem!r} uses {{data tokens}} but no "
+                "submissions were provided to fill them")
+        body_html = utils.fill_tokens(body_html,
+                                      utils.data_tokens(subs, schema or {}))
     body_html = _fixup_sibling_links(body_html, _sibling_slugs(md_path))
     related_html = _related_links(meta)
 
@@ -201,8 +221,20 @@ def generate_guides(content_dir: Path, out_dir: Path,
             continue
         if md_path.stem == "index":
             continue  # rendered by guides_index.render_index()
-        html = render_guide(md_path, guides_menu=guides_menu,
-                           subs=subs, schema=schema)
+        try:
+            html = render_guide(md_path, guides_menu=guides_menu,
+                                subs=subs, schema=schema)
+        except ImportError:
+            # The `markdown` content dependency is missing — the whole
+            # guide layer is unavailable; propagate so the caller reports
+            # the single warning (and the committed guides stay in place).
+            raise
+        except ValueError as e:
+            # A per-guide authoring fault (e.g. an unknown {{token}}) skips
+            # that one guide with a loud warning; the others still ship.
+            print(f"WARNING: guide {md_path.stem!r} skipped: {e}",
+                  file=sys.stderr)
+            continue
         dest = out_dir / "guides" / md_path.stem / "index.html"
         dest.parent.mkdir(parents=True, exist_ok=True)
         dest.write_text(html, encoding="utf-8")

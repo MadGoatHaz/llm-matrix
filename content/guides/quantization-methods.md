@@ -89,7 +89,7 @@ Why "the golden ticket"? It aims for **FP8-level quality at FP4-level memory** �
 
 ### The GGUF family: K-quants, I-quants, and UD
 
-<div class="callout callout--info"><p><b>The consumer branch.</b> A separate, VRAM-obsessed quantization system that llama.cpp, Ollama, LM Studio, and Strata all read. It has its own naming, its own hierarchy, and it is where 10 of the Matrix's 12 submissions live.</p></div>
+<div class="callout callout--info"><p><b>The consumer branch.</b> A separate, VRAM-obsessed quantization system that llama.cpp, Ollama, LM Studio, and Strata all read. It has its own naming, its own hierarchy, and it is where {{gguf_count}} of the Matrix's {{submission_count}} submissions live.</p></div>
 
 The GGUF ecosystem did not adopt GPTQ/AWQ — it built its own methods around a single constraint: *fit a big model into as little VRAM as possible.* Three families matter:
 
@@ -134,6 +134,6 @@ The practical read: if your model has a good **AWQ** or **Q4_K_M** release, that
 
 ## How this fits the Matrix
 
-The data is a clean snapshot of the split. **10 of the 12 community submissions run the GGUF family** — K/I/UD quants through llama.cpp, Ollama, and Strata: `I-Nano` on the 35B-A3B MoE, `IQ3_S` on the 125B Flash-Next, `Q4_K_M` on the 27B/4B/8B dense models, `Q5_K_M` on the coder, `Q8_0` on the 9B MTP model, and `UD-Q2_K_XL` squeezing a dense 27B into a 16GB card. The **two vLLM submissions** (27B FP8 on 2× R9700) run **native FP8** safetensors instead — the serving-side answer to the same "fit a big model" problem.
+The data is a clean snapshot of the split. **{{gguf_count}} of the {{submission_count}} community submissions run the GGUF family** — K/I/UD quants through llama.cpp, Ollama, and Strata: `I-Nano` on the 35B-A3B MoE, `IQ3_S` on the 125B Flash-Next, `Q4_K_M` on the 27B/4B/8B dense models, `Q5_K_M` on the coder, `Q8_0` on the 9B MTP model, and `UD-Q2_K_XL` squeezing a dense 27B into a 16GB card. The **vLLM submissions** (27B FP8 on 2× R9700) run **native FP8** safetensors instead — the serving-side answer to the same "fit a big model" problem.
 
 So the method you see in the Matrix's quant column is not random: **consumer single-GPU runs skew GGUF K/I/UD** (size-first), while **multi-GPU serving skews FP8/AWQ** (quality-and-speed-first). Now that you can read *how* each was made, the next step is knowing which *file* to grab for your backend — that is the [File Formats](file-formats/) guide, and the backends that consume each family are covered in [Backends](backends/).

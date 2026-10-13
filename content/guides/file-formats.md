@@ -28,7 +28,7 @@ The *format* is the container for these four. The same model in three formats is
 
 GGUF is the unified file format born out of llama.cpp (the successor of the older GGML format). Weights, config, tokenizer, and metadata all live in a single file — no stitching, no index, no surprises. It carries the entire GGUF quantization ladder, from `Q8_0` down through `Q4_K_M`, `IQ3_S`, and `I-Nano`, which is why it is the format of choice for bandwidth-constrained and VRAM-constrained machines.
 
-The Matrix is a good snapshot of the ecosystem: **10 of 12 community submissions run GGUF** — through llama.cpp, llama-swap, Ollama, and Strata. Its main limitation is that it is a *quants-first* format: the FP8 weight ecosystem lives in safetensors, not GGUF. So if a model is only published as native FP8, GGUF is not where you'll find it.
+The Matrix is a good snapshot of the ecosystem: **{{gguf_count}} of {{submission_count}} community submissions run GGUF** — through llama.cpp, llama-swap, Ollama, and Strata. Its main limitation is that it is a *quants-first* format: the FP8 weight ecosystem lives in safetensors, not GGUF. So if a model is only published as native FP8, GGUF is not where you'll find it.
 
 ### Safetensors — the PyTorch/vLLM standard
 
@@ -40,11 +40,11 @@ Both of the Matrix's vLLM submissions — MadGoat's and digitalscream's `Swift-Q
 
 ### MLX — the Apple Silicon native
 
-<div class="callout callout--warning"><p><b>The unified-memory format for Macs.</b> Zero MLX submissions in the Matrix today — the ecosystem's biggest data gap.</p></div>
+<div class="callout callout--warning"><p><b>The unified-memory format for Macs.</b> No MLX submissions in the Matrix today — the ecosystem's biggest data gap.</p></div>
 
 MLX is Apple's array framework and its native model format, built around the fact that a Mac's CPU and GPU share one pool of memory. It carries its own 4-bit and 8-bit quant sets, and it is what you run when you use MLX (or Unsloth Desktop on Metal) on Apple Silicon. Models are commonly published as safetensors and converted to MLX for Mac use.
 
-Honest caveat: the Matrix has **no MLX submissions yet** — the community data is NVIDIA/AMD-heavy. If you run a Mac, your experience is underrepresented here, which is exactly why an MLX submission from you would be valuable.
+Honest caveat: the Matrix has **no MLX submissions yet** — the community data skews NVIDIA and AMD. If you run a Mac, your experience is underrepresented here, which is exactly why an MLX submission from you would be valuable.
 
 | | GGUF | Safetensors | MLX |
 |---|---|---|---|
@@ -87,4 +87,4 @@ So the practical flow is: find the model's safetensors (or its MLX conversion), 
 
 ## How this fits the Matrix
 
-The Matrix's quant column is really *format + level* combined: "GGUF Q4_K_M", "FP8", "GGUF I-Nano". Now you can read each row's packaging — and you know why the data skews GGUF (10 of 12 submissions) with the FP8/safetensors rows concentrated in the vLLM setups. When you submit your own, name the format and the level together, and the next person can pick the right file for their backend.
+The Matrix's quant column is really *format + level* combined: "GGUF Q4_K_M", "FP8", "GGUF I-Nano". Now you can read each row's packaging — and you know why the data skews GGUF ({{gguf_count}} of {{submission_count}} submissions) with the FP8/safetensors rows concentrated in the vLLM setups. When you submit your own, name the format and the level together, and the next person can pick the right file for their backend.
