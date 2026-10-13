@@ -1,43 +1,34 @@
 # The Reference — Live Community Data
 
-Live data from the community. For filtering, comparisons, recommendations,
-and guides → [the interactive site](https://madgoathaz.github.io/llm-matrix/).
+Live community data. The full interactive experience (filtering,
+comparing, recommendations, guides) is on the site →
+[The Local AI Stack](https://madgoathaz.github.io/llm-matrix/)
 
-## The table
+## A taste of what's in there
 
-| Contributor | Hardware | Model | Backend | Quant | Use Case |
-|---|---|---|---|---|---|
-| Kif | 1x 4090 + 128GB RAM | Qwen3.8-Flash-Next 125B | Strata | IQ3_S | Agentic coding on one 24GB card |
-| digitalscream | 2x R9700 32GB | Swift 1.5 Flash-Next | Radiance | FP8 | 200+ tok/s agent serving |
-| SgtAwesomesauce | 4x v620 96GB | Qwen3.8-Flash-Next | vLLM/ROCm | W4A16 | Agentic coding, 840k KV |
-| manoreken2 | 1x 5090 + 1TB RAM | DeepSeek-V4-Pro 671B | Colibri | Q8_K_XL | Niche translation, batch |
-| lhl | 96GB+ multi-system | DS 4.1 Flash (3-way eval) | vLLM | FP8 | High-volume evals |
+- **Kif** — 1× 4090 + 128GB RAM (Strata, IQ3_S) — 125B agentic coding
+- **digitalscream** — 2× R9700 32GB (Radiance, FP8) — 200+ tok/s serving
+- **SgtAwesomesauce** — 4× v620 96GB (vLLM/ROCm, W4A16) — 840k KV context
+- **manoreken2** — 1× 5090 + 1TB RAM (Colibri, Q8_K_XL) — 671B batch runs
 
-## How to read it
+Full data (27 entries), updated weekly → [the site](https://madgoathaz.github.io/llm-matrix/)
 
-- **Hardware** = what's in the box (VRAM + RAM). **Model / Quant** = what's running.
-- **Backend** = the runtime — Strata is hybrid offload, Radiance is AMD-tuned.
-- Speed, context, and power numbers live on the site, not in the table.
+## What the site does better
 
-## The site does more
+- **Filter** by GPU, VRAM, backend, use case
+- **Compare** any two setups side-by-side
+- **Recommend** a model from your hardware
 
-A table can't filter, compare, or teach. The site can:
+## Submit your setup — COPY THIS TEMPLATE:
+```
+📋 SUBMISSION TEMPLATE — copy, fill in, post:
 
-- **Interactive filtering** — by GPU, VRAM, backend, and use case
-- **Side-by-side comparison** — any two setups
-- **"Find my model"** — recommendations from your hardware
-- **Guides + launch commands** — step-by-step, copy-paste, per backend
-
-## Submit your setup
-
-Copy, fill, paste:
-
-****
-gpu:      [e.g. 2x RTX 4090 24GB]
-model:    [name + quant]
-backend:  [vLLM / llama.cpp / Strata / ...]
-use_case: [what you run it for]
-verdict:  [one line — does it work?]
-****
-
-**Updated weekly** via automated pull from this thread.
+Hardware:     [e.g., PC / Laptop / Mac]
+GPU:          [e.g., RTX 4090, 2× 3090, M3 Ultra]
+VRAM/RAM:     [e.g., 24GB VRAM, 64GB unified]
+Model:        [e.g., Llama 3.1 8B, Mistral Nemo 12B]
+Backend:      [e.g., Ollama, llama.cpp, vLLM]
+Quant:        [e.g., Q4_K_M, Q5_K_S, FP16]
+Use case:     [e.g., daily chat, coding, summarization]
+Notes:        [optional — anything else relevant]
+```

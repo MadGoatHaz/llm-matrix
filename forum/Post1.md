@@ -1,39 +1,34 @@
 # What should I run, on what I have, for what I need?
 
-**The Local LLM Matrix** answers that in 10 seconds — then hands you the
-interactive site that does the rest.
+The Local LLM Matrix answers that in 10 seconds — community-sourced
+data for running local AI on the hardware you already own.
 
-> **→ [The full interactive experience](https://madgoathaz.github.io/llm-matrix/)**
-> Recommendations, comparisons, step-by-step guides, and copy-paste launch
-> commands — all filterable by your GPU.
-
-## What it is
-
-A community-sourced reference for running local AI models on the hardware
-you already own. Full-stack — model, quant, backend, context, speed —
-organized by *your* GPU and updated weekly. **Not a benchmark site:**
-it's a decision tool.
-
-Built by the [Level1Techs](https://forum.level1techs.com) ML / LLM / AI community.
+> ## 🎯 **[The Local AI Stack →](https://madgoathaz.github.io/llm-matrix/)**
+> Your hardware. Your models. One place.
 
 ## What's inside
 
-- **Find your model** — filter by GPU, VRAM tier, and use case
-- **Compare side-by-side** — two setups, next to each other
-- **Step-by-step guides** — from install to first token
-- **Launch commands** — copy-paste, per backend
+- **Find your model** — filter by GPU, VRAM, use case
+- **Compare side-by-side** — any two real setups
+- **Guides + launch commands** — install to first token, copy-paste
 - **Live community data** — real rigs, real results
+
+Built by the [Level1Techs](https://forum.level1techs.com) ML / LLM / AI community.
 
 ## Submit your setup
 
-Add your rig in 30 seconds. Copy, fill, paste:
+COPY THIS TEMPLATE:
+```
+📋 SUBMISSION TEMPLATE — copy, fill in, post:
 
-****
-gpu:      [e.g. 2x RTX 4090 24GB]
-model:    [name + quant]
-backend:  [vLLM / llama.cpp / Ollama / ...]
-use_case: [what you run it for]
-verdict:  [one line — does it work?]
-****
+Hardware:     [e.g., PC / Laptop / Mac]
+GPU:          [e.g., RTX 4090, 2× 3090, M3 Ultra]
+VRAM/RAM:     [e.g., 24GB VRAM, 64GB unified]
+Model:        [e.g., Llama 3.1 8B, Mistral Nemo 12B]
+Backend:      [e.g., Ollama, llama.cpp, vLLM]
+Quant:        [e.g., Q4_K_M, Q5_K_S, FP16]
+Use case:     [e.g., daily chat, coding, summarization]
+Notes:        [optional — anything else relevant]
+```
 
-That's it. Your data lands on the site, credited to you.
+Your data lands on the site, credited to you.
