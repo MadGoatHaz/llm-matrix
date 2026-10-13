@@ -50,10 +50,22 @@ def _picker() -> str:
 
 
 def _table_area() -> str:
-    """The takeaway line + (empty) diff-table wrapper + edit control."""
+    """The takeaway line + (empty) diff-table wrapper + the B2/C3
+    "Tradeoffs" paragraph + edit control.
+
+    The Tradeoffs block (``#compare-tradeoffs``) is filled client-side by
+    ``js/compare.js``: a short directional paragraph (3–5 sentences) stating
+    which way each meaningful difference matters ("A is 2.3× faster decode
+    than B, but uses 2× the VRAM"). It is hidden until a comparison is
+    active and carries no overall winner.
+    """
     return f'''
   <p class="compare-takeaway" id="compare-takeaway" role="status" aria-live="polite">Select at least 2 setups to compare them side by side.</p>
   <div class="table-wrapper compare-table-wrap is-hidden" id="compare-table-wrap"></div>
+  <div class="compare-tradeoffs is-hidden" id="compare-tradeoffs">
+    <h3 class="compare-tradeoffs-title">Tradeoffs</h3>
+    <p class="compare-tradeoffs-text" id="compare-tradeoffs-text" aria-live="polite"></p>
+  </div>
   <div class="compare-edit-row"><button class="btn" id="compare-edit" type="button" hidden>{utils.icon("✎")} Edit selection</button></div>'''
 
 
@@ -75,7 +87,7 @@ def render(subs: list[dict], schema: dict,
     <p class="subtitle">Line up 2–4 community submissions side by side — and see exactly where they differ.</p>
   </div>
 
-  <div class="callout callout--info"><p><b>How it works:</b> each column is a real community submission. Values that <em>agree</em> stay plain; values that <em>differ</em> are tinted so the contrast jumps out. Every column has a one-click <strong>launch command</strong> so you can try the setup on your own hardware. Your selection is a shareable URL — copy the address bar to send it to a friend.</p></div>'''
+  <div class="callout callout--info"><p><b>How it works:</b> each column is a real community submission. Values that <em>agree</em> stay plain; values that <em>differ</em> are tinted so the contrast jumps out. A green <b>▲ best</b> marks the leading value in each numeric row (speed, context, VRAM, power) when the lead is meaningful — close values are left uncrowned. Below the table, a short <strong>Tradeoffs</strong> paragraph states which way each difference matters ("2.3× faster decode, but 2× the VRAM"). Every column has a one-click <strong>launch command</strong> so you can try the setup on your own hardware. Your selection is a shareable URL — copy the address bar to send it to a friend.</p></div>'''
 
     body = f'''
 {intro}

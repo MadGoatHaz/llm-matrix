@@ -1065,6 +1065,52 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     margin-top: 1rem;
 }
 
+/* === VERIFICATION INDICATORS (B4/C4) ===
+   One quiet color system for how well-corroborated a setup is, shared by
+   the Matrix (dot next to the contributor), the detail panel (worded
+   confidence line), and the Recommend cards (dot + label next to the
+   name): green = verified, blue = community-reported, gray = unverified.
+   Dots are tiny and carry role="img" + aria-label for screen readers. */
+.confidence-dot {
+    display: inline-block;
+    font-size: 0.7em;
+    line-height: 1;
+    margin-left: 0.35rem;
+    vertical-align: middle;
+}
+.confidence-dot.verified { color: var(--success); }
+.confidence-dot.community { color: var(--accent); }
+.confidence-dot.unverified { color: var(--text-muted); }
+
+/* Small lifecycle tags in the Matrix model cell: "older" (superseded) and
+   "retired" (discontinued). Outlined pills keep them subtle and their
+   colors stay readable on the table surface. */
+.lifecycle-tag {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    vertical-align: middle;
+    background: transparent;
+}
+.lifecycle-tag-superseded { border: 1px solid var(--warning); color: var(--warning); }
+.lifecycle-tag-discontinued { border: 1px solid var(--danger); color: var(--danger); }
+
+/* Detail panel: the confidence line + lifecycle warning under the badges. */
+.detail-confidence { font-weight: 600; margin: 0.6rem 0 0; }
+.detail-confidence.detail-conf-verified { color: var(--success); }
+.detail-confidence.detail-conf-community { color: var(--accent); }
+.detail-confidence.detail-conf-unverified { color: var(--text-muted); }
+.detail-lifecycle {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin: 0.25rem 0 0.6rem;
+}
+.detail-lifecycle-superseded { color: var(--warning); }
+.detail-lifecycle-discontinued { color: var(--danger); }
+
 /* === SHARED UTILITIES === */
 .is-hidden { display: none !important; }
 
@@ -1346,6 +1392,38 @@ body.cmd-open { overflow: hidden; }
 .compare-empty { color: var(--text-muted); }
 .compare-actions .compare-launch { font-size: 0.85rem; }
 .compare-edit-row { margin-top: 1rem; }
+
+/* B2/C3 decision support: the "best" micro-label on a numeric row's leading
+   cell (green, quiet) and the directional Tradeoffs paragraph below the
+   table. Close values (<20% apart) get no label — the paragraph calls them
+   comparable instead of crowning a winner. */
+.compare-winner {
+    color: var(--success);
+    font-size: 0.7rem;
+    font-weight: 700;
+    margin-left: 0.4rem;
+    white-space: nowrap;
+}
+.compare-tradeoffs {
+    margin-top: 0.5rem;
+    padding: 0.75rem 1rem;
+    background: var(--surface);
+    border-left: 3px solid var(--success);
+    border-radius: var(--radius);
+}
+.compare-tradeoffs-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-secondary);
+    margin-bottom: 0.35rem;
+}
+.compare-tradeoffs-text {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+}
 
 /* === FILTER EMPTY STATE (P2-4) === */
 .filter-empty {

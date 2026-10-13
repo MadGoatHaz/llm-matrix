@@ -42,6 +42,65 @@ def td(value) -> str:
     return f'<td title="{v}">{v}</td>'
 
 
+def td_extra(value, extra_html: str) -> str:
+    """A table cell with extra inline markup after the value.
+
+    Used for the B4/C4 verification indicators: the confidence dot after
+    the contributor name and the lifecycle tag after the model name. The
+    tooltip keeps the bare value, so hover text stays clean.
+    """
+    v = utils.html_escape(utils.clean_value(value))
+    return f'<td title="{v}">{v}{extra_html}</td>'
+
+
+#: B4/C4: confidence level -> (dot class, accessible label). Both
+#: "verified" levels render as the green dot; the label names who verified.
+#: An unknown/missing confidence renders NO dot (honest: no claim).
+CONFIDENCE_DOTS = {
+    "op-verified": ("verified", "Verified by maintainer"),
+    "community-verified": ("verified", "Verified by community"),
+    "community-reported": ("community", "Community-reported"),
+    "unverified": ("unverified", "Unverified"),
+}
+
+#: B4/C4: lifecycle state -> (tag class, tag text, tooltip). ``current`` and
+#: ``watch`` render no tag — only genuinely stale entries are marked.
+LIFECYCLE_TAGS = {
+    "superseded": ("superseded", "older", "This setup has been superseded"),
+    "discontinued": ("discontinued", "retired", "This setup is no longer recommended"),
+}
+
+
+def confidence_dot(s: dict) -> str:
+    """The small confidence dot rendered next to a contributor name.
+
+    Green = verified (maintainer or community), blue = community-reported,
+    gray = unverified. Carries ``role="img"`` + ``aria-label`` + ``title``
+    so the dot is announced by screen readers and explained on hover.
+    """
+    dot = CONFIDENCE_DOTS.get(s.get("confidence") or "")
+    if not dot:
+        return ""
+    cls, label = dot
+    return (f' <span class="confidence-dot {cls}" role="img" '
+            f'aria-label="{label}" title="{label}">●</span>')
+
+
+def lifecycle_tag(s: dict) -> str:
+    """The small lifecycle tag rendered after a model name.
+
+    Superseded setups get an "older" tag, discontinued ones a "retired"
+    tag — subtle enough to keep the matrix scannable, clear enough that a
+    stale setup is never mistaken for current advice.
+    """
+    tag = LIFECYCLE_TAGS.get(s.get("lifecycle") or "current")
+    if not tag:
+        return ""
+    cls, text, title = tag
+    return (f' <span class="lifecycle-tag lifecycle-tag-{cls}" '
+            f'title="{title}">{text}</span>')
+
+
 def multiselect(axis: str, placeholder: str, options: list[str]) -> str:
     """A P4-2 multi-select filter: a disclosure button + checkbox menu.
 
@@ -122,11 +181,11 @@ def render(subs: list[dict], schema: dict, stats: dict,
             mode = utils.clean_value(s.get("engine_mode"))
             label = utils.html_escape(utils.short_model(utils.model_name(s)))
             body_rows.append(f'''        <tr id="{utils.html_escape(s["id"])}" class="data-row {utils.html_escape(tier_id)}{highlight}" tabindex="0" aria-haspopup="dialog" aria-label="View full details for {label}" data-tier="{utils.html_escape(tier_id)}" data-vendor="{utils.html_escape(vendor)}" data-backend="{utils.html_escape(backend)}" data-use-case="{utils.html_escape(use_case_attr)}" data-mode="{utils.html_escape(mode)}" data-search="{utils.html_escape(utils.search_blob(s))}" {utils.row_sort_attrs(s, schema)}>
-          {td(s["source"]["username"])}
+          {td_extra(s["source"]["username"], confidence_dot(s))}
           {td(utils.hw(s).get("description"))}
           {td(utils.hw(s).get("vendor"))}
           {td(s.get("backend"))}
-          {td(utils.model_name(s))}
+          {td_extra(utils.model_name(s), lifecycle_tag(s))}
           {td(s.get("quant"))}
           {td(s.get("use_cases"))}
           {td(utils.perf(s).get("decode_tps"))}

@@ -145,6 +145,43 @@ class TestComparePage(unittest.TestCase):
         self.assertIn('id="compare-takeaway"', text)
         self.assertIn('aria-live="polite"', text)
 
+    # --- B2/C3: decision support (tradeoffs + winner markers) ------------
+    def test_page_has_tradeoffs_block(self):
+        text = self._page()
+        self.assertIn('id="compare-tradeoffs"', text)
+        self.assertIn('id="compare-tradeoffs-text"', text)
+        self.assertRegex(text, r'<h3 class="compare-tradeoffs-title">Tradeoffs</h3>')
+        # the live paragraph is announced to screen readers
+        self.assertRegex(
+            text,
+            r'<p class="compare-tradeoffs-text" id="compare-tradeoffs-text" '
+            r'aria-live="polite">')
+
+    def test_compare_js_has_decision_support(self):
+        js = (ROOT / "js" / "compare.js").read_text(encoding="utf-8")
+        # the four numeric dimensions + their directional sentence shapes
+        for needle in (
+            "faster decode", "the context window of", "more VRAM than",
+            "less power than",
+        ):
+            self.assertIn(needle, js, f"tradeoff sentence shape missing: {needle}")
+        # the >=20% meaningful-difference rule and the comparable behavior
+        self.assertIn("MEANINGFUL", js)
+        self.assertIn("comparable", js)
+        # the per-column winner marker + the give-up clause
+        self.assertIn("compare-winner", js)
+        self.assertIn("is the fastest decode, but uses", js)
+        # power is a first-class compare row now (it feeds the tradeoffs)
+        self.assertIn("Power draw", js)
+        # honest parsing: grouped context figures ("262,144") parse whole
+        self.assertIn("replace(/,/g, '')", js)
+
+    def test_css_has_winner_and_tradeoffs_styles(self):
+        css = (ROOT / "css" / "style.css").read_text(encoding="utf-8")
+        self.assertRegex(css, r"\.compare-winner\s*{[^}]*var\(--success\)")
+        self.assertIn(".compare-tradeoffs", css)
+        self.assertIn(".compare-tradeoffs-title", css)
+
     def test_extra_scripts_load_after_main_at_depth1(self):
         text = self._page()
         for script in ("js/main.js", "js/compare.js", "js/commands.js"):
