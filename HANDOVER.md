@@ -53,10 +53,11 @@ The project's goal is to be the definitive "go-to" reference for the local AI co
 ├── VISION.md                   # What the project is and why
 │
 ├── guides/                     # Generated: the 8 deep-dive guides (guides/<slug>/index.html) + the index
-├── recommend/                  # Generated: the recommendation engine page
+├── recommend/                  # Generated: the recommendation engine page (+ the "Start Here" 3-step wizard)
 ├── compare/                    # Generated: the side-by-side comparison page
 ├── submit/                     # Generated: the static community submission form
 ├── api/                        # Generated: the data API documentation page
+├── changelog/                  # Generated: the release history page (content/changelog.md)
 │
 ├── css/
 │   └── style.css               # Design system: CSS custom properties/tokens, layout, cards, tables, filters, badges, hero, mobile breakpoints
@@ -64,6 +65,7 @@ The project's goal is to be the definitive "go-to" reference for the local AI co
 ├── js/
 │   ├── main.js                 # Shared interactivity: nav toggle, active-link, table sort, search+filters, reset, detail panel
 │   ├── recommend.js            # The recommendation engine (client-side, island-baked data)
+│   ├── wizard.js               # The "Start Here" 3-step wizard on the recommend page (feeds the form's own controls)
 │   ├── compare.js              # The compare view (winner markers + tradeoffs)
 │   ├── commands.js             # The launch-command generator
 │   └── submit.js               # The submission form assembler
@@ -138,7 +140,7 @@ git add . && git commit -m "Weekly update $(date +%Y-%m-%d)" && git push
 - `diff.py`: Works. Shows new/updated/removed posts. Compares against `data/last_seen.json`.
 - `parse.py`: Works. Extracts submissions, filters templates, normalizes tiers, applies tag overrides. Known issue: some non-standard field names from individual users may not be captured.
 - `parse_thread.py`: Works. Extracts basic data from secondary threads (keyword-based detection for benchmarks and hardware).
-- `generate_site.py` / `python -m tools.site`: Works. Generates the full site (homepage, matrix, community, guides index + the 8 guides, about, recommend, compare, submit, api) + data.json + the versioned data API. All values HTML-escaped. Template submissions filtered out.
+- `generate_site.py` / `python -m tools.site`: Works. Generates the full site (homepage, matrix, community, guides index + the 8 guides, about, recommend, compare, submit, api, changelog) + data.json + the versioned data API. All values HTML-escaped. Template submissions filtered out.
 
 ## The Website
 
@@ -148,11 +150,12 @@ git add . && git commit -m "Weekly update $(date +%Y-%m-%d)" && git push
 | Homepage | index.html | Landing, live stats, charts, community highlights, how it works | ✅ Live |
 | Matrix | matrix.html | Full data table with filters (tier, vendor, backend, search) + detail panels + launch commands | ✅ Live |
 | Compare | compare/index.html | Side-by-side 2–4 setups with winner markers and a tradeoff read | ✅ Live |
-| Recommend | recommend/index.html | The core tool: ranked community setups for your hardware + use case | ✅ Live |
+| Recommend | recommend/index.html | The core tool: a "Start Here" 3-step wizard, then ranked community setups for your hardware + use case | ✅ Live |
 | Community | community.html | Contributor cards showing each person's submissions | ✅ Live |
 | Submit | submit/index.html | The static form that builds a ready-to-post submission block | ✅ Live |
 | Guides | guides/index.html + guides/<slug>/ | The 8 deep-dive guides | ✅ Live |
 | Data API | api/index.html | Documentation for the versioned JSON data contract | ✅ Live |
+| Changelog | changelog/index.html | Release history — what's new and what changed (authored in content/changelog.md) | ✅ Live |
 | About | about.html | Project description, L1Techs connection, contribution info | ✅ Live |
 
 ### Design System

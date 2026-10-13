@@ -4,6 +4,9 @@ Answers the site's core question — "what should I run, on what I have, for
 what I need?" — with a fully client-side tool. The page carries:
 
 * the explainer copy from ``content/recommend.md``;
+* a **"Start Here" 3-step wizard** (C1) — big tappable cards that ask
+  "what do you have / want to do / matters most" and feed the form below —
+  skippable via "Skip to advanced options";
 * an interactive form (VRAM tier required; use case / vendor / priority
   optional) using progressive disclosure (the advanced options sit in a
   collapsible ``<details>``);
@@ -14,8 +17,13 @@ what I need?" — with a fully client-side tool. The page carries:
   ``#commands-config`` island (the baked submissions) — no network request,
   so the page works offline straight from disk (file://).
 
+The wizard (``js/wizard.js``) writes straight into the form's own controls
+and fires their existing change handlers — the engine sees one path, not
+two. After the wizard completes (or is skipped), a "Refine your search"
+link opens the advanced options and "Start over" resets the wizard.
+
 The page lives at ``recommend/index.html`` (depth 1) and loads the extra
-``js/recommend.js`` after the shared ``js/main.js``.
+``js/recommend.js`` + ``js/wizard.js`` after the shared ``js/main.js``.
 """
 
 from __future__ import annotations
@@ -81,6 +89,103 @@ def _vendor_options(schema: dict) -> str:
     return "\n".join(opts)
 
 
+def _wizard_card(icon: str, title: str, desc: str, value: str) -> str:
+    """One tappable wizard card.
+
+    The card is a real ``<button>`` (keyboard operable, focusable). Its
+    accessible name is the visible title + description; the emoji ``icon``
+    is decorative (``aria-hidden``). ``value`` is written into the form
+    control by ``js/wizard.js`` (``""`` = "no filter / manual entry").
+    """
+    return (
+        f'        <button type="button" class="wizard-card" data-value="{utils.html_escape(value)}">\n'
+        f'          <span class="icon" aria-hidden="true">{icon}</span>\n'
+        f'          <span class="wizard-card-title">{utils.html_escape(title)}</span>\n'
+        f'          <span class="wizard-card-desc">{utils.html_escape(desc)}</span>\n'
+        '        </button>'
+    )
+
+
+def _wizard_html() -> str:
+    """The "Start Here" 3-step wizard (C1), shown before the form.
+
+    Three taps set the form's own controls (``js/wizard.js``):
+
+    * **Step 1 — "What do you have?"** maps plain hardware to a VRAM tier,
+      conservatively (a tap never promises more VRAM than the card
+      describes): gaming → t2, high-end → t3, multi-GPU/server → t5,
+      Mac → t2 (unified memory). "Not sure" skips to manual entry.
+    * **Step 2 — "What do you want to do?"** maps goals to the schema's
+      use-case categories: chat → General Chat, code/agents → Agentic
+      Coding, documents → RAG. "Just exploring" applies no filter.
+    * **Step 3 — "What matters most to you?"** sets the priority (the
+      engine's main sort key): speed / quality / context / balanced.
+
+    Each step heading carries ``tabindex="-1"`` so ``js/wizard.js`` can move
+    focus to it on entry (screen readers announce the new step). The
+    "Skip to advanced options" link serves returning users; the
+    refine / start-over actions appear once the wizard is dismissed.
+    """
+    step1_cards = "\n".join([
+        _wizard_card("🎮", "Gaming GPU", "NVIDIA or AMD · 8–24 GB", "t2"),
+        _wizard_card("🚀", "High-end GPU", "24–48 GB of video memory", "t3"),
+        _wizard_card("🖥️", "Multi-GPU / Server", "48 GB and up", "t5"),
+        _wizard_card("🍎", "Mac", "Apple Silicon · unified memory", "t2"),
+        _wizard_card("🤔", "Not sure", "I'll pick my VRAM manually", ""),
+    ])
+    step2_cards = "\n".join([
+        _wizard_card("💬", "Chat with AI", "Daily assistant, Q&A",
+                     "General Chat"),
+        _wizard_card("👨‍💻", "Help me code", "Coding assistant, code generation",
+                     "Agentic Coding"),
+        _wizard_card("📚", "Read long documents", "Summarization, RAG", "RAG"),
+        _wizard_card("🤖", "Run agents", "Autonomous tasks, tool use",
+                     "Agentic Coding"),
+        _wizard_card("🧪", "Just exploring", "No specific goal yet", ""),
+    ])
+    step3_cards = "\n".join([
+        _wizard_card("⚡", "Speed", "Fast responses", "speed"),
+        _wizard_card("🏆", "Quality", "Best output", "quality"),
+        _wizard_card("🧠", "Long conversations", "Big context", "context"),
+        _wizard_card("⚖️", "Balance", "A bit of everything", "balanced"),
+    ])
+    return f'''
+  <section class="wizard" id="wizard">
+    <div class="wizard-top">
+      <a class="wizard-skip" href="#rec-form" id="wizard-skip">Skip to advanced options →</a>
+    </div>
+
+    <div class="wizard-step" id="wizard-step-1">
+      <p class="wizard-progress" aria-hidden="true">Step 1 of 3</p>
+      <h2 id="wizard-step-1-title" tabindex="-1">What do you have?</h2>
+      <p class="wizard-sub">Pick the hardware you'd run a model on — no specs needed.</p>
+      <div class="wizard-cards" role="group" aria-label="Your hardware">
+{step1_cards}
+      </div>
+    </div>
+
+    <div class="wizard-step" id="wizard-step-2" hidden>
+      <button type="button" class="wizard-back" data-back="1">← Back</button>
+      <p class="wizard-progress" aria-hidden="true">Step 2 of 3</p>
+      <h2 id="wizard-step-2-title" tabindex="-1">What do you want to do?</h2>
+      <p class="wizard-sub">No wrong answers — we match what the community actually runs for this.</p>
+      <div class="wizard-cards" role="group" aria-label="What you want to do">
+{step2_cards}
+      </div>
+    </div>
+
+    <div class="wizard-step" id="wizard-step-3" hidden>
+      <button type="button" class="wizard-back" data-back="2">← Back</button>
+      <p class="wizard-progress" aria-hidden="true">Step 3 of 3</p>
+      <h2 id="wizard-step-3-title" tabindex="-1">What matters most to you?</h2>
+      <p class="wizard-sub">This sets the main sort order — you can change it any time.</p>
+      <div class="wizard-cards" role="group" aria-label="Your priority">
+{step3_cards}
+      </div>
+    </div>
+  </section>'''
+
+
 def render(subs: list[dict], schema: dict, content_dir: Path,
            guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render the recommendation page document.
@@ -114,7 +219,7 @@ def render(subs: list[dict], schema: dict, content_dir: Path,
         </select>
       </div>
 
-      <details class="rec-advanced">
+      <details class="rec-advanced" id="rec-advanced">
         <summary>More options <span class="rec-advanced-hint">(optional — refine your results)</span></summary>
         <div class="rec-advanced-body">
           <div class="rec-field">
@@ -147,6 +252,11 @@ def render(subs: list[dict], schema: dict, content_dir: Path,
         <p>Pick your VRAM above and the community's best fits will appear here.</p>
       </div>
     </div>
+
+    <div class="wizard-actions" id="wizard-actions" hidden>
+      <a class="btn" href="#rec-form" id="wizard-refine">Refine your search</a>
+      <button type="button" class="btn" id="wizard-reset">Start over</button>
+    </div>
   </section>'''
 
     how_html = '''
@@ -166,6 +276,7 @@ def render(subs: list[dict], schema: dict, content_dir: Path,
   </div>
 
 {intro_html}
+{_wizard_html()}
 {form_html}
 {how_html}
 {_config_island(schema)}
@@ -175,4 +286,5 @@ def render(subs: list[dict], schema: dict, content_dir: Path,
     desc = meta.get("description", "")
     return page_shell(title, desc, body, depth=RECOMMEND_DEPTH,
                       guides_menu=guides_menu,
-                      extra_scripts=["js/recommend.js", "js/commands.js"])
+                      extra_scripts=["js/recommend.js", "js/wizard.js",
+                                     "js/commands.js"])

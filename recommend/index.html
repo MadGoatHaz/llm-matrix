@@ -64,6 +64,108 @@
 <p>Results are filtered to your <strong>VRAM class</strong>. A setup in your class may still need tuning to fit your exact card — check the VRAM estimate in the details.</p>
 <div class="callout callout--warning"><p><b>Stay honest with yourself:</b> these are community-reported numbers, not lab benchmarks. A setup in your VRAM class is a great starting point, but your exact GPU, driver, and model file will change the speed. When in doubt, start with the <b>smallest model that does the job</b> — it's faster, cooler, and leaves you room to grow.</p></div>
 
+  <section class="wizard" id="wizard">
+    <div class="wizard-top">
+      <a class="wizard-skip" href="#rec-form" id="wizard-skip">Skip to advanced options →</a>
+    </div>
+
+    <div class="wizard-step" id="wizard-step-1">
+      <p class="wizard-progress" aria-hidden="true">Step 1 of 3</p>
+      <h2 id="wizard-step-1-title" tabindex="-1">What do you have?</h2>
+      <p class="wizard-sub">Pick the hardware you'd run a model on — no specs needed.</p>
+      <div class="wizard-cards" role="group" aria-label="Your hardware">
+        <button type="button" class="wizard-card" data-value="t2">
+          <span class="icon" aria-hidden="true">🎮</span>
+          <span class="wizard-card-title">Gaming GPU</span>
+          <span class="wizard-card-desc">NVIDIA or AMD · 8–24 GB</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="t3">
+          <span class="icon" aria-hidden="true">🚀</span>
+          <span class="wizard-card-title">High-end GPU</span>
+          <span class="wizard-card-desc">24–48 GB of video memory</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="t5">
+          <span class="icon" aria-hidden="true">🖥️</span>
+          <span class="wizard-card-title">Multi-GPU / Server</span>
+          <span class="wizard-card-desc">48 GB and up</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="t2">
+          <span class="icon" aria-hidden="true">🍎</span>
+          <span class="wizard-card-title">Mac</span>
+          <span class="wizard-card-desc">Apple Silicon · unified memory</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="">
+          <span class="icon" aria-hidden="true">🤔</span>
+          <span class="wizard-card-title">Not sure</span>
+          <span class="wizard-card-desc">I&#x27;ll pick my VRAM manually</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="wizard-step" id="wizard-step-2" hidden>
+      <button type="button" class="wizard-back" data-back="1">← Back</button>
+      <p class="wizard-progress" aria-hidden="true">Step 2 of 3</p>
+      <h2 id="wizard-step-2-title" tabindex="-1">What do you want to do?</h2>
+      <p class="wizard-sub">No wrong answers — we match what the community actually runs for this.</p>
+      <div class="wizard-cards" role="group" aria-label="What you want to do">
+        <button type="button" class="wizard-card" data-value="General Chat">
+          <span class="icon" aria-hidden="true">💬</span>
+          <span class="wizard-card-title">Chat with AI</span>
+          <span class="wizard-card-desc">Daily assistant, Q&amp;A</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="Agentic Coding">
+          <span class="icon" aria-hidden="true">👨‍💻</span>
+          <span class="wizard-card-title">Help me code</span>
+          <span class="wizard-card-desc">Coding assistant, code generation</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="RAG">
+          <span class="icon" aria-hidden="true">📚</span>
+          <span class="wizard-card-title">Read long documents</span>
+          <span class="wizard-card-desc">Summarization, RAG</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="Agentic Coding">
+          <span class="icon" aria-hidden="true">🤖</span>
+          <span class="wizard-card-title">Run agents</span>
+          <span class="wizard-card-desc">Autonomous tasks, tool use</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="">
+          <span class="icon" aria-hidden="true">🧪</span>
+          <span class="wizard-card-title">Just exploring</span>
+          <span class="wizard-card-desc">No specific goal yet</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="wizard-step" id="wizard-step-3" hidden>
+      <button type="button" class="wizard-back" data-back="2">← Back</button>
+      <p class="wizard-progress" aria-hidden="true">Step 3 of 3</p>
+      <h2 id="wizard-step-3-title" tabindex="-1">What matters most to you?</h2>
+      <p class="wizard-sub">This sets the main sort order — you can change it any time.</p>
+      <div class="wizard-cards" role="group" aria-label="Your priority">
+        <button type="button" class="wizard-card" data-value="speed">
+          <span class="icon" aria-hidden="true">⚡</span>
+          <span class="wizard-card-title">Speed</span>
+          <span class="wizard-card-desc">Fast responses</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="quality">
+          <span class="icon" aria-hidden="true">🏆</span>
+          <span class="wizard-card-title">Quality</span>
+          <span class="wizard-card-desc">Best output</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="context">
+          <span class="icon" aria-hidden="true">🧠</span>
+          <span class="wizard-card-title">Long conversations</span>
+          <span class="wizard-card-desc">Big context</span>
+        </button>
+        <button type="button" class="wizard-card" data-value="balanced">
+          <span class="icon" aria-hidden="true">⚖️</span>
+          <span class="wizard-card-title">Balance</span>
+          <span class="wizard-card-desc">A bit of everything</span>
+        </button>
+      </div>
+    </div>
+  </section>
+
   <section class="recommend-tool" aria-labelledby="rec-tool-title">
     <h2 id="rec-tool-title" class="section-title"><span class="icon" aria-hidden="true">🎯</span> What should you run?</h2>
     <form class="rec-form" id="rec-form" autocomplete="off">
@@ -80,7 +182,7 @@
         </select>
       </div>
 
-      <details class="rec-advanced">
+      <details class="rec-advanced" id="rec-advanced">
         <summary>More options <span class="rec-advanced-hint">(optional — refine your results)</span></summary>
         <div class="rec-advanced-body">
           <div class="rec-field">
@@ -133,6 +235,11 @@
         <p>Pick your VRAM above and the community's best fits will appear here.</p>
       </div>
     </div>
+
+    <div class="wizard-actions" id="wizard-actions" hidden>
+      <a class="btn" href="#rec-form" id="wizard-refine">Refine your search</a>
+      <button type="button" class="btn" id="wizard-reset">Start over</button>
+    </div>
   </section>
 
   <section class="recommend-how" aria-labelledby="rec-how-title">
@@ -151,11 +258,12 @@
   </script>
 </main>
   <footer class="footer">
-    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a> · <a href="../api/">Data API</a> · <a href="https://github.com/MadGoatHaz/llm-matrix/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></div>
+    <div>The Local AI Stack — data from the <a href="https://forum.level1techs.com/t/256443">Local LLM Matrix thread</a> on Level1Techs · <a href="https://github.com/MadGoatHaz/llm-matrix">GitHub</a> · <a href="../api/">Data API</a> · <a href="../changelog/">Changelog</a> · <a href="https://github.com/MadGoatHaz/llm-matrix/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></div>
     <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
   </footer>
 <script src="../js/main.js" defer></script>
 <script src="../js/recommend.js" defer></script>
+<script src="../js/wizard.js" defer></script>
 <script src="../js/commands.js" defer></script>
 </body>
 </html>

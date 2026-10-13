@@ -27,8 +27,8 @@ from pathlib import Path
 from . import api
 from . import guides
 from . import utils
-from .pages import (about, api as api_page, community, compare, guides_index,
-                    homepage, matrix, recommend, submit)
+from .pages import (about, api as api_page, changelog, community, compare,
+                    guides_index, homepage, matrix, recommend, submit)
 
 __all__ = ["main"]
 
@@ -163,6 +163,19 @@ def main(workspace: str | Path | None = None,
         print(f"  wrote api/index.html ({len(api_html)} bytes)")
     except (FileNotFoundError, ImportError) as e:
         print(f"WARNING: api page skipped: {e}", file=sys.stderr)
+
+    # --- Changelog page (changelog/index.html, depth 1; C5) ---
+    # Static, authored markdown (content/changelog.md). Degrades with a
+    # reported warning if the content file or the `markdown` dep is missing
+    # (never silently).
+    try:
+        changelog_html = changelog.render(content_dir, guides_menu)
+        changelog_path = ws / "changelog" / "index.html"
+        changelog_path.parent.mkdir(parents=True, exist_ok=True)
+        changelog_path.write_text(changelog_html, encoding="utf-8")
+        print(f"  wrote changelog/index.html ({len(changelog_html)} bytes)")
+    except (FileNotFoundError, ImportError) as e:
+        print(f"WARNING: changelog page skipped: {e}", file=sys.stderr)
 
     # --- Guides index (guides/index.html, depth 1) ---
     content_guides = ws / "content" / "guides"

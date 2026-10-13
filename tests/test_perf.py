@@ -49,7 +49,7 @@ OG_IMAGE_BUDGET = 100 * 1024
 ALL_PAGES = (
     "index.html", "matrix.html", "community.html", "guides.html",
     "about.html", "compare/index.html", "recommend/index.html",
-    "submit/index.html", "api/index.html",
+    "submit/index.html", "api/index.html", "changelog/index.html",
     "guides/index.html",
     "guides/quantization/index.html", "guides/file-formats/index.html",
     "guides/quantization-methods/index.html",
@@ -66,6 +66,7 @@ REQUIRED_INPUTS = (
     "content/recommend.md",
     "content/submit.md",
     "content/api.md",
+    "content/changelog.md",
 )
 
 
@@ -134,8 +135,8 @@ class TestPerformanceBudget(unittest.TestCase):
         # looser anti-bloat cap (the source is committed unminified).
         js_sizes = {
             name: (ROOT / "js" / name).read_bytes()
-            for name in ("main.js", "recommend.js", "compare.js", "commands.js",
-                         "submit.js")
+            for name in ("main.js", "recommend.js", "wizard.js", "compare.js",
+                         "commands.js", "submit.js")
         }
         page_scripts = {
             "index.html": ["main.js"],
@@ -144,9 +145,11 @@ class TestPerformanceBudget(unittest.TestCase):
             "guides.html": ["main.js"],
             "about.html": ["main.js"],
             "compare/index.html": ["main.js", "compare.js", "commands.js"],
-            "recommend/index.html": ["main.js", "recommend.js", "commands.js"],
+            "recommend/index.html": ["main.js", "recommend.js", "wizard.js",
+                                     "commands.js"],
             "submit/index.html": ["main.js", "submit.js"],
             "guides/index.html": ["main.js"],
+            "changelog/index.html": ["main.js"],
         }
         # The eight guides: main.js only, except backends (commands.js).
         for slug in ("quantization", "file-formats", "quantization-methods",
