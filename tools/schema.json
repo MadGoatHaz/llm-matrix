@@ -1,8 +1,8 @@
 {
-  "version": "2.3",
+  "version": "2.4",
   "last_updated": "2026-10-13",
   "fields": {
-    "description": "Canonical submission fields and recognized aliases — the single source of truth for what the forum template asks for, what parse.py extracts, and what the site displays. parse.py's FIELD_ALIASES must mirror the 'aliases' map (tests/test_schema.py enforces the sync). Every canonical field is rendered somewhere on the site; 'optional' fields may be left blank.",
+    "description": "Canonical submission fields and recognized aliases — the single source of truth for what the forum template asks for, what parse.py extracts, and what the site displays. parse.py's FIELD_ALIASES must mirror the 'aliases' map (tests/test_schema.py enforces the sync). Every canonical field is rendered somewhere on the site; 'optional' fields may be left blank. The required minimum for a useful entry is tier + hardware + model_name (B10: the site's submit form enforces exactly these three); backend, quant_package, and primary_use_case are optional but encouraged.",
     "canonical": {
       "tier": "VRAM tier — Matrix row grouping",
       "hardware": "Hardware description — Matrix 'Hardware' + inferred 'Vendor'",
@@ -39,6 +39,7 @@
       "tokens_per_second": "throughput_tps"
     },
     "optional": [
+      "backend", "quant_package", "primary_use_case",
       "os_driver", "weight_precision", "download_url", "stable_context_tested",
       "kv_cache_setting", "engine_mode", "throughput_tps", "prefill_tps",
       "ttft_cold", "power_draw", "setup_notes"

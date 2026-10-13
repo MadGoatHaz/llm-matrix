@@ -1829,20 +1829,20 @@ body.detail-open { overflow: hidden; }
     margin-bottom: 0.4rem;
     color: var(--text);
 }
+/* B10: required fields get a red " *" marker; optional fields a muted
+   "(optional)" label — the form's 3-field minimum is legible at a glance. */
 .req {
-    color: var(--warning);
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-left: 0.35rem;
+    color: var(--danger);
+    font-size: 1.05rem;
+    font-weight: 700;
+    line-height: 0;
+    margin-left: 0.2rem;
+    vertical-align: super;
 }
 .opt {
     color: var(--text-muted);
-    font-size: 0.72rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+    font-size: 0.78rem;
+    font-weight: 500;
     margin-left: 0.35rem;
 }
 .submit-field input,

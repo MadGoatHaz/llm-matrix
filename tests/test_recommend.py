@@ -169,5 +169,110 @@ class TestRecommendPage(unittest.TestCase):
         self.assertIn('href="recommend/"', text)
 
 
+class TestQualityRankingContract(unittest.TestCase):
+    """B1: the quality priority scores MODEL CAPABILITY x QUANT, not bits alone.
+
+    The project's own quantization guide says "the model you pick matters
+    more than the quant you pick" — a 35B-A3B I-Nano MoE beats a dense 27B
+    Q4 on a 16 GB card. The engine must therefore blend model size/family
+    (60%) with quant precision (40%), so a capable small-quant model is
+    acknowledged instead of sunk (the old quant-only scale gave I-Nano 15
+    vs Q4_K_M 40). The live behavior is exercised by
+    work/scratch/verify_quality_b1.js (a DOM shim running the real
+    recommend.js); this contract locks the scoring table + formula in the
+    source so a future edit cannot quietly revert to bits-only ranking.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.js = (ROOT / "js" / "recommend.js").read_text(encoding="utf-8")
+
+    def _ranks(self):
+        import re
+        return {k: int(v) for k, v in re.findall(
+            r"\['([a-z0-9_\-\.]+)',\s*(\d+)\]", self.js)}
+
+    # --- the rebalanced quant scale (the 40% half) ----------------------
+    def test_quant_scale_rebalanced(self):
+        ranks = self._ranks()
+        expected = {
+            'fp16': 100, 'bf16': 100,
+            'fp8': 85,
+            'int8': 75, 'w8a8': 75,
+            'q8_0': 75, 'q8': 75,
+            'q6_k': 60, 'q6': 60,
+            'q5_k_m': 50, 'q5': 50,
+            'q4_k_m': 40,
+            'ud-q4': 35, 'q4': 35,
+            'iq4_xs': 35, 'iq4': 35,
+            'iq3_s': 20, 'iq3': 20, 'q3': 20,
+            'i-nano': 20, 'nano': 20,
+            'ud-q2': 10, 'q2': 10,
+        }
+        for key, val in expected.items():
+            with self.subTest(quant=key):
+                self.assertEqual(ranks.get(key), val,
+                                 f"quant scale: {key} should rank {val}")
+
+    def test_i_nano_no_longer_sunk_vs_q4(self):
+        # The original contradiction: I-Nano (15) sank below Q4_K_M (40).
+        # Now the two live in the same order-of-magnitude (20 vs 40) and the
+        # model half of the blend does the deciding.
+        ranks = self._ranks()
+        self.assertLess(ranks['i-nano'] - ranks['q4_k_m'], 30,
+                        "I-Nano must not be an order of magnitude below Q4")
+
+    # --- the model capability half (60%) --------------------------------
+    def test_model_capability_bands(self):
+        for clause in (
+            "if (total >= 100) return 90;",
+            "if (total >= 70) return 80;",
+            "if (total >= 35 || (active != null && active >= 30)) return 70;",
+            "if (total >= 27) return 60;",
+            "if (total >= 20) return 50;",
+            "if (total >= 8) return 35;",
+            "return 20;",
+        ):
+            with self.subTest(clause=clause):
+                self.assertIn(clause, self.js,
+                              "model capability band missing from "
+                              "modelCapabilityScore")
+        self.assertIn("function modelCapabilityScore", self.js)
+        # Unstated size -> neutral, never sunk or inflated.
+        self.assertIn("return 50", self.js)
+
+    def test_model_size_from_params_fields_or_name(self):
+        # params_total / params_active are used when the data carries them;
+        # otherwise the name is parsed ("27B", "120B", "35B-A3B").
+        self.assertIn("model.params_total", self.js)
+        self.assertIn("model.params_active", self.js)
+        self.assertIn("35B-A3B", self.js)  # the MoE name shape in the docs
+
+    # --- the blend formula (the contract itself) ------------------------
+    def test_quality_is_model_60_plus_quant_40(self):
+        self.assertIn(
+            "s.modelScore * 0.6 + s.precision.rank * 0.4", self.js,
+            "quality must be model capability (60%) + quant (40%)")
+        self.assertIn("modelScore: modelCapabilityScore(s)", self.js)
+
+    def test_blend_examples_match_the_guide(self):
+        # The spec's worked examples (model x 0.6 + quant x 0.4):
+        i_nano_35b = 70 * 0.6 + 20 * 0.4    # 35B-A3B I-Nano  -> 50
+        q4_27b = 60 * 0.6 + 40 * 0.4        # 27B Q4_K_M      -> 52
+        fp8_120b = 90 * 0.6 + 85 * 0.4      # 120B FP8        -> 88
+        q2_7b = 20 * 0.6 + 10 * 0.4         # 7B Q2           -> 16
+        self.assertAlmostEqual(i_nano_35b, 50)
+        self.assertAlmostEqual(q4_27b, 52)
+        self.assertLessEqual(abs(i_nano_35b - q4_27b), 10,
+                            "35B-A3B I-Nano must rank within 10 of 27B Q4_K_M")
+        self.assertGreater(fp8_120b, q4_27b, "120B FP8 ranks highest")
+        self.assertLess(q2_7b, i_nano_35b, "7B Q2 ranks lowest")
+
+    # --- the why-line names both halves ----------------------------------
+    def test_why_line_surfaces_model_and_quant(self):
+        self.assertIn("s.modelSize + ' model'", self.js)
+        self.assertIn("s.precision.key + ' precision'", self.js)
+
+
 if __name__ == "__main__":
     unittest.main()

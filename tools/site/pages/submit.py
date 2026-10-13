@@ -122,7 +122,7 @@ def render(schema: dict, content_dir: Path,
       <fieldset class="submit-group">
         <legend>Your hardware</legend>
         <div class="submit-field">
-          <label for="sub-tier">VRAM <span class="req">required</span></label>
+          <label for="sub-tier">VRAM <span class="req" title="Required">*</span></label>
           <select id="sub-tier" name="tier" required aria-required="true" aria-describedby="sub-tier-err">
 {_tier_options(schema)}
           </select>
@@ -130,26 +130,27 @@ def render(schema: dict, content_dir: Path,
           <p class="field-err" id="sub-tier-err" role="alert" hidden></p>
         </div>
         <div class="submit-field">
-          <label for="sub-vendor">GPU vendor <span class="opt">optional</span></label>
+          <label for="sub-vendor">GPU vendor <span class="opt">(optional)</span></label>
           <select id="sub-vendor" name="vendor">
 {_string_options(schema, "hardware_vendors", "Auto-detect from hardware")}
           </select>
         </div>
         <div class="submit-field">
-          <label for="sub-hardware">Hardware <span class="req">required</span></label>
+          <label for="sub-hardware">Hardware <span class="req" title="Required">*</span></label>
           <input type="text" id="sub-hardware" name="hardware" required aria-required="true"
                  placeholder="e.g. 2x RX 7900 XTX 24GB, 128GB RAM" aria-describedby="sub-hardware-err">
           <p class="field-err" id="sub-hardware-err" role="alert" hidden></p>
         </div>
         <div class="submit-field">
-          <label for="sub-backend">Backend <span class="req">required</span></label>
-          <select id="sub-backend" name="backend" required aria-required="true" aria-describedby="sub-backend-err">
+          <label for="sub-backend">Backend <span class="opt">(optional)</span></label>
+          <select id="sub-backend" name="backend" aria-describedby="sub-backend-err">
 {_string_options(schema, "backends", "Select a backend…")}
           </select>
+          <p class="field-hint">Adding your backend and quant helps others find your setup!</p>
           <p class="field-err" id="sub-backend-err" role="alert" hidden></p>
         </div>
         <div class="submit-field">
-          <label for="sub-os">OS / driver <span class="opt">optional</span></label>
+          <label for="sub-os">OS / driver <span class="opt">(optional)</span></label>
           <select id="sub-os" name="os_driver">
 {_string_options(schema, "os_drivers", "Not sure / other")}
           </select>
@@ -159,23 +160,23 @@ def render(schema: dict, content_dir: Path,
       <fieldset class="submit-group">
         <legend>Your model</legend>
         <div class="submit-field">
-          <label for="sub-model">Model name <span class="req">required</span></label>
+          <label for="sub-model">Model name <span class="req" title="Required">*</span></label>
           <input type="text" id="sub-model" name="model_name" required aria-required="true"
                  placeholder="e.g. d0xin/Swift-Qwen3.8-27B-Uncensored-FP8" aria-describedby="sub-model-err">
           <p class="field-err" id="sub-model-err" role="alert" hidden></p>
         </div>
         <div class="submit-field">
-          <label for="sub-quant">Quant / precision <span class="req">required</span></label>
-          <input type="text" id="sub-quant" name="quant_package" required aria-required="true"
+          <label for="sub-quant">Quant / precision <span class="opt">(optional)</span></label>
+          <input type="text" id="sub-quant" name="quant_package"
                  list="quant-list" placeholder="e.g. GGUF Q4_K_M, FP8, I-Nano" aria-describedby="sub-quant-err">
           <p class="field-err" id="sub-quant-err" role="alert" hidden></p>
         </div>
         <div class="submit-field">
-          <label for="sub-precision">Weight precision <span class="opt">optional</span></label>
+          <label for="sub-precision">Weight precision <span class="opt">(optional)</span></label>
           <input type="text" id="sub-precision" name="weight_precision" placeholder="e.g. FP8 (native), ~2.5bpw">
         </div>
         <div class="submit-field">
-          <label for="sub-url">Download link <span class="opt">optional</span></label>
+          <label for="sub-url">Download link <span class="opt">(optional)</span></label>
           <input type="url" id="sub-url" name="download_url" placeholder="https://huggingface.co/…" aria-describedby="sub-url-err">
           <p class="field-err" id="sub-url-err" role="alert" hidden></p>
         </div>
@@ -184,24 +185,25 @@ def render(schema: dict, content_dir: Path,
       <fieldset class="submit-group">
         <legend>How you use it</legend>
         <div class="submit-field">
-          <label for="sub-usecase">Primary use case <span class="req">required</span></label>
-          <select id="sub-usecase" name="primary_use_case" required aria-required="true" aria-describedby="sub-usecase-err">
+          <label for="sub-usecase">Primary use case <span class="opt">(optional)</span></label>
+          <select id="sub-usecase" name="primary_use_case" aria-describedby="sub-usecase-err">
 {_string_options(schema, "use_cases", "Select a use case…")}
           </select>
+          <p class="field-hint">Not sure? Pick the closest — or leave it blank and we'll figure it out.</p>
           <p class="field-err" id="sub-usecase-err" role="alert" hidden></p>
         </div>
         <div class="submit-field">
-          <label for="sub-context">Stable context tested <span class="opt">optional</span></label>
+          <label for="sub-context">Stable context tested <span class="opt">(optional)</span></label>
           <input type="text" id="sub-context" name="stable_context_tested" placeholder="e.g. 32k tokens (NIAH hit)">
         </div>
         <div class="submit-field">
-          <label for="sub-kv">KV cache setting <span class="opt">optional</span></label>
+          <label for="sub-kv">KV cache setting <span class="opt">(optional)</span></label>
           <select id="sub-kv" name="kv_cache_setting">
 {_string_options(schema, "kv_cache_types", "Not sure / default")}
           </select>
         </div>
         <div class="submit-field">
-          <label for="sub-mode">Engine mode <span class="opt">optional</span></label>
+          <label for="sub-mode">Engine mode <span class="opt">(optional)</span></label>
           <select id="sub-mode" name="engine_mode">
 {_string_options(schema, "engine_modes", "VRAM-only (default)")}
           </select>
@@ -233,8 +235,8 @@ def render(schema: dict, content_dir: Path,
       <fieldset class="submit-group">
         <legend>Notes</legend>
         <div class="submit-field">
-          <label for="sub-notes">Setup notes <span class="req">required</span></label>
-          <textarea id="sub-notes" name="setup_notes" rows="4" required aria-required="true"
+          <label for="sub-notes">Setup notes <span class="opt">(optional)</span></label>
+          <textarea id="sub-notes" name="setup_notes" rows="4"
                     placeholder="Launch flags, quirks, what worked, what didn't…" aria-describedby="sub-notes-err"></textarea>
           <p class="field-err" id="sub-notes-err" role="alert" hidden></p>
         </div>

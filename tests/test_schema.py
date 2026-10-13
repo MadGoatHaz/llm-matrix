@@ -94,7 +94,7 @@ class TestSchemaStructure(unittest.TestCase):
 
 
 class TestFieldsRegistry(unittest.TestCase):
-    """``fields`` (schema v2.2) is the single source of truth for what the
+    """``fields`` (schema v2.4) is the single source of truth for what the
     forum template asks for and what parse.py extracts. This class locks the
     registry's shape and enforces that it stays in sync with the parser.
     """
@@ -151,6 +151,22 @@ class TestFieldsRegistry(unittest.TestCase):
             self.assertIn(opt, canonical, f"optional field {opt} not registered")
         # Speed is tracked but optional (not every submission reports it).
         self.assertIn("throughput_tps", self.schema["fields"]["optional"])
+
+    def test_required_minimum_is_three_fields(self):
+        # B10: the site's submit form enforces ONLY tier + hardware +
+        # model_name — the minimum for a useful entry (the "30 seconds"
+        # promise). backend / quant_package / primary_use_case are optional
+        # (encouraged), and the registry must say exactly that.
+        canonical = set(self.schema["fields"]["canonical"])
+        optional = set(self.schema["fields"]["optional"])
+        self.assertEqual(
+            canonical - optional,
+            {"tier", "hardware", "model_name"},
+            "the required minimum must be exactly tier + hardware + model_name")
+        for encouraged in ("backend", "quant_package", "primary_use_case"):
+            self.assertIn(
+                encouraged, optional,
+                f"{encouraged} must be optional (encouraged) per B10")
 
 
 if __name__ == "__main__":

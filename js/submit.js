@@ -43,9 +43,14 @@
     'ttft_cold', 'power_draw', 'setup_notes'
   ];
 
-  // Fields that must be filled before a block is produced.
-  var REQUIRED = ['sub-tier', 'sub-hardware', 'sub-backend', 'sub-model',
-                  'sub-quant', 'sub-usecase', 'sub-notes'];
+  // B10: the minimum for a useful entry — three fields (VRAM tier, hardware,
+  // model). A newcomer who doesn't know their "primary use case" from a
+  // 15-item list should not bounce; everything else is optional (encouraged).
+  var REQUIRED = ['sub-tier', 'sub-hardware', 'sub-model'];
+
+  // B10: optional fields whose absence earns a friendly nudge after a
+  // successful submit (they make an entry easier to find and filter).
+  var NUDGE_FIELDS = { 'sub-backend': 'backend', 'sub-quant': 'quant' };
 
   // ------------------------------------------------------------------
   // Small helpers
@@ -170,6 +175,9 @@
     // Block assembly
     // ----------------------------------------------------------------
     function buildBlock() {
+      // B10: optional fields are handled gracefully — an empty field is
+      // omitted from the block entirely (never an empty "key:" line), so a
+      // 3-field submission produces a clean, parse-ready block.
       var lines = ['[COMMUNITY-SUBMISSION]'];
       ORDER.forEach(function (key) {
         var field = null;
@@ -179,6 +187,18 @@
       });
       lines.push('[/COMMUNITY-SUBMISSION]');
       return lines.join('\n');
+    }
+
+    // B10: a friendly nudge for the optional (encouraged) fields the user
+    // skipped — encouragement, not a requirement.
+    function optionalNudge() {
+      var missing = [];
+      Object.keys(NUDGE_FIELDS).forEach(function (id) {
+        if (!val(id)) missing.push(NUDGE_FIELDS[id]);
+      });
+      if (!missing.length) return '';
+      return ' (Adding your ' + missing.join(' and ') +
+        ' helps others find your setup!)';
     }
 
     function showPreview(block) {
@@ -218,15 +238,16 @@
       }
       var block = buildBlock();
       showPreview(block);
+      var nudge = optionalNudge(); // B10
       if (action === 'copy') {
         copyText(block).then(function (ok) {
           setStatus(ok
-            ? 'Copied to clipboard — paste it into the forum thread (link in the preview).'
+            ? 'Copied to clipboard — paste it into the forum thread (link in the preview).' + nudge
             : 'Copy failed — select the text in the preview below.');
         });
       } else if (action === 'issue') {
         window.open(issueUrl(block), '_blank', 'noopener');
-        setStatus('Opened a pre-filled GitHub issue in a new tab.');
+        setStatus('Opened a pre-filled GitHub issue in a new tab.' + nudge);
       }
     }
 

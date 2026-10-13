@@ -192,6 +192,35 @@ def clean_value(value: Any) -> str:
     return s
 
 
+# No-measurement sentinels. Contributors write "N/A (bench.sh planned)",
+# "TBD", "unknown", "none", "-", "—" in fields they did not measure. Left
+# alone, these survive into the dataset and render in the detail panel as
+# if they were measurements — they are the absence of data, not data.
+_SENTINEL_RE = re.compile(r"^(?:n/a|tbd|unknown|none|-|—)", re.IGNORECASE)
+# A genuine figure with a sentinel appended ("45 N/A") — keep the figure.
+_NUM_SENTINEL_RE = re.compile(
+    r"^(\d+(?:\.\d+)?)\s*(?:n/a|tbd|unknown|none)\b", re.IGNORECASE)
+
+
+def clean_sentinel(value: Any) -> str:
+    """Blank a value that is a no-measurement sentinel.
+
+    A value that STARTS with ``N/A`` / ``TBD`` / ``unknown`` / ``none`` /
+    ``-`` / ``—`` (case-insensitive) is not a measurement — it becomes
+    ``''``. A genuine figure with a sentinel appended (``"45 N/A"``) keeps
+    the figure. Anything else passes through unchanged (stripped).
+    """
+    s = str(value if value is not None else "").strip()
+    if not s:
+        return ""
+    m = _NUM_SENTINEL_RE.match(s)
+    if m:
+        return m.group(1)
+    if _SENTINEL_RE.match(s):
+        return ""
+    return s
+
+
 def is_template_submission(s: dict) -> bool:
     """True if a submission carries no real data (unfilled/empty template)."""
     key_fields = [

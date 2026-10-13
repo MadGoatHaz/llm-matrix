@@ -38,6 +38,11 @@ Data-quality handling:
       refined against the hardware description, and vendor inference
       collects ALL GPU vendors present (2+ -> "Mixed", none -> "").
     - List/bullet artifacts in values are cleaned.
+    - No-measurement sentinels ("N/A (bench.sh planned)", "TBD", "unknown",
+      "none", "-", "—") are blanked in every field (B8), so the absence of
+      a measurement never survives into the dataset and renders in the
+      detail panel as if it were one. A genuine figure with a sentinel
+      appended ("45 N/A") keeps the figure.
     - os_driver is extracted from the block and emitted on the entry
       (schema canonical field; displayed in the detail panel).
 """
@@ -70,6 +75,7 @@ if _REPO_ROOT not in sys.path:
 from tools.site.utils import (  # noqa: E402
     OPTION_LIST_RE,
     TEMPLATE_CONTENT_RE,
+    clean_sentinel,
     is_placeholder,
     scrub_placeholders,
     split_backend,
@@ -680,13 +686,16 @@ def is_field_placeholder(v):
 
 def clean_field(v):
     """Unbracket a value and blank it when it is an unfilled template
-    placeholder. Applied to EVERY field (not just the core four) so an
-    instruction like "Prefill tok/s (if measured)" never survives into the
+    placeholder OR a no-measurement sentinel. Applied to EVERY field (not
+    just the core four) so an instruction like "Prefill tok/s (if measured)"
+    and a sentinel like "N/A (bench.sh planned)" never survive into the
     dataset; genuine values — including ones users wrapped in brackets —
     keep their content.
     """
     s = _unbracket(v)
-    return "" if is_field_placeholder(v) else s
+    if is_field_placeholder(v):
+        return ""
+    return clean_sentinel(s)
 
 def is_template_submission(data_dict):
     """Return True if the submission is clearly an unfilled template."""
@@ -964,10 +973,12 @@ def main():
                     "marked": bool(sub.get("marked", True)),
                 },
                 "type": sub["type"],
-                # Verbatim block, with unfilled template values blanked — the
-                # instruction text must not survive into the dataset.
+                # Verbatim block, with unfilled template values and
+                # no-measurement sentinels blanked — the instruction text
+                # and the "N/A"/"TBD" markers must not survive into the
+                # dataset (B8).
                 "raw": {
-                    k: ("" if is_field_placeholder(v) else str(v))
+                    k: ("" if is_field_placeholder(v) else clean_sentinel(v))
                     for k, v in sub["data"].items()
                 },
                 # Parsed/normalized fields. The tier is resolved against the

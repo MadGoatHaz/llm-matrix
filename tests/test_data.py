@@ -161,6 +161,40 @@ class TestSubmissionsInvariants(unittest.TestCase):
             walk(sub, sub.get("id", "?"))
         self.assertEqual(bad, [], "placeholder instruction text leaked into the dataset")
 
+    def test_no_sentinels_in_field_values(self):
+        # B8 data-tree guard (the `grep -i "N/A|TBD|unknown" data/` contract):
+        # no field value anywhere in the dataset — including the verbatim raw
+        # blocks — may START with a no-measurement sentinel ("N/A (bench.sh
+        # planned)", "TBD", "unknown", "none", "-", "—"). Those are the
+        # ABSENCE of a measurement, not data, and would render in the detail
+        # panel as if they were values. Prose comments are exempt: ``notes``
+        # (submitter prose) and the curation ``highlight_reason`` may mention
+        # the words mid-text.
+        import re
+        sentinel = re.compile(r"^(?:n/a|tbd|unknown|none|-|—)", re.IGNORECASE)
+        exempt = {"notes", "highlight_reason"}
+        bad = []
+
+        def walk(o, path):
+            if isinstance(o, str):
+                s = o.strip()
+                if s and sentinel.match(s):
+                    bad.append(f"{path}: {o!r}")
+            elif isinstance(o, dict):
+                for k, v in o.items():
+                    if k in exempt:
+                        continue
+                    walk(v, f"{path}.{k}")
+            elif isinstance(o, list):
+                for i, v in enumerate(o):
+                    walk(v, f"{path}[{i}]")
+
+        for sub in self.subs:
+            walk(sub, sub.get("id", "?"))
+        self.assertEqual(
+            bad, [],
+            "no-measurement sentinels leaked into field values")
+
     def test_speed_fields_are_decomposed(self):
         # P0-2 data guard: decode_tps must never carry a prefill figure.
         # A "PP ... TG ..." / "prefill ... decode ..." compound string is

@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-13T15:49:36.654058",
-  "schema_version": "2.3",
+  "generated_at": "2026-10-13T16:22:09.366030",
+  "schema_version": "2.4",
   "source_thread": "https://forum.level1techs.com/t/256443",
   "total_submissions": 26,
   "skipped_templates": 2,
@@ -1265,7 +1265,7 @@
         "kv_cache_setting": "int8 (engine-native quantized KV)",
         "throughput_tps": "99-128 decode (median 108, on 50k+ token prompts)",
         "prefill_tps": "825-3600 on uncached tokens (median ~2800, prompt cache ~90% hits)",
-        "ttft_cold": "N/A (bench.sh planned)",
+        "ttft_cold": "",
         "power_draw": "450W stock cap, 12W idle at P8; peak under load not measured",
         "setup_notes": "125B MoE hybrid on a single 24GB card: 6892 experts (~13.4 GB) in VRAM, rest in RAM, lookup table on NVMe. VRAM permanently occupied 23471/24564 MiB (processes /strata + /strata-vision). Speculative decoding MTP=4 + lookup=3, pcie_frac 0.35, image input enabled, one request at a time. WSL2 is not an officially documented path: RAM must be allocated via .wslconfig (96 GB here) or the engine can't load the 35-55 GB of experts. 4x32GB double-rank DDR4 holding 3600 CL18 (unusual on Ryzen 5000 - most boards drop to 3200 with this many ranks), so the RAM-resident experts get ~57 GB/s of dual-channel bandwidth."
       },
@@ -1290,7 +1290,7 @@
       "performance": {
         "decode_tps": "128",
         "prefill_tps": "825-3600 on uncached tokens (median ~2800, prompt cache ~90% hits)",
-        "ttft_cold": "N/A (bench.sh planned)",
+        "ttft_cold": "",
         "power_w": "450W stock cap, 12W idle at P8; peak under load not measured"
       },
       "engine_mode": "",
@@ -1329,7 +1329,7 @@
         "kv_cache_setting": "FP8",
         "throughput_tps": "200t/s+ decode average",
         "prefill_tps": "5200-6200t/s",
-        "ttft_cold": "N/A",
+        "ttft_cold": "",
         "power_draw": "500-600W during inference, GPUs at 330W cap each",
         "setup_notes": "Everything running in VRAM and system RAM, no disk tier"
       },
@@ -1354,7 +1354,7 @@
       "performance": {
         "decode_tps": "200",
         "prefill_tps": "5200-6200t/s",
-        "ttft_cold": "N/A",
+        "ttft_cold": "",
         "power_w": "500-600W during inference, GPUs at 330W cap each"
       },
       "engine_mode": "",

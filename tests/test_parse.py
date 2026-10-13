@@ -866,5 +866,72 @@ class TestBackendNormalization(unittest.TestCase):
         self.assertEqual(self.parse.split_backend("", self.schema), ("", ""))
 
 
+class TestSentinelCleanup(unittest.TestCase):
+    """B8: no-measurement sentinels must not survive into the dataset.
+
+    Contributors write "N/A (bench.sh planned)", "TBD", "unknown", "none",
+    "-", "—" in fields they did not measure. ``clean_sentinel`` (the shared
+    helper in tools/site/utils.py, applied by ``clean_field`` to EVERY
+    parsed field) blanks those; a genuine figure with a sentinel appended
+    ("45 N/A") keeps the figure.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.parse = load_tool("tools/parse.py")
+        # tools/site/utils.py is the single source of truth (importable once
+        # the repo root is on sys.path, as load_tool guarantees).
+        import sys
+        from tests.util import ROOT
+        if str(ROOT) not in sys.path:
+            sys.path.insert(0, str(ROOT))
+        from tools.site import utils
+        cls.utils = utils
+
+    # --- clean_sentinel: sentinels blanked ------------------------------
+    def test_na_with_explanation_is_blank(self):
+        self.assertEqual(
+            self.utils.clean_sentinel("N/A (bench.sh planned)"), "")
+
+    def test_bare_sentinels_are_blank(self):
+        for v in ("N/A", "n/a", "N/A.", "TBD", "tbd", "TBD.", "unknown",
+                  "Unknown", "UNKNOWN", "none", "None", "NONE", "-", "—",
+                  "n/a (planned)", "TBD (will measure later)"):
+            with self.subTest(value=v):
+                self.assertEqual(self.utils.clean_sentinel(v), "", v)
+
+    # --- clean_sentinel: genuine data kept ------------------------------
+    def test_figure_with_appended_sentinel_keeps_figure(self):
+        self.assertEqual(self.utils.clean_sentinel("45 N/A"), "45")
+        self.assertEqual(self.utils.clean_sentinel("19.3 n/a"), "19.3")
+
+    def test_genuine_values_pass_through(self):
+        for v in ("19.3 s", "240k", "amdgpu", "450W stock cap",
+                  "int8 (engine-native quantized KV)", "Q4_K_M"):
+            with self.subTest(value=v):
+                self.assertEqual(self.utils.clean_sentinel(v), v.strip(), v)
+
+    def test_empty_and_none(self):
+        self.assertEqual(self.utils.clean_sentinel(""), "")
+        self.assertEqual(self.utils.clean_sentinel(None), "")
+
+    # --- clean_field integration: every parsed field is sentinel-safe ---
+    def test_clean_field_blanks_sentinel(self):
+        self.assertEqual(self.parse.clean_field("N/A (bench.sh planned)"), "")
+        self.assertEqual(self.parse.clean_field("TBD"), "")
+        self.assertEqual(self.parse.clean_field("unknown"), "")
+
+    def test_clean_field_keeps_figure_and_genuine_values(self):
+        self.assertEqual(self.parse.clean_field("45 N/A"), "45")
+        self.assertEqual(self.parse.clean_field("19.3 s"), "19.3 s")
+        self.assertEqual(self.parse.clean_field("[llama-cpp]"), "llama-cpp")
+
+    def test_clean_field_still_blanks_placeholders(self):
+        # Sentinel cleanup composes with (does not replace) the P0
+        # placeholder sweep.
+        self.assertEqual(
+            self.parse.clean_field("Prefill tok/s (if measured)"), "")
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -12,7 +12,7 @@ Every row in the <a href="../matrix.html">Matrix</a> is a real setup someone is 
 
 ## How it works
 
-1. **Fill in the form.** The required fields are your VRAM tier, hardware, backend, model, quant, primary use case, and a few notes. Everything else is optional — but the more you share, the more useful your entry is.
+1. **Fill in the form.** Only three fields are required — your VRAM tier, hardware, and model. That's the 30 seconds. Everything else (backend, quant, speed, use case, notes) is optional — but the more you share, the more useful your entry is.
 2. **Pick your path.** Copy the block straight to the <a href="https://forum.level1techs.com/t/256443" target="_blank" rel="noopener">forum thread</a> (the original home of the data), or open a pre-filled GitHub issue.
 3. **We integrate it.** Submissions are reviewed weekly and parsed into the dataset — your entry appears in the Matrix and the forum index, credited to you.
 

@@ -18,9 +18,11 @@
 // estimated never appears (no fit guarantee). Use case, vendor, and priority
 // shape the ranking, and the submission's confidence + lifecycle state weight
 // it (a superseded or discontinued setup ranks below a current one, and
-// lower-corroborated reports rank below verified ones). Every result carries
-// a plain-English "why this matched" and a deep link to its row in the
-// Matrix.
+// lower-corroborated reports rank below verified ones). The "quality"
+// priority scores model capability (60%) blended with quant precision (40%)
+// (B1) — matching the project's own quantization guide, where the model you
+// pick matters more than the quant you pick. Every result carries a
+// plain-English "why this matched" and a deep link to its row in the Matrix.
 
 (function () {
   'use strict';
@@ -73,27 +75,42 @@
   }
 
   // ------------------------------------------------------------------
-  // Model precision -> a 0-100 quality rank. Higher = more bits = better
-  // quality (and more VRAM). Derived from weight_precision, falling back to
-  // the quant string. Longest token first so "q4_k_m" beats "q4".
+  // B1: quality = model capability (60%) + quant precision (40%).
+  //
+  // The project's own quantization guide says "the model you pick matters
+  // more than the quant you pick" — a 35B-A3B I-Nano MoE beats a dense
+  // 27B Q4 on a 16 GB card. Scoring the quality priority on quant bits
+  // alone sank the community's best 16 GB answer (an I-Nano entry scored
+  // 15 while a 27B Q4_K_M scored 40), so the quality rank is now a
+  // weighted blend: the model's size/family does the heavy lifting and
+  // the quant refines it. It is a HEURISTIC for ranking, not a physics
+  // simulation — the goal is "don't sink capable small-quant models."
   // ------------------------------------------------------------------
+
+  // Quant precision -> a 0-100 rank (B1: rebalanced scale). Higher = more
+  // bits = less quality loss (and more VRAM). This is the 40% quant half
+  // of the quality score; the 60% model half is modelCapabilityScore().
+  // Derived from weight_precision, falling back to the quant string, then
+  // the model name (several real submissions carry the quant only in the
+  // name, e.g. "Qwen3.8-Flash-Next-Q4_K_M"). Longest token first so
+  // "q4_k_m" beats "q4".
   var PRECISION_RANKS = [
-    ['fp16', 100], ['bf16', 95],
-    ['fp8', 85], ['int8', 85], ['w8a8', 85],
-    ['q8_0', 70], ['q8', 70],
+    ['fp16', 100], ['bf16', 100],
+    ['fp8', 85],
+    ['int8', 75], ['w8a8', 75],
+    ['q8_0', 75], ['q8', 75],
     ['q6_k', 60], ['q6', 60],
-    ['q5_k_m', 52], ['q5', 50],
-    ['q4_k_m', 40], ['ud-q4', 40], ['q4', 40],
+    ['q5_k_m', 50], ['q5', 50],
+    ['q4_k_m', 40],
+    ['ud-q4', 35], ['q4', 35],
     ['iq4_xs', 35], ['iq4', 35],
-    ['iq3_s', 30], ['iq3', 30], ['q3', 25],
-    ['i-nano', 15], ['nano', 15], ['ud-q2', 15], ['q2', 15]
+    ['iq3_s', 20], ['iq3', 20], ['q3', 20],
+    ['i-nano', 20], ['nano', 20],
+    ['ud-q2', 10], ['q2', 10]
   ];
   PRECISION_RANKS.sort(function (a, b) { return b[0].length - a[0].length; });
 
   function precisionRank(sub) {
-    // weight_precision first, then quant, then the model name (several real
-    // submissions leave the first two empty but carry the quant in the name,
-    // e.g. "Qwen3.8-Flash-Next-Q4_K_M").
     var src = String(
       sub.weight_precision || sub.quant || (sub.model && sub.model.name) || ''
     ).toLowerCase();
@@ -104,6 +121,53 @@
       }
     }
     return { key: 'unknown', rank: 50 };
+  }
+
+  // Model capability -> a 0-100 score (B1: the 60% model half of quality).
+  // Larger models and more capable families score higher:
+  //   100B+ : 90 · 70B+ : 80 · 35B+ (or a MoE with 30B+ active) : 70 ·
+  //   27B : 60 · 20B : 50 · 8-14B : 35 · <8B : 20
+  // The size comes from model.params_total / model.params_active when the
+  // data carries them; otherwise it is estimated from the model name
+  // ("27B", "120B", "35B-A3B" — MoE names state total-then-active). No
+  // size stated -> 50 (neutral, never sunk or inflated).
+  function modelCapabilityScore(sub) {
+    var model = (sub && sub.model) || {};
+    var total = null, active = null;
+    if (model.params_total != null && !isNaN(parseFloat(model.params_total))) {
+      total = parseFloat(model.params_total);
+    }
+    if (model.params_active != null && !isNaN(parseFloat(model.params_active))) {
+      active = parseFloat(model.params_active);
+    }
+    if (total == null) {
+      var name = String(model.name || '').toUpperCase();
+      var m = name.match(/(\d+(?:\.\d+)?)B(?:\s*-\s*A\s*(\d+(?:\.\d+)?)\s*B)?/);
+      if (m) {
+        total = parseFloat(m[1]);
+        active = m[2] ? parseFloat(m[2]) : null;
+      }
+    }
+    if (total == null || isNaN(total)) return 50;
+    if (total >= 100) return 90;
+    if (total >= 70) return 80;
+    if (total >= 35 || (active != null && active >= 30)) return 70;
+    if (total >= 27) return 60;
+    if (total >= 20) return 50;
+    if (total >= 8) return 35;
+    return 20;
+  }
+
+  // A short model-size label for the "why this matched" line ("120B",
+  // "35B-A3B"). Empty when the name states no size.
+  function modelSizeLabel(sub) {
+    var model = (sub && sub.model) || {};
+    if (model.params_total != null && !isNaN(parseFloat(model.params_total))) {
+      return parseFloat(model.params_total) + 'B';
+    }
+    var name = String(model.name || '').toUpperCase();
+    var m = name.match(/(\d+(?:\.\d+)?)B(?:\s*-\s*A\s*(\d+(?:\.\d+)?)\s*B)?/);
+    return m ? m[0].replace(/\s+/g, '') : '';
   }
 
   // First numeric token of a decode-speed string, as a float (matches the
@@ -187,6 +251,8 @@
           speed: parseSpeed(s.performance && s.performance.decode_tps),
           context: parseContext(s.context && s.context.stable),
           precision: precisionRank(s),
+          modelScore: modelCapabilityScore(s), // B1: 60% of quality
+          modelSize: modelSizeLabel(s),
           confidence: s.confidence || 'community-reported',
           lifecycle: s.lifecycle || 'current'
         };
@@ -273,7 +339,9 @@
       return pool.map(function (s) {
         var speedScore = maxSpeed ? (s.speed / maxSpeed) * 100 : 0;
         var contextScore = maxContext ? (s.context / maxContext) * 100 : 0;
-        var qualityScore = s.precision.rank;
+        // B1: quality blends model capability (60%) with quant precision
+        // (40%) — a capable small-quant model is no longer sunk.
+        var qualityScore = s.modelScore * 0.6 + s.precision.rank * 0.4;
         var primary;
         if (sel.priority === 'speed') primary = speedScore;
         else if (sel.priority === 'quality') primary = qualityScore;
@@ -313,7 +381,13 @@
       }
       if (sel.vendor && s.vendor === sel.vendor) parts.push('runs on ' + s.vendor);
       if (sel.priority === 'speed' && s.speed) parts.push(s.speed + ' t/s decode');
-      else if (sel.priority === 'quality' && s.precision.key !== 'unknown') parts.push(s.precision.key + ' precision');
+      else if (sel.priority === 'quality') {
+        // B1: the quality blend is model + quant — show both halves.
+        var qparts = [];
+        if (s.modelSize) qparts.push(s.modelSize + ' model');
+        if (s.precision.key !== 'unknown') qparts.push(s.precision.key + ' precision');
+        if (qparts.length) parts.push(qparts.join(' · '));
+      }
       else if (sel.priority === 'context' && s.context) parts.push(s.context.toLocaleString() + ' tokens of context');
       parts.push(confidencePhrase(s)); // A2: surface the trust level
       return parts.slice(0, 4).join(' · ');
