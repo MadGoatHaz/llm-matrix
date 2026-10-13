@@ -1065,6 +1065,28 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     margin-top: 1rem;
 }
 
+/* === START-HERE WIZARD (C1) ===
+   Three tappable-card steps that feed the form's own controls. Real
+   <button> cards (min 88px tall) in a 2-col grid; one column on mobile.
+   The visible title + description is each card's accessible name. */
+.wizard { max-width: var(--form-max-width); margin: 2rem auto 0; }
+.wizard-top { display: flex; justify-content: flex-end; margin-bottom: 0.5rem; }
+.wizard-skip { color: var(--text-muted); font-size: 0.85rem; padding: 0.5rem 0.75rem; }
+.wizard-skip:hover { color: var(--text); }
+.wizard-step { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.5rem; }
+.wizard-progress { color: var(--text-muted); font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+.wizard-step h2 { font-size: 1.4rem; margin: 0.25rem 0; }
+.wizard-sub { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1.25rem; }
+.wizard-back { background: none; border: none; color: var(--text-muted); font-size: 0.85rem; cursor: pointer; padding: 0.5rem 0.75rem; margin-bottom: 0.5rem; }
+.wizard-back:hover { color: var(--text); }
+.wizard-cards { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+.wizard-card { display: flex; flex-direction: column; align-items: flex-start; gap: 0.3rem; text-align: left; background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; min-height: 88px; cursor: pointer; font: inherit; color: var(--text); }
+.wizard-card:hover { border-color: var(--accent); }
+.wizard-card .icon { font-size: 1.5rem; line-height: 1; }
+.wizard-card-title { font-weight: 700; font-size: 1rem; }
+.wizard-card-desc { color: var(--text-muted); font-size: 0.82rem; }
+.wizard-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; margin-top: 1rem; }
+
 /* === VERIFICATION INDICATORS (B4/C4) ===
    One quiet color system for how well-corroborated a setup is, shared by
    the Matrix (dot next to the contributor), the detail panel (worded
@@ -1918,6 +1940,16 @@ body.detail-open { overflow: hidden; }
 
 .submit-next { margin: 2rem 0; }
 
+/* === CHANGELOG (C5) ===
+   Flat, scannable release list: each version heading gets an accent
+   left-bar; the change lists stay in the page's reading width. */
+.changelog { max-width: var(--content-max-width); }
+.changelog h2 { border-left: 3px solid var(--accent); padding-left: 0.75rem; margin: 1.75rem 0 0.75rem; }
+.changelog h2:first-child { margin-top: 0; }
+.changelog ul { margin-left: 1.5rem; margin-bottom: 1.25rem; }
+.changelog li { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 0.4rem; }
+.changelog li:last-child { margin-bottom: 0; }
+
 /* === MOBILE === */
 @media (max-width: 768px) {
     .container { padding: 1.5rem; }
@@ -1942,6 +1974,8 @@ body.detail-open { overflow: hidden; }
     .nav-dropdown-menu { min-width: 200px; }
     .recommend-teaser-card { flex-direction: column; align-items: flex-start; }
     .rec-advanced-body { grid-template-columns: 1fr; }
+    .wizard-cards { grid-template-columns: 1fr; }
+    .wizard-step { padding: 1.25rem; }
     .rec-card { flex-direction: column; gap: 0.5rem; padding: 1rem; }
     .rec-rank { width: 32px; height: 32px; font-size: 0.95rem; }
     .cmd-dialog { padding: 1.25rem; }

@@ -11,7 +11,7 @@ Every data point is community-sourced — real people running real models on rea
 ## What's included
 
 - **The Matrix** — every submission grouped by VRAM tier, with filters, search, sorting, detail panels, and verification badges
-- **Recommend** — the core tool: community setups ranked for your hardware and use case, with honest tradeoffs
+- **Recommend** — the core tool: a 3-step "Start Here" wizard, then community setups ranked for your hardware and use case, with honest tradeoffs
 - **Compare** — any 2–4 setups side by side, with directional tradeoff readings from a shareable URL
 - **Launch commands** — copy-paste start commands for every backend, tailored to each submission
 - **8 guides** — quantization, file formats, quantization methods, model architectures, KV cache, context extension, backends, multi-GPU
@@ -32,6 +32,7 @@ A static site on GitHub Pages — no build step, no server, no client-side depen
 | Submit | `/submit/` | The static form that builds a ready-to-post `[COMMUNITY-SUBMISSION]` block |
 | Guides | `/guides/` | The 8 deep-dive guides |
 | Data API | `/api/` | Documentation for the versioned JSON data contract |
+| Changelog | `/changelog/` | What's new and what changed, release by release |
 | About | `/about.html` | What the project is, how data is sourced, how to contribute |
 
 ## The Weekly Cycle

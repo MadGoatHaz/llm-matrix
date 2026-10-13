@@ -38,7 +38,7 @@ def footer(depth: int = 0) -> str:
     """
     p = asset_prefix(depth)
     return f'''  <footer class="footer">
-    <div>The Local AI Stack — data from the <a href="{FORUM_THREAD}">Local LLM Matrix thread</a> on Level1Techs · <a href="{GITHUB_REPO}">GitHub</a> · <a href="{p}api/">Data API</a> · <a href="{GITHUB_REPO}/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></div>
+    <div>The Local AI Stack — data from the <a href="{FORUM_THREAD}">Local LLM Matrix thread</a> on Level1Techs · <a href="{GITHUB_REPO}">GitHub</a> · <a href="{p}api/">Data API</a> · <a href="{p}changelog/">Changelog</a> · <a href="{GITHUB_REPO}/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener">Contribute</a></div>
     <div class="forum-credit">Not an official Level1Techs project. All data is community-reported — check the thread for context.</div>
   </footer>'''
 
