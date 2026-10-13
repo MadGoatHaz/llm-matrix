@@ -159,17 +159,22 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
 
 /* Guides dropdown (P1-9 populates the menu; P1-0 leaves the plain link) */
 .nav-dropdown { position: relative; }
+/* The Guides toggle must share the exact box model of every other .nav-links a
+   (inline, same font-size/line-height/padding) so "Guides" sits on the same
+   baseline as Home/Matrix/etc. It was display:inline-flex + align-items:center,
+   which centered the label+caret in its own box and shifted the text vertically.
+   The ▾ caret is now just a (slightly smaller) inline glyph on the shared
+   baseline — the markup already carries the separating space. */
 .nav-dropdown-toggle {
     color: var(--text-secondary);
-    padding: 0.7rem 1rem;     /* ≥ 44px touch target */
+    padding: 0.7rem 1rem;
     border-radius: var(--radius);
     font-size: 0.9rem;
     font-weight: 500;
     transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
+    display: inline;
 }
+.nav-dropdown-toggle .icon { font-size: 0.75em; line-height: 1; }
 .nav-dropdown-toggle:hover { color: var(--text); background: var(--surface); }
 .nav-dropdown-menu {
     display: none;
@@ -271,7 +276,20 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
     align-items: center;
     gap: 0.5rem;
 }
-.card p { color: var(--text-secondary); font-size: 0.95rem; }
+/* Card headings + body spacing: the global "* { margin: 0 }" reset zeroes every
+   margin, so a card's heading, text lines, and CTA button all touch (this is
+   what made the community "Want to be here?" button overlap its text). Restore
+   the vertical rhythm here — ≥1rem between body lines, 0 after the last. */
+.card h2 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.card p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; }
+.card p:last-child { margin-bottom: 0; }
 .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -1316,25 +1334,37 @@ body.cmd-open { overflow: hidden; }
     height: auto;
     display: block;
 }
-.chart .grid-line { stroke: var(--border); stroke-width: 1; }
-.chart .axis-line { stroke: var(--border-light); stroke-width: 1.5; }
-.chart .tick-label { fill: var(--text-muted); font-size: 11px; font-family: var(--font-mono); }
-.chart .axis-title { fill: var(--text-secondary); font-size: 12px; font-family: var(--font-sans); }
-.chart .bar { fill: var(--chart-1); }
-.chart .bar:hover { fill: var(--accent-hover); }
-.chart .bar-value { fill: var(--text); font-size: 12px; font-weight: 600; font-family: var(--font-mono); }
-.chart .seg-1 { fill: var(--chart-1); }
-.chart .seg-2 { fill: var(--chart-2); }
-.chart .seg-3 { fill: var(--chart-3); }
-.chart .seg-4 { fill: var(--chart-4); }
-.chart .seg-5 { fill: var(--chart-5); }
-.chart .seg-6 { fill: var(--chart-6); }
-.chart .seg-1, .chart .seg-2, .chart .seg-3,
-.chart .seg-4, .chart .seg-5, .chart .seg-6 { cursor: default; }
-.chart .dot { fill: var(--chart-2); stroke: var(--bg); stroke-width: 1.5; opacity: 0.9; }
-.chart .dot:hover { opacity: 1; }
-.chart .donut-center-value { fill: var(--text); font-size: 30px; font-weight: 700; font-family: var(--font-sans); }
-.chart .donut-center-label { fill: var(--text-muted); font-size: 11px; font-family: var(--font-sans); }
+/* The <svg> root is class="chart-svg" (not ".chart"), so every chart rule
+   scopes to .chart-svg — this is what makes the design tokens resolve. (The
+   earlier ".chart" scope matched nothing, so every shape fell back to the
+   SVG default black fill and the "By the numbers" charts rendered all-black.) */
+.chart-svg .grid-line { stroke: var(--border); stroke-width: 1; }
+.chart-svg .axis-line { stroke: var(--border-light); stroke-width: 1.5; }
+.chart-svg .tick-label { fill: var(--text-muted); font-size: 11px; font-family: var(--font-mono); }
+.chart-svg .axis-title { fill: var(--text-secondary); font-size: 12px; font-family: var(--font-sans); }
+.chart-svg .bar { fill: var(--chart-1); }
+.chart-svg .bar:hover { fill: var(--accent-hover); }
+.chart-svg .bar-value { fill: var(--text); font-size: 12px; font-weight: 600; font-family: var(--font-mono); }
+.chart-svg .seg-1 { fill: var(--chart-1); }
+.chart-svg .seg-2 { fill: var(--chart-2); }
+.chart-svg .seg-3 { fill: var(--chart-3); }
+.chart-svg .seg-4 { fill: var(--chart-4); }
+.chart-svg .seg-5 { fill: var(--chart-5); }
+.chart-svg .seg-6 { fill: var(--chart-6); }
+.chart-svg .seg-1, .chart-svg .seg-2, .chart-svg .seg-3,
+.chart-svg .seg-4, .chart-svg .seg-5, .chart-svg .seg-6 { cursor: default; }
+.chart-svg .dot { fill: var(--chart-2); stroke: var(--bg); stroke-width: 1.5; opacity: 0.9; }
+.chart-svg .dot:hover { opacity: 1; }
+.chart-svg .donut-center-value { fill: var(--text); font-size: 30px; font-weight: 700; font-family: var(--font-sans); }
+.chart-svg .donut-center-label { fill: var(--text-muted); font-size: 11px; font-family: var(--font-sans); }
+/* A 100% donut degenerates to a <circle> ring (fill:none + stroke-width);
+   color it via stroke so the general .seg-N fill rule can't turn it into a disc. */
+.chart-svg circle.seg-1 { fill: none; stroke: var(--chart-1); }
+.chart-svg circle.seg-2 { fill: none; stroke: var(--chart-2); }
+.chart-svg circle.seg-3 { fill: none; stroke: var(--chart-3); }
+.chart-svg circle.seg-4 { fill: none; stroke: var(--chart-4); }
+.chart-svg circle.seg-5 { fill: none; stroke: var(--chart-5); }
+.chart-svg circle.seg-6 { fill: none; stroke: var(--chart-6); }
 
 /* HTML legend (real text — screen-reader and keyboard friendly). */
 .chart-legend {
