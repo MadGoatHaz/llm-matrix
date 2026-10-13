@@ -14,9 +14,6 @@ Thumbs.db
 # Kilo agent session state (untracked by design)
 .kilo/
 
-# Scratch space is a working area — ignored by default. The few
-# reference files worth keeping are explicitly re-included (tracked).
-work/scratch/
-!work/scratch/.gitkeep
-!work/scratch/qa_report.txt
-!work/scratch/qa_structural_check.py
+# Internal development workspace (logs, plans, research, scratch).
+# NOT part of the public site — ignored entirely.
+work/
