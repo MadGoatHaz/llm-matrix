@@ -17,8 +17,10 @@ research notebooks, or your own tools.
 | `/data.json` | The canonical submissions dataset | What the site's own client tools fetch. Carries the `version` field. |
 | `/data/api/v1/submissions.json` | Identical to `/data.json` | The versioned path — the stable URL to code against. |
 | `/data/api/v1/schema.json` | The JSON Schema (draft 2020-12) for the submissions payload | **Authored by hand** (not generated) — it *defines* the contract. |
-| `/data/api/v1/benchmarks.json` | Benchmark reports from the Crucible thread | `{version, source, thread_id, url, count, items[]}` |
-| `/data/api/v1/hardware.json` | Hardware showcases from the "Show Off Your AI Rig" thread | Same envelope as benchmarks |
+| `/data/api/v1/benchmarks.json` | Benchmark reports from the Crucible thread (structured since v1.4) | `{version, source, thread_id, url, count, items[]}` |
+| `/data/api/v1/hardware.json` | Hardware showcases from the "Show Off Your AI Rig" thread (structured since v1.4) | Same envelope as benchmarks |
+| `/data/api/v1/benchmarks_schema.json` | The JSON Schema for the benchmarks payload (v1.4) | Authored by hand — the generator never overwrites it. |
+| `/data/api/v1/hardware_schema.json` | The JSON Schema for the hardware payload (v1.4) | Same. |
 
 All URLs are absolute from the site root, e.g.:
 
@@ -32,7 +34,7 @@ Top level (all seven keys required):
 
 | Field | Type | Meaning |
 |-------|------|---------|
-| `version` | string | The API version (`major.minor`) — currently `1.3`. |
+| `version` | string | The API version (`major.minor`) — currently `1.4`. |
 | `generated_at` | string (ISO 8601) | When the pipeline last produced this dataset. |
 | `schema_version` | string | The `tools/schema.json` version the data was parsed against. |
 | `source_thread` | string (URL) | The forum thread the data came from. |
@@ -72,6 +74,80 @@ is [`v1/schema.json`](v1/schema.json)):
 > They're free text on purpose (people report "54.4 decode" or "19.3s");
 > parse the leading number when you need one.
 
+## The secondary datasets (v1.4)
+
+`v1/benchmarks.json` (the **Crucible** benchmarking thread) and
+`v1/hardware.json` (the **"Show Off Your AI Rig"** thread) are parsed by
+`tools/parse_thread.py` in two passes:
+
+1. **Relevance** — keyword matching flags posts that talk about
+   performance (Crucible) or hardware (Rigs). Every flagged post becomes
+   an item, so a relevant post is never silently dropped.
+2. **Structured extraction** — fields are pulled from the post's *own*
+   text under a conservative policy:
+
+   * **Quoted content is excluded.** A Discourse quote belongs to the
+     quoted author — a reply quoting "3x rtx 6000 pro ws" to ask a
+     question does not credit the replying user with that rig.
+   * **Questions, hypotheticals, and envy are not specs.**
+     "With 4x9700?", "I might get a couple of DGX sparks", and "jealous
+     of the MI210" never produce hardware fields.
+   * **Thresholds are not measurements.** "comfortable ≥ 30 tokens/sec"
+     (a design target) is not a decode-speed report.
+   * **Nothing is guessed.** A field the post does not state is `null`
+     (per-card VRAM is *computed* only when the post states both the
+     per-card figure and the count — "Dual 5060ti 16g" → 32; it is never
+     filled in from outside knowledge).
+
+   Every non-null string value is verbatim (or a trivial case cleanup)
+   from the post, so each field is verifiable against the source text.
+   The `notes` field on a structured item carries the verbatim sentence(s)
+   the values came from — the audit trail.
+
+**Every item also keeps `preview`** — the first 300 chars of the post —
+so posts where structured extraction found nothing (most of the Crucible
+thread is tool discussion, not results) still carry their content. The
+`structured` boolean tells you which is which.
+
+### Benchmark item (`v1/benchmarks.json` → `items[]`)
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `id` | string | `crucible_post_<post-number>_<n>`. |
+| `post_id` / `post_number` | integer | The Discourse post id / thread position. |
+| `contributor` / `date` | string | Author handle / `YYYY-MM-DD`. |
+| `model` | string or null | LLM model being benchmarked (verbatim). A bare family name with no version signal is rejected. |
+| `hardware` | string or null | GPU as stated, with count when stated ("4x 9700 Pro"). |
+| `backend` | string or null | The poster's inference engine. Capability lists and parenthetical asides are not. |
+| `performance` | object | `{decode_tps, prefill_tps, vram_gb, ttft_s}` — labeled figures only; strings as reported, numbers for GB/s. |
+| `context_length` | string or null | e.g. `128K`, `650K`, `1M`. |
+| `power_w` | number or null | Power draw in watts. |
+| `notes` | string or null | Verbatim source sentence(s) for the extracted values. |
+| `preview` | string (≤300) | Always present — the fallback content. |
+| `structured` | boolean | `true` when at least one data field was extracted. |
+
+### Hardware item (`v1/hardware.json` → `items[]`)
+
+| Field | Type | Meaning |
+|-------|------|---------|
+| `id` | string | `rigs_post_<post-number>_<n>` — a post describing several machines (multiple neofetch blocks) contributes one item per machine. |
+| `post_id` / `post_number` | integer | As above. |
+| `contributor` / `date` | string | As above. |
+| `gpu` | object | `{model, count}` — the machine's primary GPU. Neofetch `GPU n:` lines are grouped and the dominant model wins (a baseboard iGPU doesn't outvote eight A4000s); otherwise count phrases / `GPU:` labels / first-person bare mentions. Vendor words carried only when stated. |
+| `vram_total_gb` | number or null | Explicit total, per-card × stated count, or unified memory. |
+| `cpu` | string or null | As stated (neofetch lines cleaned of `(R)`/thread-count/clock). |
+| `ram_gb` | number or null | System RAM as stated. |
+| `storage` | string or null | Drives as stated, joined with `+`. Vague mentions stay null. |
+| `os` | string or null | As stated. |
+| `workload` | string or null | What it runs: model + backend + context + verbatim speed snippets. |
+| `notes` | string or null | Secondary signals (spare GPUs, power draw, PSU). |
+| `preview` | string (≤300) | Always present. |
+| `structured` | boolean | `true` when at least one hardware field was extracted. |
+
+Both payloads validate against their authored schemas:
+[`v1/benchmarks_schema.json`](v1/benchmarks_schema.json) and
+[`v1/hardware_schema.json`](v1/hardware_schema.json).
+
 ## The JSON Schema
 
 [`v1/schema.json`](v1/schema.json) is a [JSON Schema
@@ -105,6 +181,25 @@ conformance check of `data.json` against the schema on every CI run.
 
   ### Changelog
 
+  - **v1.4 — 2026-10-13** — the secondary datasets
+    (`v1/benchmarks.json`, `v1/hardware.json`) were upgraded from
+    300-char preview snapshots to **structured entries** (see "The
+    secondary datasets" above): benchmark items carry
+    `model` / `hardware` / `backend` / `performance` /
+    `context_length` / `power_w`, and rig items carry
+    `gpu{model,count}` / `vram_total_gb` / `cpu` / `ram_gb` /
+    `storage` / `os` / `workload` — each `null` when the post does not
+    state it, never guessed, with the `preview` field kept on every item
+    as the fallback and a `structured` flag marking which items carry
+    data. Two new **authored** schemas define the payloads:
+    `v1/benchmarks_schema.json` and `v1/hardware_schema.json`. The
+    envelope (`version` / `source` / `thread_id` / `url` / `count` /
+    `items`) is unchanged; the preview-only item keys from v1.0–v1.3
+    (`username` / `title` / `has_benchmark_data` / `has_hardware`) were
+    never part of this README's documented contract, so the restructure
+    publishes as additive under the same `v1/` path. The canonical
+    submissions payload (`data.json` / `v1/submissions.json`) is
+    untouched.
   - **v1.3 — 2026-10-13** — the VRAM tiers are now **disjoint bands**
     (parsed against `tools/schema.json` v2.3): t1 = under 16GB, t2 =
     16–23GB, t3 = 24–31GB, **t4 = 32–47GB (new — 32 GB cards such as the

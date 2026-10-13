@@ -1,65 +1,345 @@
 {
-  "version": "1.3",
+  "version": "1.4",
   "source": "Crucible: LLM Bench",
   "thread_id": "crucible",
   "url": "https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531",
-  "count": 7,
+  "count": 16,
   "items": [
     {
+      "id": "crucible_post_1_0",
+      "post_id": 4124180,
       "post_number": 1,
-      "username": "MadGoat",
+      "contributor": "MadGoat",
       "date": "2026-10-01",
-      "title": "",
-      "preview": "I built Crucible LLM \u2014 a terminal-based benchmarking suite that stress-tests any OpenAI-compatible inference server and measures what a real user actually experiences. One static Rust binary. No Python. No venv. No dependencies. Why it exists Most benchmarks shout \u201cxx.x tokens/sec!\u201d and stop. But wh",
-      "has_benchmark_data": true
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "I built Crucible LLM - a terminal-based benchmarking suite that stress-tests any OpenAI-compatible inference server and measures what a real user actually experiences. One static Rust binary. No Python. No venv. No dependencies. Why it exists Most benchmarks shout \"xx.x tokens/sec!\" and stop. But wh",
+      "structured": false
     },
     {
+      "id": "crucible_post_2_0",
+      "post_id": 4124218,
       "post_number": 2,
-      "username": "thr3e",
+      "contributor": "thr3e",
       "date": "2026-10-01",
-      "title": "",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
       "preview": "You might pull some ideas from GitHub - local-inference-lab/llm-inference-bench: LLM inference decode throughput benchmark with Rich TUI dashboard. Measures token generation speed across concurrency levels and context lengths. Supports SGLang and vLLM engines. \u00b7 GitHub this is the blackwell performa",
-      "has_benchmark_data": true
+      "structured": false
     },
     {
+      "id": "crucible_post_6_0",
+      "post_id": 4124293,
       "post_number": 6,
-      "username": "robertcarter",
+      "contributor": "robertcarter",
       "date": "2026-10-02",
-      "title": "",
-      "preview": "The idea of measuring per-user performance instead of only aggregate tokens/sec is really useful. I especially like the \u201cpractical sweet spot\u201d concept, because a server can look great in a benchmark while individual users are already getting poor response times. The TUI and CI/JSON output also make ",
-      "has_benchmark_data": true
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "The idea of measuring per-user performance instead of only aggregate tokens/sec is really useful. I especially like the \"practical sweet spot\" concept, because a server can look great in a benchmark while individual users are already getting poor response times. The TUI and CI/JSON output also make ",
+      "structured": false
     },
     {
+      "id": "crucible_post_10_0",
+      "post_id": 4124760,
+      "post_number": 10,
+      "contributor": "Strawberry",
+      "date": "2026-10-03",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "Screenshot 2026-10-03 I'm glad I upgraded the power supply recently...",
+      "structured": false
+    },
+    {
+      "id": "crucible_post_11_0",
+      "post_id": 4125343,
+      "post_number": 11,
+      "contributor": "MadGoat",
+      "date": "2026-10-04",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "Crucible LLM v0.1.2 - GPU Monitoring for Everyone - Pushed Again: Any and all feedback VERY welcome. THANKS! Strawberry: I'm glad I upgraded the power supply recently... If you could - I would love to know how Crucible reports the power for your AMD cards. I don't have any AMD cards to test on (nor ",
+      "structured": false
+    },
+    {
+      "id": "crucible_post_12_0",
+      "post_id": 4125384,
       "post_number": 12,
-      "username": "Strawberry",
+      "contributor": "Strawberry",
       "date": "2026-10-05",
-      "title": "",
-      "preview": "It reports only the first card? This feature is very new. I can say, what it\u2019s reporting is definitely correct. The 9700 spikes over 400 watts on NIAH test because it\u2019s pure prefill. I was monitoring with LACT and running the benchmarks from my dedicated Linux desktop remotely. It only sees one card",
-      "has_benchmark_data": true
+      "model": null,
+      "hardware": "9700",
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": 400.0,
+      "notes": "The 9700 spikes over 400 watts on NIAH test because it's pure prefill.",
+      "preview": "It reports only the first card? This feature is very new. I can say, what it's reporting is definitely correct. The 9700 spikes over 400 watts on NIAH test because it's pure prefill. I was monitoring with LACT and running the benchmarks from my dedicated Linux desktop remotely. It only sees one card",
+      "structured": true
     },
     {
+      "id": "crucible_post_13_0",
+      "post_id": 4125385,
+      "post_number": 13,
+      "contributor": "MadGoat",
+      "date": "2026-10-05",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "- That is INCREDIBLY helpful. Thank you. I was wondering if it was going to only grab one card, this confirms that - Also, are you using 0.1.3? - I have been working on adding a new power tab this evening - I wonder if the cards are reported in the power tab or if it's still pulling GPU0? Thanks a m",
+      "structured": false
+    },
+    {
+      "id": "crucible_post_14_0",
+      "post_id": 4125387,
+      "post_number": 14,
+      "contributor": "Strawberry",
+      "date": "2026-10-05",
+      "model": null,
+      "hardware": "5090",
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": "128K",
+      "power_w": null,
+      "notes": "I have a pile of hardware lying around and most of these are doing double duty, like the 5090 in my daily driver, and so on. | So far, not a single model that I've loaded has been able to return anything at all on any position in the 128K context.",
+      "preview": "I just downloaded a fresh copy of it because as mentioned in the notes, it needs to run on the machine with the cards in it in order for that feature to work. And I noticed that it's on 0.1.3 versus the 0.1.1 I've been using all day. Only one GPU shows up on the Power tab, but all of the metrics app",
+      "structured": true
+    },
+    {
+      "id": "crucible_post_15_0",
+      "post_id": 4125859,
+      "post_number": 15,
+      "contributor": "MadGoat",
+      "date": "2026-10-05",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "- Crucible LLM v0.1.3 - GPU & Power Monitor Released Lots of changes and polishing - Thank you @Strawberry for the feedback and testing!",
+      "structured": false
+    },
+    {
+      "id": "crucible_post_16_0",
+      "post_id": 4126216,
       "post_number": 16,
-      "username": "mini-pouce",
+      "contributor": "mini-pouce",
       "date": "2026-10-06",
-      "title": "",
-      "preview": "Thank you for sharing your tool. MadGoat: The \u201cpractical sweet spot\u201d \u2014 not just where aggregate throughput plateaus, but the maximum number of users where each one still gets a comfortable \u2265 30 tokens/sec. May you consider for this aspect a dispersion behaviour, either in tk/s or more praticaly in l",
-      "has_benchmark_data": true
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "Thank you for sharing your tool. MadGoat: The \"practical sweet spot\" - not just where aggregate throughput plateaus, but the maximum number of users where each one still gets a comfortable >= 30 tokens/sec. May you consider for this aspect a dispersion behaviour, either in tk/s or more praticaly in ",
+      "structured": false
     },
     {
+      "id": "crucible_post_18_0",
+      "post_id": 4127529,
+      "post_number": 18,
+      "contributor": "Gabor_Bikki",
+      "date": "2026-10-09",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "With 4x9700?",
+      "structured": false
+    },
+    {
+      "id": "crucible_post_19_0",
+      "post_id": 4127541,
+      "post_number": 19,
+      "contributor": "Strawberry",
+      "date": "2026-10-09",
+      "model": "Qwen 3.8 flash next",
+      "hardware": "4x 9700 Pro",
+      "backend": "Radiance",
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": "I am in fact using 4x 9700 pro cards. | Mostly qwen 3.8 flash next, qwen 3.8 27b models and their derivatives.",
+      "preview": "I am in fact using 4x 9700 pro cards. Mostly qwen 3.8 flash next, qwen 3.8 27b models and their derivatives. I recently switched to Radiance which is a real game changer for these cards.",
+      "structured": true
+    },
+    {
+      "id": "crucible_post_20_0",
+      "post_id": 4127653,
+      "post_number": 20,
+      "contributor": "Strawberry",
+      "date": "2026-10-10",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "Hey, so I have one more question / suggestion / discussion item. I asked some colleagues to run the needle in a haystack check on their models as a sanity check on mine. They were getting some very interesting results and it was failing almost 100% of the time no matter what their settings were. So,",
+      "structured": false
+    },
+    {
+      "id": "crucible_post_22_0",
+      "post_id": 4128204,
       "post_number": 22,
-      "username": "MadGoat",
+      "contributor": "MadGoat",
       "date": "2026-10-11",
-      "title": "",
-      "preview": "\u2013 v0.1.4 is out \u2013 Big one, mostly under the hood. Short version: I went after measurement integrity , and the main culprit turned out to be reasoning models quietly breaking several of the older numbers. What\u2019s new in 0.1.4 : Reasoning models handled \u2014 thinking is suppressed where the backend allows",
-      "has_benchmark_data": true
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "- v0.1.4 is out - Big one, mostly under the hood. Short version: I went after measurement integrity , and the main culprit turned out to be reasoning models quietly breaking several of the older numbers. What's new in 0.1.4 : Reasoning models handled - thinking is suppressed where the backend allows",
+      "structured": false
     },
     {
+      "id": "crucible_post_23_0",
+      "post_id": 4128287,
       "post_number": 23,
-      "username": "MadGoat",
+      "contributor": "MadGoat",
       "date": "2026-10-12",
-      "title": "",
-      "preview": "\u2014 v0.1.5 is out: Reasoning, Done Right The foundational one. Last release suppressed a reasoning model\u2019s thinking to keep the capability tests fair \u2014 until you hit a server that ignores that (a lot of newer \u201cconfig-only\u201d ones do, and Qwen3.5+ won\u2019t honor /no_think ), which silently turned good model",
-      "has_benchmark_data": true
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "- v0.1.5 is out: Reasoning, Done Right The foundational one. Last release suppressed a reasoning model's thinking to keep the capability tests fair - until you hit a server that ignores that (a lot of newer \"config-only\" ones do, and Qwen3.5+ won't honor /no_think ), which silently turned good model",
+      "structured": false
+    },
+    {
+      "id": "crucible_post_24_0",
+      "post_id": 4128329,
+      "post_number": 24,
+      "contributor": "mohan226",
+      "date": "2026-10-12",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "Hey @MadGoat , Nice work on the bench! I got to know about this one after @Strawberry told me. The issues only help anybody using it, even myself so I'm glad they could be fixed. I might have a couple more regarding the GPU power monitoring, but I need to verify first if it's actually a quirk of my ",
+      "structured": false
     }
   ]
 }

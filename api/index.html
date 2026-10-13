@@ -59,13 +59,14 @@
 <li><code>data.json</code> — the canonical submissions dataset (what the site's own tools use)</li>
 <li><code>data/api/v1/submissions.json</code> — the same payload at its <strong>versioned</strong> path</li>
 <li><code>data/api/v1/schema.json</code> — the <strong>JSON Schema</strong> (draft 2020-12) that formally defines the shape</li>
-<li><code>data/api/v1/benchmarks.json</code> / <code>data/api/v1/hardware.json</code> — the secondary community datasets</li>
+<li><code>data/api/v1/benchmarks.json</code> / <code>data/api/v1/hardware.json</code> — the secondary community datasets (structured since v1.4)</li>
+<li><code>data/api/v1/benchmarks_schema.json</code> / <code>data/api/v1/hardware_schema.json</code> — their JSON Schemas</li>
 </ul>
 <p>The full contract — every field, the versioning policy, the changelog — is documented in the <a href="https://github.com/MadGoatHaz/llm-matrix/blob/main/data/api/README.md" target="_blank" rel="noopener">API README</a> in the repo.</p>
 <h2 id="the-shape-of-a-record">The shape of a record</h2>
 <p>Each submission in <code>submissions[]</code> carries the 20-key canonical shape — provenance, hardware, OS/driver, model, quant, context, performance, and curation metadata:</p>
 <pre><code class="language-json">{
-  &quot;version&quot;: &quot;1.3&quot;,
+  &quot;version&quot;: &quot;1.4&quot;,
   &quot;generated_at&quot;: &quot;2026-10-13T16:22:09.366030&quot;,
   &quot;schema_version&quot;: &quot;2.4&quot;,
   &quot;source_thread&quot;: &quot;https://forum.level1techs.com/t/256443&quot;,
@@ -89,6 +90,13 @@
 }
 </code></pre>
 <p>(abbreviated — the <a href="../data/api/v1/schema.json">schema</a> defines every field, type, and closed enum precisely.)</p>
+<h2 id="the-secondary-datasets">The secondary datasets</h2>
+<p>Two more community threads are published the same way, now as <strong>structured</strong> data (v1.4):</p>
+<ul>
+<li><code>data/api/v1/benchmarks.json</code> — the <strong>Crucible</strong> benchmarking thread: each item carries <code>model</code>, <code>hardware</code>, <code>backend</code>, <code>performance</code> (decode / prefill / VRAM / TTFT), <code>context_length</code>, and <code>power_w</code> — all <code>null</code> when the post doesn't state them.</li>
+<li><code>data/api/v1/hardware.json</code> — the <strong>"Show Off Your AI Rig"</strong> thread: each item carries <code>gpu</code> (model + count), <code>vram_total_gb</code>, <code>cpu</code>, <code>ram_gb</code>, <code>storage</code>, <code>os</code>, and <code>workload</code> (what it runs, with verbatim speed snippets).</li>
+</ul>
+<p>The extraction is deliberately conservative: quoted content is excluded (a reply quoting someone else's rig doesn't credit the replier), questions and hypotheticals aren't specs, and nothing is guessed — a field that isn't in the post stays <code>null</code>. Every item keeps its 300-char <code>preview</code> as the fallback, and a <code>structured</code> flag tells you which items carry real data. Both payloads validate against their schemas (<code>benchmarks_schema.json</code> / <code>hardware_schema.json</code>), and each structured value is verbatim from the source post — the <code>notes</code> field carries the sentence it came from.</p>
 <h2 id="versioning">Versioning</h2>
 <p>The <code>version</code> field is a <code>major.minor</code> stamp. <strong>Additive</strong> changes (new optional fields, new enum values) bump the minor in place; <strong>breaking</strong> changes bump the major and publish under a new <code>data/api/vN/</code> path — old versions stay frozen, so your code never breaks silently. Pin the major and check <code>version</code> at runtime.</p>
 <h2 id="use-it-from-your-own-site">Use it from your own site</h2>
