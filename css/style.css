@@ -43,6 +43,14 @@
     --shadow-lg: 0 8px 24px rgba(0,0,0,0.4);
 
     --max-width: 1200px;
+    /* Reading width for long-form content (guides / articles). Comfortable
+       for sustained reading — wide enough to not feel cramped, narrow enough
+       that line length stays legible. Centered inside the --max-width page
+       container with breathing room on both sides. */
+    --content-max-width: 900px;
+    /* Comfortable width for multi-field forms (recommend / submit) so the
+       fields don't stretch across the full 1200px page container. */
+    --form-max-width: 760px;
     --nav-height: 60px;
 }
 
@@ -290,6 +298,16 @@ code, .mono { font-family: var(--font-mono); font-size: 0.9em; }
 }
 .card p { color: var(--text-secondary); font-size: 0.95rem; margin-bottom: 1rem; }
 .card p:last-child { margin-bottom: 0; }
+/* About page: its info cards are the only bare `.card` elements that are
+   *direct* children of `<main class="container">` (verified — the homepage /
+   community / guides-index cards all live inside `.card-grid`). Constrain them
+   to a comfortable reading width and center, so the prose reads better than
+   full-bleed across the 1200px container. */
+main.container > .card {
+    max-width: 820px;
+    margin-left: auto;
+    margin-right: auto;
+}
 .card-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
@@ -472,14 +490,14 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     margin: 0 auto;
 }
 .hero h1 {
-    font-size: 2.5rem;
+    font-size: clamp(2rem, 1.6rem + 1.8vw, 3rem);
     font-weight: 800;
     margin-bottom: 1rem;
     line-height: 1.2;
 }
 .hero h1 span { color: var(--accent); }
 .hero .tagline {
-    font-size: 1.2rem;
+    font-size: clamp(1.05rem, 0.95rem + 0.6vw, 1.3rem);
     color: var(--text-secondary);
     margin-bottom: 2rem;
 }
@@ -592,17 +610,18 @@ tr.highlighted { border-left: 3px solid var(--warning); }
 
 /* === GUIDE PAGE LAYER (long-form: guides/<slug>/index.html) === */
 .guide {
-    max-width: 760px;
+    width: 100%;
+    max-width: var(--content-max-width);
     margin: 0 auto;
 }
 .guide h1 {
-    font-size: 2rem;
+    font-size: clamp(1.75rem, 1.4rem + 1.4vw, 2.5rem);
     font-weight: 800;
     margin-bottom: 0.5rem;
     line-height: 1.2;
 }
 .guide h2 {
-    font-size: 1.4rem;
+    font-size: clamp(1.25rem, 1.1rem + 0.6vw, 1.6rem);
     font-weight: 700;
     margin: 2rem 0 0.75rem;
     padding-bottom: 0.4rem;
@@ -615,7 +634,12 @@ tr.highlighted { border-left: 3px solid var(--warning); }
 }
 .guide p {
     color: var(--text-secondary);
-    margin-bottom: 1rem;
+    margin-bottom: 1.1rem;
+    /* Fluid body text: scales smoothly from 1rem on phones up to ~1.15rem on
+       wide screens so line length stays comfortable as the 900px column
+       grows. */
+    font-size: clamp(1rem, 0.6rem + 1.5vw, 1.15rem);
+    line-height: 1.7;
 }
 .guide ul, .guide ol {
     color: var(--text-secondary);
@@ -625,8 +649,18 @@ tr.highlighted { border-left: 3px solid var(--warning); }
 .guide a { color: var(--accent); }
 .guide strong { color: var(--text); }
 
-/* Tables rendered from markdown */
-.guide table { margin: 1rem 0; }
+/* Tables rendered from markdown. `display:block` turns the table into a
+   scroll container so an unexpectedly wide table scrolls horizontally
+   (within the 900px column) instead of overflowing the page — the rows/cells
+   keep their internal table layout, and normal-width tables just fill the
+   column. */
+.guide table {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    margin: 1rem 0;
+}
 .guide th {
     background: var(--surface-2);
     text-align: left;
@@ -848,8 +882,12 @@ tr.highlighted { border-left: 3px solid var(--warning); }
 }
 .recommend-teaser-cta { white-space: nowrap; }
 
-/* The interactive tool */
-.recommend-tool { margin: 2rem 0; }
+/* The interactive tool. Capped to a comfortable form width and centered so
+   the fields don't stretch across the full page container. */
+.recommend-tool {
+    max-width: var(--form-max-width);
+    margin: 2rem auto;
+}
 .rec-form {
     background: var(--surface);
     border: 1px solid var(--border);
@@ -1645,7 +1683,11 @@ body.detail-open { overflow: hidden; }
 }
 
 /* === SUBMIT (P3-4: the community submission form) === */
-.submit-tool { margin: 2rem 0; }
+/* Capped to a comfortable form width and centered (same as recommend). */
+.submit-tool {
+    max-width: var(--form-max-width);
+    margin: 2rem auto;
+}
 
 .submit-form {
     background: var(--surface);
@@ -1771,7 +1813,7 @@ body.detail-open { overflow: hidden; }
 
 /* === MOBILE === */
 @media (max-width: 768px) {
-    .container { padding: 1rem; }
+    .container { padding: 1.5rem; }
     .hero { padding: 2rem 1rem; }
     .hero h1 { font-size: 1.8rem; }
     .stats-row { flex-direction: column; }
