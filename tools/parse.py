@@ -49,6 +49,7 @@ RAW_LATEST = DATA_DIR / "raw" / "latest.json"
 SCHEMA = WORKSPACE / "tools" / "schema.json"
 TAGS = WORKSPACE / "tools" / "tags.json"
 OUTPUT = DATA_DIR / "submissions.json"
+CANDIDATES = DATA_DIR / "candidates.json"
 
 # Reuse the site generator's helpers (the single source of truth, shared
 # with validate.py and the site pages): the backend normalizer (free-text
@@ -123,6 +124,16 @@ def parse_submission_block(block_text):
         # and breaking the list). Checked before key matching.
         if current_key is not None and isinstance(data.get(current_key), list):
             if line == ']':
+                data[current_key] = _join_list(data[current_key])
+                current_key = None
+            elif line.endswith(']') and len(line) > 1:
+                # Closing bracket attached to the last content line (e.g. a
+                # multi-line value whose final line is "... 8888]"). Capture
+                # the content, then close the list so a following "key:" line
+                # is not absorbed as list content.
+                item = _clean_item(line[:-1].rstrip())
+                if item:
+                    data[current_key].append(item)
                 data[current_key] = _join_list(data[current_key])
                 current_key = None
             elif line not in ('[', ','):
@@ -283,22 +294,339 @@ SUBMISSION_PATTERNS = (
 )
 
 def extract_submissions_from_post(post):
-    """Extract all submission blocks from a post's cooked HTML."""
+    """Extract all submission blocks from a post's cooked HTML.
+
+    Returns a list of dicts, each with:
+      - ``type``: "full" / "quick" (marker blocks) or "full" (unmarked)
+      - ``data``: the parsed + alias-mapped key/value dict
+      - ``prose``: cleaned prose around the block (P1-2 attribution)
+      - ``marked``: True for [COMMUNITY-SUBMISSION]/[QUICK-SUBMIT] blocks,
+        False for unmarked-structure blocks (P1-1 transparency flag)
+
+    Pass 1 is marker-based (with positional spans so the prose before /
+    between / after each block can be attributed). Pass 2 (P1-1) fires only
+    when a post has NO markers, recovering unmarked structured posts.
+    """
     text = strip_html(post.get("cooked", ""))
     submissions = []
 
+    # Pass 1: marker-based extraction, tracking each span's position.
+    spans = []
     for pattern, sub_type in SUBMISSION_PATTERNS:
         for match in re.finditer(pattern, text, re.DOTALL):
             block = match.group(1).strip()
             if not block:
                 continue
-            for sub_block in split_on_separator(block):
-                submissions.append({
-                    "type": sub_type,
-                    "data": apply_aliases(parse_submission_block(split_inline_fields(sub_block)))
-                })
+            spans.append((match.start(), match.end(), sub_type, block))
+    spans.sort(key=lambda s: s[0])
+
+    for idx, (start, end, sub_type, block) in enumerate(spans):
+        # P1-2: prose around the span. "Before" prose (only the first span)
+        # attaches to the span's first sub-block; "after" prose (up to the
+        # next span, or end of post) attaches to its last sub-block.
+        before = text[:start] if idx == 0 and start > 0 else ""
+        next_start = spans[idx + 1][0] if idx + 1 < len(spans) else len(text)
+        after = text[end:next_start] if next_start > end else ""
+        sub_blocks = split_on_separator(block)
+        for j, sub_block in enumerate(sub_blocks):
+            prose = ""
+            if j == 0:
+                prose = clean_prose(before)
+            if j == len(sub_blocks) - 1:
+                tail = clean_prose(after)
+                prose = f"{prose} {tail}".strip()
+            submissions.append({
+                "type": sub_type,
+                "data": apply_aliases(parse_submission_block(split_inline_fields(sub_block))),
+                "prose": prose,
+                "marked": True,
+            })
+
+    # Pass 2 (P1-1): unmarked structured posts. Only when no markers exist,
+    # so a post is never double-counted. Deterministic structure detection.
+    if not spans:
+        detected = detect_unmarked_structure(text)
+        if detected is not None:
+            start_line, end_line, block_text = detected
+            lines = text.split("\n")
+            after = clean_prose("\n".join(lines[end_line + 1:]))
+            submissions.append({
+                "type": "full",
+                "data": apply_aliases(parse_submission_block(split_inline_fields(block_text))),
+                "prose": after,
+                "marked": False,
+            })
 
     return submissions
+
+# ---------------------------------------------------------------------------
+# P1-1: unmarked structure detection (Layer 2)
+# ---------------------------------------------------------------------------
+
+# A bare "key:" line (brackets optional) after HTML decoding.
+KEY_LINE_RE = re.compile(r"^\[?[a-z_]+\]?:\s")
+# Max continuation lines allowed between two key lines in one structure.
+MAX_KEY_GAP = 6
+
+#: Canonical field names (post alias-mapping). Used to decide how "real" an
+#: unmarked key/value run is and to spot unmapped keys (P1-4).
+CANONICAL_FIELDS = {
+    "tier", "hardware", "backend", "os_driver", "model_name", "quant_package",
+    "weight_precision", "download_url", "primary_use_case", "stable_context_tested",
+    "kv_cache_setting", "engine_mode", "throughput_tps", "prefill_tps",
+    "ttft_cold", "power_draw", "setup_notes",
+}
+
+
+def clean_prose(t):
+    """Collapse whitespace in already-HTML-stripped prose (P1-2 / P1-5)."""
+    return re.sub(r"\s+", " ", t or "").strip()
+
+
+def detect_unmarked_structure(text):
+    """Detect an unmarked structured submission (P1-1, Layer 2).
+
+    Signal: a cluster of >=3 key lines (``key: value``, brackets optional)
+    with bounded gaps (so a multi-line value like ``setup_notes:`` doesn't
+    break the run), where >=2 of the keys map to canonical field names.
+
+    Returns ``(start_line, end_line, block_text)`` for the strongest
+    qualifying cluster, or ``None``. Deterministic (structure-based), no NLP.
+    """
+    lines = text.split("\n")
+    key_idx = [i for i, l in enumerate(lines) if KEY_LINE_RE.match(l.strip())]
+    if len(key_idx) < 3:
+        return None
+    # Cluster key lines separated by at most MAX_KEY_GAP continuation lines.
+    clusters = []
+    cur = [key_idx[0]]
+    for k in key_idx[1:]:
+        if k - cur[-1] <= MAX_KEY_GAP:
+            cur.append(k)
+        else:
+            clusters.append(cur)
+            cur = [k]
+    clusters.append(cur)
+    best = None
+    for cluster in clusters:
+        if len(cluster) < 3:
+            continue
+        start, end = cluster[0], cluster[-1]
+        block_text = "\n".join(lines[start:end + 1])
+        data = apply_aliases(parse_submission_block(split_inline_fields(block_text)))
+        mapped = sum(1 for k, v in data.items()
+                     if k in CANONICAL_FIELDS and str(v).strip())
+        if mapped >= 2:
+            if best is None or len(cluster) > len(best[2]):
+                best = (start, end, block_text)
+    return best
+
+# ---------------------------------------------------------------------------
+# P1-3: cross-block inheritance
+# ---------------------------------------------------------------------------
+
+# Quant-format signatures, most-specific first, for comparing a model name's
+# implied quant against a primary block's stated quant.
+_QUANT_SIG_PATTERNS = (
+    "q8_k_xl", "q6_k_xl", "q4_k_xl", "q2_k_xl",
+    "q8_0", "q4_0", "q5_0",
+    "q5_k_m", "q4_k_m", "q3_k_m",
+    "iq4_xs", "iq3_s", "iq2_s",
+    "nvfp4", "mxfp4", "fp8", "bf16", "fp16",
+    "q4", "q5", "q6", "q8",
+)
+
+
+def _quant_sig(s):
+    """A comparable quant-format signature from a model name or quant string.
+
+    ``None`` when no known quant token is present (so a block whose model
+    name names no quant never inherits a possibly-wrong primary quant).
+    """
+    t = (s or "").lower().replace("-", "_")
+    for pat in _QUANT_SIG_PATTERNS:
+        if pat in t:
+            return pat
+    return None
+
+
+def apply_cross_block_inheritance(entries):
+    """P1-3: inherit hardware/backend/quant from the primary block.
+
+    The primary block is the first one with the most fields filled. A
+    subsequent block that is genuinely empty for ``hardware`` / ``backend``
+    inherits the primary's value. ``quant_package`` is inherited ONLY when the
+    block's model name carries the SAME quant signature as the primary (a
+    differing or absent quant is left empty rather than guessed — the quality
+    bar forbids force-fitting). Each inherited field is provenance-flagged.
+
+    ``model`` / ``use_case`` / ``speed`` / ``notes`` are never inherited
+    (they are per-block).
+    """
+    if len(entries) < 2:
+        return entries
+
+    def _field_count(e):
+        n = 0
+        if (e.get("hardware") or {}).get("description"):
+            n += 1
+        if e.get("backend"):
+            n += 1
+        if (e.get("model") or {}).get("name"):
+            n += 1
+        if e.get("quant"):
+            n += 1
+        if e.get("tier"):
+            n += 1
+        if (e.get("context") or {}).get("stable"):
+            n += 1
+        if e.get("use_cases"):
+            n += 1
+        return n
+
+    primary_idx = max(range(len(entries)), key=lambda i: _field_count(entries[i]))
+    primary = entries[primary_idx]
+    p_hw = (primary.get("hardware") or {}).get("description", "")
+    p_vendor = (primary.get("hardware") or {}).get("vendor")
+    p_be = primary.get("backend", "")
+    p_q = primary.get("quant", "")
+    p_qs = _quant_sig(p_q)
+
+    for i, e in enumerate(entries):
+        if i == primary_idx:
+            continue
+        inh = {}
+        hw = e.get("hardware") or {}
+        if not hw.get("description") and p_hw:
+            hw["description"] = p_hw
+            hw["vendor"] = p_vendor
+            e["hardware"] = hw
+            inh["hardware"] = f"block_{primary_idx}"
+        if not e.get("backend") and p_be:
+            e["backend"] = p_be
+            inh["backend"] = f"block_{primary_idx}"
+        if not e.get("quant") and p_q:
+            e_qs = _quant_sig((e.get("model") or {}).get("name", ""))
+            if e_qs == p_qs:
+                e["quant"] = p_q
+                inh["quant"] = f"block_{primary_idx}"
+        if inh:
+            e["inherited_from"] = inh
+    return entries
+
+# ---------------------------------------------------------------------------
+# P1-5: prose-only candidates (Layer 3, conservative / human-in-the-loop)
+# ---------------------------------------------------------------------------
+
+# A first-person statement about the submitter's OWN setup (not a question).
+FIRST_PERSON_SETUP_RE = re.compile(
+    r"\bI (?:run|use|'m using|am using|have|switched|switch|'ve run|don't|do|came|shot)\b"
+    r"|\bmy (?:system|systems|rig|use|setup|GPU|hardware|evals|workload)\b",
+    re.IGNORECASE,
+)
+# An explicit hardware / model / VRAM / backend signal.
+HARDWARE_SIGNAL_RE = re.compile(
+    r"R9700|R9600|MI210|MI250|MI300|MI325|4090|5090|5080|A100|H100|H200|"
+    r"v620|W7900|9700|9600|\d+\s?GB|\d+\s?gig|"
+    r"DeepSeek|Qwen|Gemma|GLM|Kimi|Llama|Swift|Nemotron|GPT|MiMo|Carnice|"
+    r"LiteLLM|llama\.cpp|vLLM|Ollama|Strata|Radiance|Colibri|MLX|Unsloth",
+    re.IGNORECASE,
+)
+# A first line opening with a question word marks a question, not a submission.
+_QUESTION_FIRST_RE = re.compile(
+    r"^(How|What|Why|When|Where|Who|Which|Do|Does|Did|Have|Has|Had|"
+    r"Can|Could|Would|Will|Is|Are|Was|Were)\b",
+    re.IGNORECASE,
+)
+
+_GPU_TOKENS = {
+    "9700": "R9700", "9600": "R9600", "mi210": "MI210", "mi250": "MI250",
+    "mi300": "MI300", "mi325": "MI325", "4090": "4090", "5090": "5090",
+    "5080": "5080", "a100": "A100", "h100": "H100", "h200": "H200",
+    "v620": "v620", "w7900": "W7900",
+}
+_BACKEND_TOKENS = (
+    "LiteLLM", "llama.cpp", "llama-cpp", "vLLM", "Ollama",
+    "Strata", "Radiance", "Colibri", "MLX", "Unsloth",
+)
+_MODEL_TOKENS = (
+    "DeepSeek V4 Flash", "DeepSeek 4.1 Flash", "DeepSeek-V4.1-Flash",
+    "Swift_Qwen3.8", "Swift Qwen3.8", "Qwen 3.8 27B", "Qwen3.8-27B",
+    "Qwen 3.8 Flash Next", "Gemma 4 31B", "Gemma4", "GLM 5", "GLM-5",
+    "DeepSeek-R1",
+)
+
+
+def extract_candidate(post):
+    """P1-5 (Layer 3, conservative): a prose-only post that reads as a
+    first-person setup description carrying a hardware/model signal becomes a
+    *review candidate* — NOT a submission.
+
+    Candidates are the human-in-the-loop queue: the raw prose is always
+    preserved so the curator can read it, and only high-confidence fields
+    (explicit GPU model, VRAM amount, backend, named model) are extracted.
+    The site owner's posts (admin/changelog) and question-first posts are
+    excluded. Returns ``None`` when the post is not a candidate.
+    """
+    text = strip_html(post.get("cooked", ""))
+    if not text.strip():
+        return None
+    user = post.get("username", "unknown")
+    if user.strip().lower() == "madgoat":
+        return None
+    # Normalize curly apostrophes/quotes so the signals match reliably.
+    norm = (text.replace("\u2019", "'").replace("\u2018", "'")
+                .replace("\u201c", '"').replace("\u201d", '"'))
+    first_line = next((l.strip() for l in norm.split("\n") if l.strip()), "")
+    if _QUESTION_FIRST_RE.match(first_line):
+        return None
+    if not FIRST_PERSON_SETUP_RE.search(norm):
+        return None
+    if not HARDWARE_SIGNAL_RE.search(norm):
+        return None
+
+    low = norm.lower()
+    fields = {}
+    gpus = []
+    for tok, name in _GPU_TOKENS.items():
+        if tok in low and name not in gpus:
+            gpus.append(name)
+    if "quad" in low:
+        gpus.insert(0, "quad (4x)")
+    if gpus:
+        fields["gpu"] = ", ".join(gpus)
+    vrams = sorted({m for m in re.findall(r"(\d+)\s?(?:GB|gig)", norm, re.IGNORECASE)},
+                   key=int)
+    if vrams:
+        fields["vram_gb"] = ", ".join(vrams)
+    backends = []
+    for b in _BACKEND_TOKENS:
+        if b.lower() not in low:
+            continue
+        # A backend named only in a negative / hypothetical context (e.g.
+        # "I haven't tried Strata") is NOT high-confidence — skip it so the
+        # candidate queue stays honest (the raw text still shows the context).
+        ctx = low[max(0, low.find(b.lower()) - 14):low.find(b.lower())]
+        if re.search(r"haven'?t|have not|never|don'?t|didn'?t|not tried|not use|not run", ctx):
+            continue
+        backends.append(b)
+    if backends:
+        fields["backend"] = ", ".join(backends)
+    models = []
+    for m in _MODEL_TOKENS:
+        if m.lower() in low and m not in models:
+            models.append(m)
+    if models:
+        fields["models"] = ", ".join(models)
+
+    return {
+        "id": f"candidate_post_{post.get('post_number', 0)}_{user.lower()}",
+        "confidence": "unverified",
+        "source_post": post.get("post_number", 0),
+        "source_user": user,
+        "raw_text": clean_prose(norm),
+        "fields": fields,
+    }
 
 # ---------------------------------------------------------------------------
 # Template / placeholder detection
@@ -424,6 +752,7 @@ def main():
 
     posts = thread.get("post_stream", {}).get("posts", [])
     submissions = []
+    candidates = []
     warnings = []
     skipped_templates = 0
     valid_backends = set(schema.get("backends", []))
@@ -433,6 +762,7 @@ def main():
         username = post.get("username", "unknown")
 
         subs = extract_submissions_from_post(post)
+        post_entries = []
 
         for i, sub in enumerate(subs):
             # Skip unfilled template/placeholder submissions entirely.
@@ -450,6 +780,25 @@ def main():
             if backend_detail:
                 notes = f"{notes} | {backend_detail}" if notes else backend_detail
 
+            # P1-4: fold any parsed keys that map to NO canonical field into
+            # the notes (e.g. post 8's "coherence:") so nothing is silently
+            # lost in the `raw` block that trim_for_client drops.
+            unmapped = {k: v for k, v in sub["data"].items()
+                        if k not in CANONICAL_FIELDS and str(v).strip()}
+            if unmapped:
+                extra = " ".join(f"{k}: {v}" for k, v in unmapped.items())
+                notes = f"{notes} {extra}" if notes else extra
+
+            # P1-2: attribute the prose before/between/after this block to its
+            # notes (cleaned in extract_submissions_from_post). Kept simple —
+            # appended verbatim, no NLP parsing. Guard: prose that itself reads
+            # as a template placeholder (e.g. a long preamble containing
+            # "e.g.,") is NOT appended, so the P0 placeholder sweep stays clean.
+            prose = sub.get("prose", "")
+            if prose and not is_placeholder(prose):
+                notes = f"{notes} {prose}" if notes else prose
+            notes = notes.strip()
+
             # Speed: a single unlabeled figure is the decode speed; a string
             # carrying BOTH a prefill and a decode figure ("PP 120t/s, TG
             # 2.5 t/s") is split so the prompt-processing number never lands
@@ -465,7 +814,9 @@ def main():
                     "post_number": post_num,
                     "post_id": post.get("id"),
                     "username": username,
-                    "submitted_at": post.get("created_at", "")
+                    "submitted_at": post.get("created_at", ""),
+                    # P1-1 transparency: False for unmarked-structure blocks.
+                    "marked": bool(sub.get("marked", True)),
                 },
                 "type": sub["type"],
                 # Verbatim block, with unfilled template values blanked — the
@@ -520,11 +871,17 @@ def main():
                     entry["tags"] = tag_val.get("tags", [])
                     break
 
-            submissions.append(entry)
+            post_entries.append(entry)
 
-            # Warnings
+        # P1-3: cross-block inheritance — needs the post's full entry set, so
+        # it runs after every entry for this post is built.
+        post_entries = apply_cross_block_inheritance(post_entries)
+
+        # Warnings (computed AFTER inheritance, so a block whose backend was
+        # inherited is not falsely flagged as missing one).
+        for entry in post_entries:
             if not entry["tier"]:
-                warnings.append(f"Post #{post_num} ({username}): Could not normalize tier from '{sub['data'].get('tier', 'N/A')}'")
+                warnings.append(f"Post #{post_num} ({username}): tier not normalizable (left empty)")
             if not entry["backend"]:
                 warnings.append(f"Post #{post_num} ({username}): No backend specified")
             elif entry["backend"] not in valid_backends:
@@ -532,6 +889,14 @@ def main():
                 # quality note, not a hard failure — one unusual entry must
                 # not block the pipeline).
                 warnings.append(f"Post #{post_num} ({username}): backend '{entry['backend']}' matched no known backend (kept as-is)")
+
+        submissions.extend(post_entries)
+
+        # P1-5: prose-only candidates (no markers AND no unmarked structure).
+        if not subs:
+            cand = extract_candidate(post)
+            if cand:
+                candidates.append(cand)
 
     # Write output. `submissions` contains only real (non-template) entries,
     # so total_submissions and all stats below reflect real data only.
@@ -548,10 +913,26 @@ def main():
     with open(OUTPUT, 'w') as f:
         json.dump(output, f, indent=2)
 
+    # P1-5: write the conservative prose-only candidate queue (NOT part of the
+    # site output until a curator promotes an entry).
+    candidate_output = {
+        "generated_at": datetime.now().isoformat(),
+        "source_thread": "https://forum.level1techs.com/t/256443",
+        "total_candidates": len(candidates),
+        "note": ("Conservative prose-only candidates (Layer 3). Each is flagged "
+                 "unverified for curator review and is NOT included in "
+                 "submissions.json or the site until promoted."),
+        "candidates": candidates,
+    }
+    with open(CANDIDATES, 'w') as f:
+        json.dump(candidate_output, f, indent=2)
+
     # Summary
     print(f"✓ Parsed {len(submissions)} real submissions from {len(posts)} posts")
     print(f"✓ Skipped {skipped_templates} template/placeholder submission(s)")
+    print(f"✓ Queued {len(candidates)} prose-only candidate(s) for review")
     print(f"✓ Output: {OUTPUT}")
+    print(f"✓ Candidates: {CANDIDATES}")
 
     # Tier distribution (real submissions only)
     tier_counts = {}

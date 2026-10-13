@@ -22,7 +22,7 @@ else
 PYTHON ?= .venv/bin/python
 endif
 
-.PHONY: help test build lint validate clean golden check pull
+.PHONY: help test build lint validate clean golden check pull review-candidates
 
 help:
 	@echo "Local AI Stack — common commands"
@@ -68,6 +68,13 @@ check: lint validate test
 
 pull:
 	./pull.sh
+
+# --- Candidate review (P1-5 human-in-the-loop queue) ----------------------
+# Lists the conservative prose-only candidates from data/candidates.json.
+# These are NOT in the site; a curator promotes the good ones.
+review-candidates:
+	@echo "==> Listing prose-only review candidates (data/candidates.json)"
+	$(PYTHON) tools/review_candidates.py
 
 # --- Site generation --------------------------------------------------------
 

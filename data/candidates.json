@@ -1,0 +1,53 @@
+{
+  "generated_at": "2026-10-13T11:13:38.267257",
+  "source_thread": "https://forum.level1techs.com/t/256443",
+  "total_candidates": 4,
+  "note": "Conservative prose-only candidates (Layer 3). Each is flagged unverified for curator review and is NOT included in submissions.json or the site until promoted.",
+  "candidates": [
+    {
+      "id": "candidate_post_9_mashie",
+      "confidence": "unverified",
+      "source_post": 9,
+      "source_user": "mashie",
+      "raw_text": "The preferred model you linked next to the DeepSeek V4 Flash Vision Exp is the non-vision model. Personally I run DeepSeek V4 Flash 0731 with the original quant.",
+      "fields": {
+        "models": "DeepSeek V4 Flash"
+      }
+    },
+    {
+      "id": "candidate_post_16_patrick_m",
+      "confidence": "unverified",
+      "source_post": 16,
+      "source_user": "Patrick_M",
+      "raw_text": "Today I switched to Swift_Qwen3.8-27B in FP8 and it is so much faster and more responsive that standard Qwen3.8 on both of my systems with 96gb VRAM. I put the context to 256k for now and it just works\u2026 I am also using LiteLLM to direct agents to whichever system has the most availability to help increase my utilization and not big down agents. One suggestion is to put the weights of the models in your table. For example I have 4x MI210 GPUs that I use for simulations but was wondering what I could do with 256GB VRAM, well since those cards are limited to FP16 at the lowest, I can't really tell from the table what is running at FP16 or lower.",
+      "fields": {
+        "gpu": "MI210",
+        "vram_gb": "96, 256",
+        "backend": "LiteLLM",
+        "models": "Swift_Qwen3.8, Qwen3.8-27B"
+      }
+    },
+    {
+      "id": "candidate_post_24_strawberry",
+      "confidence": "unverified",
+      "source_post": 24,
+      "source_user": "Strawberry",
+      "raw_text": "Quad 9700s reporting for duty! Though really, you can just look at the 64/128 gig recommendations and adapt them. It's AMD and weird, but modern. Fp8 performance is nice but NVFP4 \u2192 MXFP4 is the real golden ticket from what I understand and I see hardly anyone doing this yet. I don't regret spending on these as they are useful enough now but have plenty of room to grow.",
+      "fields": {
+        "gpu": "quad (4x), R9700",
+        "vram_gb": "128"
+      }
+    },
+    {
+      "id": "candidate_post_25_lhl",
+      "confidence": "unverified",
+      "source_post": 25,
+      "source_user": "lhl",
+      "raw_text": "@manoreken2 For translation, I'm curious how Gemma 4 31B does (I don't know how it's ancient Chinese is, but it's Japanese is pretty top tier for its size, beating out most newer open models in my evals)\u2026 As for my use of local LLMs is pretty much exclusively for coding\u2026 Qwen 3.8 27B (medium) continues to be my <24GB champ, although I haven't tried Strata - it might make it possible to run decent Qwen 3.8 Flash Next quants well on some smaller GPUs (assuming you have the system memory) Qwen 3.8 Flash Next NVFP4 (medium) - I've run a lot of tokens through this. It's quite a good coder and is extremely fast. at the <128GB tier its my top pick (can be squeezed into 96GB if you try) I've shot out qwen38fn, glm53f, and ds41f against synthetic and my own workload evals and DeepSeek 4.1 Flash actually did slightly edge out the others, both in quality and speed. I also compared mimo26f, and even w/ the tool-call fix, I wasn't so impressed by its perf. I've run tens of billions of tokens through ds41f.",
+      "fields": {
+        "vram_gb": "24, 96, 128",
+        "models": "DeepSeek 4.1 Flash, Qwen 3.8 27B, Qwen 3.8 Flash Next, Gemma 4 31B"
+      }
+    }
+  ]
+}

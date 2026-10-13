@@ -94,6 +94,10 @@
               "type": "string",
               "format": "date-time",
               "description": "ISO 8601 timestamp the post was created."
+            },
+            "marked": {
+              "type": "boolean",
+              "description": "True when the submission came from a [COMMUNITY-SUBMISSION]/[QUICK-SUBMIT] marker block; false when recovered from an unmarked structured post (deterministic structure detection, P1-1). (Added in v1.2.)"
             }
           }
         },
@@ -106,8 +110,11 @@
           "description": "The original [COMMUNITY-SUBMISSION] block fields, verbatim. The key set varies by submission type (quick reports carry fewer). Preserved for provenance — consumers should use the normalized fields."
         },
         "tier": {
-          "enum": ["t1", "t2", "t3", "t4", "t5", "t6"],
-          "description": "VRAM tier: t1 = ≤16GB, t2 = 16-24GB, t3 = 24-32GB, t4 = 48-64GB, t5 = 96-128GB, t6 = 196-256GB+."
+          "anyOf": [
+            {"enum": ["t1", "t2", "t3", "t4", "t5", "t6"]},
+            {"type": "null"}
+          ],
+          "description": "VRAM tier: t1 = ≤16GB, t2 = 16-24GB, t3 = 24-32GB, t4 = 48-64GB, t5 = 96-128GB, t6 = 196-256GB+. null = no VRAM tier (e.g. a CPU-only rig) — the entry renders under the matrix's 'Unclassified' group. (null allowed in v1.2.)"
         },
         "hardware": {
           "type": "object",
@@ -230,6 +237,13 @@
             "type": "string"
           },
           "description": "Free-form curator tags."
+        },
+        "inherited_from": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "Provenance for fields inherited from the post's primary block (cross-block inheritance, P1-3): a map of field name -> source block id (e.g. {\"hardware\": \"block_0\", \"backend\": \"block_0\"}). Present only when the block omitted hardware/backend/quant that its post's primary block supplied; model/use_case/speed/notes are never inherited. (Added in v1.2.)"
         }
       }
     }

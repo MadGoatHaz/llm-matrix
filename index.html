@@ -58,10 +58,10 @@
 
 
   <div class="stats-row">
-    <div class="stat-card"><div class="value">25</div><div class="label">Submissions</div></div>
+    <div class="stat-card"><div class="value">26</div><div class="label">Submissions</div></div>
     <div class="stat-card"><div class="value">7</div><div class="label">Contributors</div></div>
     <div class="stat-card"><div class="value">3</div><div class="label">Hardware Vendors</div></div>
-    <div class="stat-card"><div class="value">6</div><div class="label">Backends</div></div>
+    <div class="stat-card"><div class="value">7</div><div class="label">Backends</div></div>
   </div>
 
   <section class="recommend-teaser" aria-labelledby="rec-teaser-title">
@@ -103,8 +103,8 @@
     <h3 class="subheading">Popular Backends</h3>
 
   <div class="stats-row">
+    <div class="stat-card"><div class="value">12</div><div class="label">llama.cpp</div></div>
     <div class="stat-card"><div class="value">5</div><div class="label">llama-swap</div></div>
-    <div class="stat-card"><div class="value">5</div><div class="label">llama.cpp</div></div>
     <div class="stat-card"><div class="value">4</div><div class="label">Ollama</div></div>
   </div>
 
@@ -137,14 +137,14 @@
 
   <section aria-labelledby="numbers-title">
     <h2 class="section-title" id="numbers-title"><span class="icon" aria-hidden="true">📊</span> By the numbers</h2>
-    <p class="charts-intro">The whole dataset at a glance — 25 submissions,
+    <p class="charts-intro">The whole dataset at a glance — 26 submissions,
        updated from the forum thread every week. <a href="matrix.html">The matrix has three more views →</a></p>
     <div class="chart-grid">
     <figure class="chart-card" aria-label="VRAM distribution">
       <h3><span class="icon" aria-hidden="true">📊</span> VRAM distribution</h3>
       <div class="chart-body">
       <svg class="chart-svg" role="img" aria-labelledby="home-vram-title home-vram-desc" viewBox="0 0 640 320">
-        <title id="home-vram-title">VRAM distribution: 25 submissions across 6 tiers</title>
+        <title id="home-vram-title">VRAM distribution: 26 submissions across 6 tiers</title>
         <desc id="home-vram-desc">Bar chart of community submissions per VRAM tier. ≤16GB: 5; 16-24GB: 4; 24-32GB: 1; 48-64GB: 6; 96-128GB: 3; 196-256GB+: 6</desc>
 
         <line class="grid-line" x1="46" y1="266.0" x2="624" y2="266.0"/>        <text class="tick-label" x="38" y="270.0" text-anchor="end">0</text>
@@ -178,24 +178,26 @@
       <h3><span class="icon" aria-hidden="true">🔌</span> Backend usage</h3>
       <div class="chart-body">
       <svg class="chart-svg" role="img" aria-labelledby="home-backend-title home-backend-desc" viewBox="0 0 320 320">
-        <title id="home-backend-title">Backend usage: 18 submissions across 6 backends</title>
-        <desc id="home-backend-desc">Donut chart of submissions per inference backend. llama-swap: 5 (28%); llama.cpp: 5 (28%); Ollama: 4 (22%); vLLM: 2 (11%); Radiance: 1 (6%); Strata: 1 (6%)</desc>
+        <title id="home-backend-title">Backend usage: 26 submissions across 7 backends</title>
+        <desc id="home-backend-desc">Donut chart of submissions per inference backend. llama.cpp: 12 (46%); llama-swap: 5 (19%); Ollama: 4 (15%); vLLM: 2 (8%); Colibri: 1 (4%); Radiance: 1 (4%); Strata: 1 (4%)</desc>
 
-        <path class="seg-1" d="M 160.00 32.00 A 128 128 0 0 1 286.06 182.23 L 236.82 173.54 A 78 78 0 0 0 160.00 82.00 Z"><title>llama-swap: 5 submissions (28%)</title></path>
-        <path class="seg-2" d="M 286.06 182.23 A 128 128 0 0 1 116.22 280.28 L 133.32 233.30 A 78 78 0 0 0 236.82 173.54 Z"><title>llama.cpp: 5 submissions (28%)</title></path>
-        <path class="seg-3" d="M 116.22 280.28 A 128 128 0 0 1 33.94 137.77 L 83.18 146.46 A 78 78 0 0 0 133.32 233.30 Z"><title>Ollama: 4 submissions (22%)</title></path>
-        <path class="seg-4" d="M 33.94 137.77 A 128 128 0 0 1 77.72 61.95 L 109.86 100.25 A 78 78 0 0 0 83.18 146.46 Z"><title>vLLM: 2 submissions (11%)</title></path>
-        <path class="seg-5" d="M 77.72 61.95 A 128 128 0 0 1 116.22 39.72 L 133.32 86.70 A 78 78 0 0 0 109.86 100.25 Z"><title>Radiance: 1 submission (6%)</title></path>
-        <path class="seg-6" d="M 116.22 39.72 A 128 128 0 0 1 160.00 32.00 L 160.00 82.00 A 78 78 0 0 0 133.32 86.70 Z"><title>Strata: 1 submission (6%)</title></path>
-        <text class="donut-center-value" x="160.0" y="158.0" text-anchor="middle">18</text>        <text class="donut-center-label" x="160.0" y="178.0" text-anchor="middle">submissions</text>
+        <path class="seg-1" d="M 160.00 32.00 A 128 128 0 0 1 190.63 284.28 L 178.67 235.73 A 78 78 0 0 0 160.00 82.00 Z"><title>llama.cpp: 12 submissions (46%)</title></path>
+        <path class="seg-2" d="M 190.63 284.28 A 128 128 0 0 1 54.66 232.71 L 95.81 204.31 A 78 78 0 0 0 178.67 235.73 Z"><title>llama-swap: 5 submissions (19%)</title></path>
+        <path class="seg-3" d="M 54.66 232.71 A 128 128 0 0 1 40.32 114.61 L 87.07 132.34 A 78 78 0 0 0 95.81 204.31 Z"><title>Ollama: 4 submissions (15%)</title></path>
+        <path class="seg-4" d="M 40.32 114.61 A 128 128 0 0 1 75.12 64.19 L 108.28 101.62 A 78 78 0 0 0 87.07 132.34 Z"><title>vLLM: 2 submissions (8%)</title></path>
+        <path class="seg-5" d="M 75.12 64.19 A 128 128 0 0 1 100.52 46.66 L 123.75 90.93 A 78 78 0 0 0 108.28 101.62 Z"><title>Colibri: 1 submission (4%)</title></path>
+        <path class="seg-6" d="M 100.52 46.66 A 128 128 0 0 1 129.37 35.72 L 141.33 84.27 A 78 78 0 0 0 123.75 90.93 Z"><title>Radiance: 1 submission (4%)</title></path>
+        <path class="seg-7" d="M 129.37 35.72 A 128 128 0 0 1 160.00 32.00 L 160.00 82.00 A 78 78 0 0 0 141.33 84.27 Z"><title>Strata: 1 submission (4%)</title></path>
+        <text class="donut-center-value" x="160.0" y="158.0" text-anchor="middle">26</text>        <text class="donut-center-label" x="160.0" y="178.0" text-anchor="middle">submissions</text>
       </svg>
       <ul class="chart-legend" aria-label="Backends">
-        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-1" aria-hidden="true"></span>llama-swap <span class="chart-legend-count">5</span></li>
-        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-2" aria-hidden="true"></span>llama.cpp <span class="chart-legend-count">5</span></li>
+        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-1" aria-hidden="true"></span>llama.cpp <span class="chart-legend-count">12</span></li>
+        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-2" aria-hidden="true"></span>llama-swap <span class="chart-legend-count">5</span></li>
         <li class="chart-legend-item"><span class="chart-legend-swatch swatch-3" aria-hidden="true"></span>Ollama <span class="chart-legend-count">4</span></li>
         <li class="chart-legend-item"><span class="chart-legend-swatch swatch-4" aria-hidden="true"></span>vLLM <span class="chart-legend-count">2</span></li>
-        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-5" aria-hidden="true"></span>Radiance <span class="chart-legend-count">1</span></li>
-        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-6" aria-hidden="true"></span>Strata <span class="chart-legend-count">1</span></li>
+        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-5" aria-hidden="true"></span>Colibri <span class="chart-legend-count">1</span></li>
+        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-6" aria-hidden="true"></span>Radiance <span class="chart-legend-count">1</span></li>
+        <li class="chart-legend-item"><span class="chart-legend-swatch swatch-7" aria-hidden="true"></span>Strata <span class="chart-legend-count">1</span></li>
       </ul>
       </div>
     </figure>

@@ -492,10 +492,13 @@ def compute_stats(subs: list[dict], schema: dict) -> dict:
     for s in subs:
         v = hw(s).get("vendor", "")
         if v and not is_placeholder(v):
-            # Exclude "Mixed" when it comes only from empty/template entries
+            # Exclude a bare "Mixed" that comes only from an empty-hardware
+            # entry (a CPU-only rig) — it is not a real vendor signal. The
+            # backend below is still counted (no `continue`).
             if v == "Mixed" and is_placeholder(hw(s).get("description")):
-                continue
-            vendor_set.add(v)
+                pass
+            else:
+                vendor_set.add(v)
         b = normalize_backend(s.get("backend", ""), schema)
         if b:
             backend_set.add(b)
@@ -509,13 +512,21 @@ def compute_stats(subs: list[dict], schema: dict) -> dict:
 
 
 def group_by_tier(subs: list[dict], tiers: list[dict]) -> list[tuple[str, str, list[dict]]]:
-    """Ordered [(tier_id, tier_label, [subs...])] for tiers that have rows."""
+    """Ordered [(tier_id, tier_label, [subs...])] for tiers that have rows.
+
+    Submissions with no VRAM tier (e.g. a CPU-only rig) are NOT dropped: they
+    collect into a trailing ``unclassified`` bucket so every real submission is
+    represented on the tier-grouped matrix.
+    """
     labels = {t["id"]: t["label"] for t in tiers}
     out = []
     for t in tiers:
         tier_subs = [s for s in subs if s.get("tier") == t["id"]]
         if tier_subs:
             out.append((t["id"], labels[t["id"]], tier_subs))
+    unclassified = [s for s in subs if not s.get("tier")]
+    if unclassified:
+        out.append(("unclassified", "Unclassified (no VRAM tier)", unclassified))
     return out
 
 

@@ -1,9 +1,9 @@
 {
-  "version": "1.1",
-  "generated_at": "2026-10-13T10:41:41.173398",
+  "version": "1.2",
+  "generated_at": "2026-10-13T11:08:37.128444",
   "schema_version": "2.2",
   "source_thread": "https://forum.level1techs.com/t/256443",
-  "total_submissions": 25,
+  "total_submissions": 26,
   "skipped_templates": 2,
   "submissions": [
     {
@@ -12,7 +12,8 @@
         "post_number": 5,
         "post_id": 4119255,
         "username": "digitalscream",
-        "submitted_at": "2026-09-18T14:00:04.030Z"
+        "submitted_at": "2026-09-18T14:00:04.030Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -53,7 +54,7 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "magiccodingman/vllm-radiance, with adaptive MTP = 8",
+      "notes": "magiccodingman/vllm-radiance, with adaptive MTP = 8 In truth, I could\u2019ve used any of the Swift options, I just went for uncensored because I occasionally have to track down DoS attacks on my forum and that sort of thing makes standard Qwen-based models nervy. Swift is the only fine-tune I\u2019ve encountered that\u2019s a straight upgrade on the original model with no catches or caveats. It just works, and it does what it says on the tin.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -65,7 +66,8 @@
         "post_number": 6,
         "post_id": 4119262,
         "username": "Burhan",
-        "submitted_at": "2026-09-18T14:30:23.937Z"
+        "submitted_at": "2026-09-18T14:30:23.937Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -110,7 +112,7 @@
         "power_w": "75 W"
       },
       "engine_mode": "Hybrid (VRAM+RAM)",
-      "notes": "",
+      "notes": "Updated to list each model separately",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -122,7 +124,8 @@
         "post_number": 6,
         "post_id": 4119262,
         "username": "Burhan",
-        "submitted_at": "2026-09-18T14:30:23.937Z"
+        "submitted_at": "2026-09-18T14:30:23.937Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -179,7 +182,8 @@
         "post_number": 6,
         "post_id": 4119262,
         "username": "Burhan",
-        "submitted_at": "2026-09-18T14:30:23.937Z"
+        "submitted_at": "2026-09-18T14:30:23.937Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -236,7 +240,8 @@
         "post_number": 6,
         "post_id": 4119262,
         "username": "Burhan",
-        "submitted_at": "2026-09-18T14:30:23.937Z"
+        "submitted_at": "2026-09-18T14:30:23.937Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -281,7 +286,7 @@
         "power_w": "75 W"
       },
       "engine_mode": "Hybrid (VRAM+RAM)",
-      "notes": "",
+      "notes": "I have Ollama + Open WebUI + SearXNG configured for general purpose usage. I\u2019ve had great results with just having Qwen3.6-27b (low thinking mode) doing web research for me, even the Qwen3.5-9b has done surprisingly well. The KV cache quantization has helped a lot for getting bigger models and context windows running with limited VRAM, and the 75W max on the small GPU has been very kind to my electric bill. Most of my usage here is \u2018throwing tasks over the fence.\u2019 So speed isn\u2019t critical, it\u2019s just getting the job done as best as possible. Generally I\u2019ll send a message for a research task and then come back several minutes or even hours later to review the results. I do have another system for coding that I\u2019ll share separately later on.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -293,7 +298,8 @@
         "post_number": 8,
         "post_id": 4119449,
         "username": "s1ugh34d",
-        "submitted_at": "2026-09-18T20:53:48.887Z"
+        "submitted_at": "2026-09-18T20:53:48.887Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -348,7 +354,8 @@
         "post_number": 8,
         "post_id": 4119449,
         "username": "s1ugh34d",
-        "submitted_at": "2026-09-18T20:53:48.887Z"
+        "submitted_at": "2026-09-18T20:53:48.887Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -391,7 +398,7 @@
         "power_w": "~214 W peak, 99% GPU util"
       },
       "engine_mode": "",
-      "notes": "Thinking model \u2014 emits reasoning_content; budget 512+ tokens or it burns max_tokens in reasoning and returns finish_reason=length with empty content. Answered verbal-math correctly (final answer 4). ~5GB VRAM footprint. | llama.cpp subprocess",
+      "notes": "Thinking model \u2014 emits reasoning_content; budget 512+ tokens or it burns max_tokens in reasoning and returns finish_reason=length with empty content. Answered verbal-math correctly (final answer 4). ~5GB VRAM footprint. | llama.cpp subprocess coherence: holds through 49k NIAH.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -403,7 +410,8 @@
         "post_number": 8,
         "post_id": 4119449,
         "username": "s1ugh34d",
-        "submitted_at": "2026-09-18T20:53:48.887Z"
+        "submitted_at": "2026-09-18T20:53:48.887Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -446,7 +454,7 @@
         "power_w": "~233 W peak, 100% GPU util"
       },
       "engine_mode": "",
-      "notes": "13.8GB VRAM = nearly full weight residency on 16GB; decode speed collapses to 14 tps (big dense model). Slow prefill: 41s TTFT @8k, 245s @49k. | llama.cpp subprocess",
+      "notes": "13.8GB VRAM = nearly full weight residency on 16GB; decode speed collapses to 14 tps (big dense model). Slow prefill: 41s TTFT @8k, 245s @49k. | llama.cpp subprocess coherence: holds through full 49k NIAH. Good value if you need 30k+ ctx on a dense 27B and can live with 14 tps.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -458,7 +466,8 @@
         "post_number": 8,
         "post_id": 4119449,
         "username": "s1ugh34d",
-        "submitted_at": "2026-09-18T20:53:48.887Z"
+        "submitted_at": "2026-09-18T20:53:48.887Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -512,7 +521,8 @@
         "post_number": 8,
         "post_id": 4119449,
         "username": "s1ugh34d",
-        "submitted_at": "2026-09-18T20:53:48.887Z"
+        "submitted_at": "2026-09-18T20:53:48.887Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -566,7 +576,8 @@
         "post_number": 12,
         "post_id": 4119505,
         "username": "manoreken2",
-        "submitted_at": "2026-09-19T00:47:52.759Z"
+        "submitted_at": "2026-09-19T00:47:52.759Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -606,7 +617,7 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "llama-server -m C:/work/hf/DeepSeek-R1.gguf -c 8192 -t 10 --parallel 1",
+      "notes": "llama-server -m C:/work/hf/DeepSeek-R1.gguf -c 8192 -t 10 --parallel 1 My task is niche: 2500\uff5e1000 years ago Chinese historical documents to modern Japanese translation, it is for my recreational reading. Slow token throughput is no problem for this task, because it is unattended batch translation. Model parameters are spilled out to main memory (1024GB). Following is my subjective output text quality evaluation. This is one of the most suitable model for this task. This is output example: \u53f2\u8a18 \u65e5\u672c\u8a9e\u8a33 DeepSeek-R1:671b-0528-q8_0",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -618,7 +629,8 @@
         "post_number": 12,
         "post_id": 4119505,
         "username": "manoreken2",
-        "submitted_at": "2026-09-19T00:47:52.759Z"
+        "submitted_at": "2026-09-19T00:47:52.759Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -629,16 +641,16 @@
       },
       "tier": "t6",
       "hardware": {
-        "description": "",
-        "vendor": "Mixed"
+        "description": "RTX 5090 + IceLake Xeon",
+        "vendor": "NVIDIA"
       },
-      "backend": "",
+      "backend": "llama.cpp",
       "os_driver": "",
       "model": {
         "name": "DeepSeek-V3.1 Terminus:671b_q8_0",
         "url": "unsloth/DeepSeek-V3.1-Terminus-GGUF \u00b7 Hugging Face"
       },
-      "quant": "",
+      "quant": "GGUF Q8_0",
       "weight_precision": "",
       "use_cases": "",
       "context": {
@@ -652,11 +664,16 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "",
+      "notes": "This is also good.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
-      "tags": []
+      "tags": [],
+      "inherited_from": {
+        "hardware": "block_0",
+        "backend": "block_0",
+        "quant": "block_0"
+      }
     },
     {
       "id": "post_12_manoreken2_2",
@@ -664,7 +681,8 @@
         "post_number": 12,
         "post_id": 4119505,
         "username": "manoreken2",
-        "submitted_at": "2026-09-19T00:47:52.759Z"
+        "submitted_at": "2026-09-19T00:47:52.759Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -675,10 +693,10 @@
       },
       "tier": "t6",
       "hardware": {
-        "description": "",
-        "vendor": "Mixed"
+        "description": "RTX 5090 + IceLake Xeon",
+        "vendor": "NVIDIA"
       },
-      "backend": "",
+      "backend": "llama.cpp",
       "os_driver": "",
       "model": {
         "name": "DeepSeek-V3.2:671b_UD-Q8_K_XL",
@@ -698,11 +716,15 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "",
+      "notes": "Outputs literal translation style text and difficult to understand.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
-      "tags": []
+      "tags": [],
+      "inherited_from": {
+        "hardware": "block_0",
+        "backend": "block_0"
+      }
     },
     {
       "id": "post_12_manoreken2_3",
@@ -710,7 +732,8 @@
         "post_number": 12,
         "post_id": 4119505,
         "username": "manoreken2",
-        "submitted_at": "2026-09-19T00:47:52.759Z"
+        "submitted_at": "2026-09-19T00:47:52.759Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -721,10 +744,10 @@
       },
       "tier": "t6",
       "hardware": {
-        "description": "",
-        "vendor": "Mixed"
+        "description": "RTX 5090 + IceLake Xeon",
+        "vendor": "NVIDIA"
       },
-      "backend": "",
+      "backend": "llama.cpp",
       "os_driver": "",
       "model": {
         "name": "GLM-5.2-UD-Q6_K_XL",
@@ -744,11 +767,15 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "",
+      "notes": "Outputs literal translation style text. not suitable for this task.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
-      "tags": []
+      "tags": [],
+      "inherited_from": {
+        "hardware": "block_0",
+        "backend": "block_0"
+      }
     },
     {
       "id": "post_12_manoreken2_4",
@@ -756,7 +783,8 @@
         "post_number": 12,
         "post_id": 4119505,
         "username": "manoreken2",
-        "submitted_at": "2026-09-19T00:47:52.759Z"
+        "submitted_at": "2026-09-19T00:47:52.759Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -767,10 +795,10 @@
       },
       "tier": "t6",
       "hardware": {
-        "description": "",
-        "vendor": "Mixed"
+        "description": "RTX 5090 + IceLake Xeon",
+        "vendor": "NVIDIA"
       },
-      "backend": "",
+      "backend": "llama.cpp",
       "os_driver": "",
       "model": {
         "name": "Kimi-K2.6-UD-Q8_K_XL",
@@ -790,11 +818,15 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "",
+      "notes": "Outputs youth slang-like text. not suitable for history textbook translation.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
-      "tags": []
+      "tags": [],
+      "inherited_from": {
+        "hardware": "block_0",
+        "backend": "block_0"
+      }
     },
     {
       "id": "post_12_manoreken2_5",
@@ -802,7 +834,8 @@
         "post_number": 12,
         "post_id": 4119505,
         "username": "manoreken2",
-        "submitted_at": "2026-09-19T00:47:52.759Z"
+        "submitted_at": "2026-09-19T00:47:52.759Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -812,10 +845,10 @@
       },
       "tier": "t5",
       "hardware": {
-        "description": "",
-        "vendor": "Mixed"
+        "description": "RTX 5090 + IceLake Xeon",
+        "vendor": "NVIDIA"
       },
-      "backend": "",
+      "backend": "llama.cpp",
       "os_driver": "",
       "model": {
         "name": "Qwen3:235b-a22b-thinking-2507-q4",
@@ -835,11 +868,15 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "",
+      "notes": "Quite sloppy, outputs many incorrect things.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
-      "tags": []
+      "tags": [],
+      "inherited_from": {
+        "hardware": "block_0",
+        "backend": "block_0"
+      }
     },
     {
       "id": "post_12_manoreken2_6",
@@ -847,7 +884,8 @@
         "post_number": 12,
         "post_id": 4119505,
         "username": "manoreken2",
-        "submitted_at": "2026-09-19T00:47:52.759Z"
+        "submitted_at": "2026-09-19T00:47:52.759Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -856,10 +894,10 @@
       },
       "tier": "t4",
       "hardware": {
-        "description": "",
-        "vendor": "Mixed"
+        "description": "RTX 5090 + IceLake Xeon",
+        "vendor": "NVIDIA"
       },
-      "backend": "",
+      "backend": "llama.cpp",
       "os_driver": "",
       "model": {
         "name": "nemotron-3-super:120b",
@@ -879,11 +917,15 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "",
+      "notes": "Unusable, do not know Asian history, refuse to translate cruel text, cannot output proper Japanese text.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
-      "tags": []
+      "tags": [],
+      "inherited_from": {
+        "hardware": "block_0",
+        "backend": "block_0"
+      }
     },
     {
       "id": "post_12_manoreken2_7",
@@ -891,7 +933,8 @@
         "post_number": 12,
         "post_id": 4119505,
         "username": "manoreken2",
-        "submitted_at": "2026-09-19T00:47:52.759Z"
+        "submitted_at": "2026-09-19T00:47:52.759Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -901,10 +944,10 @@
       },
       "tier": "t4",
       "hardware": {
-        "description": "",
-        "vendor": "Mixed"
+        "description": "RTX 5090 + IceLake Xeon",
+        "vendor": "NVIDIA"
       },
-      "backend": "",
+      "backend": "llama.cpp",
       "os_driver": "",
       "model": {
         "name": "GPT-OSS:120b",
@@ -924,11 +967,15 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "",
+      "notes": "This model does not know basic culture and history of Asia. Also it refuse to translate some cruel texts.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
-      "tags": []
+      "tags": [],
+      "inherited_from": {
+        "hardware": "block_0",
+        "backend": "block_0"
+      }
     },
     {
       "id": "post_17_manoreken2_0",
@@ -936,7 +983,8 @@
         "post_number": 17,
         "post_id": 4120037,
         "username": "manoreken2",
-        "submitted_at": "2026-09-20T22:37:48.204Z"
+        "submitted_at": "2026-09-20T22:37:48.204Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -974,7 +1022,56 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "llama-server --model C:/hf/DeepSeek-V4-Pro-0813-UD-Q8_K_XL.gguf --ctx-size 16384 --flash-attn on --parallel 1 --no-cont-batching --load-mode none --batch-size 4096 --ubatch-size 4096 --cache-type-k q8_0 --cache-type-v q8_0 --ctx-checkpoints 0 --threads 20 --threads-batch 20 --jinja --log-verbosity 4 --cache-reuse 256 --cache-ram -1 --swa-full --timeout 3600 --host 0.0.0.0 --port 8888",
+      "notes": "llama-server --model C:/hf/DeepSeek-V4-Pro-0813-UD-Q8_K_XL.gguf --ctx-size 16384 --flash-attn on --parallel 1 --no-cont-batching --load-mode none --batch-size 4096 --ubatch-size 4096 --cache-type-k q8_0 --cache-type-v q8_0 --ctx-checkpoints 0 --threads 20 --threads-batch 20 --jinja --log-verbosity 4 --cache-reuse 256 --cache-ram -1 --swa-full --timeout 3600 --host 0.0.0.0 --port 8888 Output example: \u73fe\u4ee3\u65e5\u672c\u8a9e ../document/\u6625\u79cb\u5de6\u6c0f\u50b3 unsloth/DeepSeek-V4-Pro-0813-UD-Q8_K_XL This is pretty good so far, focusing faithful translation of original text and less clutter than DeepSeek-R1:671b_Q8, which sometimes outputs nonsense such as: a warning against SNS-driven society, or it is the model ruler aligning with SDGs goal 16",
+      "confidence": "community-reported",
+      "lifecycle": "current",
+      "highlight": false,
+      "tags": []
+    },
+    {
+      "id": "post_18_manoreken2_0",
+      "source": {
+        "post_number": 18,
+        "post_id": 4121718,
+        "username": "manoreken2",
+        "submitted_at": "2026-09-25T09:03:49.180Z",
+        "marked": false
+      },
+      "type": "full",
+      "raw": {
+        "backend": "[colibri]",
+        "model_name": "[DeepSeek-V4.1-Flash]",
+        "download_url": "[ deepseek-ai/DeepSeek-V4.1-Flash \u00b7 Hugging Face ]",
+        "setup_notes": "download exe from https://github.com/JustVugg/colibri/releases/download/v1.12.1/colibri-v1.12.1-windows-x86_64.zip, hf download deepseek-ai/DeepSeek-V4.1-Flash --local-dir C:\\hf\\dfv41f, set COLI_ALLOW_INSECURE_BIND=1, coli serve --model C:\\hf\\dsv41f --host 0.0.0.0 --port 8888",
+        "primary_use_case": "[translation of government journal from 481 BCE China]",
+        "stable_context_tested": "[12288]"
+      },
+      "tier": null,
+      "hardware": {
+        "description": "",
+        "vendor": "Mixed"
+      },
+      "backend": "Colibri",
+      "os_driver": "",
+      "model": {
+        "name": "DeepSeek-V4.1-Flash",
+        "url": "deepseek-ai/DeepSeek-V4.1-Flash \u00b7 Hugging Face"
+      },
+      "quant": "",
+      "weight_precision": "",
+      "use_cases": "translation of government journal from 481 BCE China",
+      "context": {
+        "stable": "12288",
+        "kv_cache": ""
+      },
+      "performance": {
+        "decode_tps": "",
+        "prefill_tps": "",
+        "ttft_cold": "",
+        "power_w": ""
+      },
+      "engine_mode": "",
+      "notes": "download exe from https://github.com/JustVugg/colibri/releases/download/v1.12.1/colibri-v1.12.1-windows-x86_64.zip, hf download deepseek-ai/DeepSeek-V4.1-Flash --local-dir C:\\hf\\dfv41f, set COLI_ALLOW_INSECURE_BIND=1, coli serve --model C:\\hf\\dsv41f --host 0.0.0.0 --port 8888 Output text example : \u73fe\u4ee3\u65e5\u672c\u8a9e\u8a33 \u6625\u79cb\u5de6\u6c0f\u50b3 deepseek-v4.1-flash-colibri CPU-only inference using colibri. output text is antiquated and literal word-to-word style, difficult to read.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,
@@ -986,7 +1083,8 @@
         "post_number": 21,
         "post_id": 4122536,
         "username": "PawingUnplug",
-        "submitted_at": "2026-09-28T07:14:44.464Z"
+        "submitted_at": "2026-09-28T07:14:44.464Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -1038,7 +1136,8 @@
         "post_number": 21,
         "post_id": 4122536,
         "username": "PawingUnplug",
-        "submitted_at": "2026-09-28T07:14:44.464Z"
+        "submitted_at": "2026-09-28T07:14:44.464Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -1090,7 +1189,8 @@
         "post_number": 22,
         "post_id": 4122551,
         "username": "SgtAwesomesauce",
-        "submitted_at": "2026-09-28T08:00:27.341Z"
+        "submitted_at": "2026-09-28T08:00:27.341Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -1148,7 +1248,8 @@
         "post_number": 26,
         "post_id": 4128355,
         "username": "Kif",
-        "submitted_at": "2026-10-12T09:32:10.190Z"
+        "submitted_at": "2026-10-12T09:32:10.190Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -1194,7 +1295,7 @@
         "power_w": "450W stock cap, 12W idle at P8; peak under load not measured"
       },
       "engine_mode": "",
-      "notes": "125B MoE hybrid on a single 24GB card: 6892 experts (~13.4 GB) in VRAM, rest in RAM, lookup table on NVMe. VRAM permanently occupied 23471/24564 MiB (processes /strata + /strata-vision). Speculative decoding MTP=4 + lookup=3, pcie_frac 0.35, image input enabled, one request at a time. WSL2 is not an officially documented path: RAM must be allocated via .wslconfig (96 GB here) or the engine can't load the 35-55 GB of experts. 4x32GB double-rank DDR4 holding 3600 CL18 (unusual on Ryzen 5000 - most boards drop to 3200 with this many ranks), so the RAM-resident experts get ~57 GB/s of dual-channel bandwidth. | dedicated Qwen3.8-Flash-Next engine, OpenAI/Anthropic API",
+      "notes": "125B MoE hybrid on a single 24GB card: 6892 experts (~13.4 GB) in VRAM, rest in RAM, lookup table on NVMe. VRAM permanently occupied 23471/24564 MiB (processes /strata + /strata-vision). Speculative decoding MTP=4 + lookup=3, pcie_frac 0.35, image input enabled, one request at a time. WSL2 is not an officially documented path: RAM must be allocated via .wslconfig (96 GB here) or the engine can't load the 35-55 GB of experts. 4x32GB double-rank DDR4 holding 3600 CL18 (unusual on Ryzen 5000 - most boards drop to 3200 with this many ranks), so the RAM-resident experts get ~57 GB/s of dual-channel bandwidth. | dedicated Qwen3.8-Flash-Next engine, OpenAI/Anthropic API Hi, Please note that big parts of this post have been written with the help of the hereafter described model using OpenWork harness as I was afraid to miss relevant infos Strata on a 4090 + 128 GB, under WSL2 \u2014 agentic coding Direct answer to @lhl (post #25): yes, Strata changes the \u201csmall GPU\u201d equation. A Qwen3.8-Flash-Next 125B in IQ3_S runs on a single 4090 here, at ~108 tok/s decode in real agent use. Beyond raw speed, what sold me is the prompt cache: ~90% hit rate, so agent follow-ups on ~50k-token contexts resume in 0.3-0.8 s instead of re-prefilling. One note for anyone eyeing WSL2: the docs target native Windows or native Linux. Under WSL2 you must allocate RAM explicitly (.wslconfig, 96 GB here - WSL2 defaults to 50% of host), otherwise the engine doesn\u2019t have enough RAM to load the 35-55 GB of experts. I came from llama.cpp (Qwen3.8-27B-UD-IQ4_X@256k, KV q4_0), where I was already doing very good agentic coding with Claude Code or Copilot CLI (both via VSCode terminal). No formal comparison, but Strata at IQ3_S/131k doesn\u2019t make me miss the 27B at 256k - I do miss some context depth, and I\u2019m planning to test 256k under Strata. On the tier brackets: with hybrid offload engines (Strata), the VRAM tier alone no longer describes what actually fits - this 125B IQ3_S run is RAM+SSD-bound, not VRAM-bound. A RAM column or an \u201chybrid/offload\u201d flag would be more honest than a VRAM bracket. Cheers !",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": true,
@@ -1211,7 +1312,8 @@
         "post_number": 28,
         "post_id": 4128376,
         "username": "digitalscream",
-        "submitted_at": "2026-10-12T11:17:02.223Z"
+        "submitted_at": "2026-10-12T11:17:02.223Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -1257,7 +1359,7 @@
         "power_w": "500-600W during inference, GPUs at 330W cap each"
       },
       "engine_mode": "",
-      "notes": "Everything running in VRAM and system RAM, no disk tier",
+      "notes": "Everything running in VRAM and system RAM, no disk tier OK, new submission now that I\u2019ve got Swift 1.5 Flash Next running accurately on my R9700s. Honestly, this thing is nuts. It sometimes takes longer to get to the solution than 27B, but it\u2019s better at finding the right solution and much better at understanding vaguely-defined requirements. The fact that it\u2019s hitting 200t/s+ with MTP, rather than DFlash2, is incredible in itself.",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": true,
@@ -1274,7 +1376,8 @@
         "post_number": 33,
         "post_id": 4128818,
         "username": "manoreken2",
-        "submitted_at": "2026-10-13T12:45:58.600Z"
+        "submitted_at": "2026-10-13T12:45:58.600Z",
+        "marked": true
       },
       "type": "full",
       "raw": {
@@ -1312,7 +1415,7 @@
         "power_w": ""
       },
       "engine_mode": "",
-      "notes": "It outputs clean Japanese. The model knows kings of \u897f\u79e6 therefore it knows China history more than GPT-OSS-120B, but less than DeepSeek-R1 : Gemma4 31B does not know the older sexagenary cycle year names such as \u65c3\u8499\u5927\u8352\u843d, \u67d4\u5146\u56f0\u6566 or \u662d\u967d\u5927\u6df5\u737b and those words trigger pretty sloppy quasi-history. Denial of translation of cruel historical text is somewhat relaxed than DeepSeek-V4-Pro-0813. | vulkan with no performance tuning",
+      "notes": "It outputs clean Japanese. The model knows kings of \u897f\u79e6 therefore it knows China history more than GPT-OSS-120B, but less than DeepSeek-R1 : Gemma4 31B does not know the older sexagenary cycle year names such as \u65c3\u8499\u5927\u8352\u843d, \u67d4\u5146\u56f0\u6566 or \u662d\u967d\u5927\u6df5\u737b and those words trigger pretty sloppy quasi-history. Denial of translation of cruel historical text is somewhat relaxed than DeepSeek-V4-Pro-0813. | vulkan with no performance tuning @lhl Thanks for your suggestion!",
       "confidence": "community-reported",
       "lifecycle": "current",
       "highlight": false,

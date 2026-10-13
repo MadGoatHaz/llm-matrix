@@ -25,7 +25,7 @@ import math
 from . import utils
 
 #: Color-slot classes (resolved to --chart-1..6 in css/style.css).
-PALETTE_SIZE = 6
+PALETTE_SIZE = 7
 
 
 def _esc(v) -> str:

@@ -108,10 +108,10 @@ def render(subs: list[dict], schema: dict, stats: dict,
 
     # --- Table body: tier groups ---
     body_rows = []
-    for tier_id, _label, tier_subs in utils.group_by_tier(subs, tiers):
+    for tier_id, tier_label, tier_subs in utils.group_by_tier(subs, tiers):
         body_rows.append(
             f'        <tr class="tier-header" data-tier="{utils.html_escape(tier_id)}">'
-            f'<td colspan="{TOTAL_COLUMNS}">{utils.html_escape(labels.get(tier_id, tier_id))}</td></tr>'
+            f'<td colspan="{TOTAL_COLUMNS}">{utils.html_escape(tier_label)}</td></tr>'
         )
         for s in tier_subs:
             highlight = ' highlighted' if s.get("highlight") else ''

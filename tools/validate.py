@@ -58,7 +58,7 @@ if _REPO_ROOT not in sys.path:
 
 from tools.site.utils import normalize_backend, match_use_cases  # noqa: E402
 
-# Every JSON file the pipeline reads/writes that must stay valid.
+# Core pipeline files that MUST exist and parse (a missing one is a hard fail).
 DATA_FILES = (
     "data/submissions.json",
     "data/benchmarks.json",
@@ -67,6 +67,11 @@ DATA_FILES = (
     "data/last_seen.json",
     "tools/schema.json",
     "tools/tags.json",
+)
+# Optional files validated only when present. The P1-5 candidate queue is a
+# review artifact (not core data), and synthetic test workspaces omit it.
+OPTIONAL_DATA_FILES = (
+    "data/candidates.json",
 )
 
 # The canonical key contract every parsed submission carries (schema v2.1).
@@ -112,12 +117,19 @@ def _check(name, status, detail=""):
 # ---------------------------------------------------------------------------
 
 def check_json_files(workspace=WORKSPACE):
-    """Every committed ``.json`` file must parse (check 1)."""
+    """Every committed ``.json`` file must parse (check 1).
+
+    Core :data:`DATA_FILES` must exist and parse (a missing one is a hard
+    fail). :data:`OPTIONAL_DATA_FILES` (the P1-5 candidate queue) are parsed
+    only when present — their absence is legitimate (e.g. a synthetic test
+    workspace), so it is not a failure.
+    """
     results = []
-    for rel in DATA_FILES:
+    for rel in DATA_FILES + OPTIONAL_DATA_FILES:
         path = workspace / rel
         if not path.exists():
-            results.append(_check(f"valid-json: {rel}", "fail", "file is missing"))
+            if rel in DATA_FILES:
+                results.append(_check(f"valid-json: {rel}", "fail", "file is missing"))
             continue
         try:
             load_json(path)

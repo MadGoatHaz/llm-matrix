@@ -24,15 +24,19 @@
     --danger: #ef4444;
     --purple: #a78bfa;
     --cyan: #06b6d4;
-    /* P4-1 chart palette: the SVG chart classes (.seg-1…6, .swatch-1…6,
+    --pink: #ec4899;
+    /* P4-1 chart palette: the SVG chart classes (.seg-1…7, .swatch-1…7,
        .bar, .dot) resolve to these, so the inline SVGs stay theme-driven
-       (no inline color values) and new data picks up the theme for free. */
+       (no inline color values) and new data picks up the theme for free.
+       Seven slots so the backend donut can show every distinct engine
+       (a 7th backend, e.g. Colibri, without reusing a color). */
     --chart-1: var(--accent);
     --chart-2: var(--cyan);
     --chart-3: var(--purple);
     --chart-4: var(--success);
     --chart-5: var(--warning);
     --chart-6: var(--danger);
+    --chart-7: var(--pink);
 
     --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     --font-mono: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
@@ -1389,8 +1393,10 @@ body.cmd-open { overflow: hidden; }
 .chart-svg .seg-4 { fill: var(--chart-4); }
 .chart-svg .seg-5 { fill: var(--chart-5); }
 .chart-svg .seg-6 { fill: var(--chart-6); }
+.chart-svg .seg-7 { fill: var(--chart-7); }
 .chart-svg .seg-1, .chart-svg .seg-2, .chart-svg .seg-3,
-.chart-svg .seg-4, .chart-svg .seg-5, .chart-svg .seg-6 { cursor: default; }
+.chart-svg .seg-4, .chart-svg .seg-5, .chart-svg .seg-6,
+.chart-svg .seg-7 { cursor: default; }
 .chart-svg .dot { fill: var(--chart-2); stroke: var(--bg); stroke-width: 1.5; opacity: 0.9; }
 .chart-svg .dot:hover { opacity: 1; }
 .chart-svg .donut-center-value { fill: var(--text); font-size: 30px; font-weight: 700; font-family: var(--font-sans); }
@@ -1403,6 +1409,7 @@ body.cmd-open { overflow: hidden; }
 .chart-svg circle.seg-4 { fill: none; stroke: var(--chart-4); }
 .chart-svg circle.seg-5 { fill: none; stroke: var(--chart-5); }
 .chart-svg circle.seg-6 { fill: none; stroke: var(--chart-6); }
+.chart-svg circle.seg-7 { fill: none; stroke: var(--chart-7); }
 
 /* HTML legend (real text — screen-reader and keyboard friendly). */
 .chart-legend {
@@ -1429,6 +1436,7 @@ body.cmd-open { overflow: hidden; }
 .swatch-4 { background: var(--chart-4); }
 .swatch-5 { background: var(--chart-5); }
 .swatch-6 { background: var(--chart-6); }
+.swatch-7 { background: var(--chart-7); }
 
 /* === ADVANCED FILTERS (P4-2) === */
 

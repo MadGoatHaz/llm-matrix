@@ -63,10 +63,14 @@ class TestSubmissionsInvariants(unittest.TestCase):
                 self.assertEqual(missing, [], f"missing keys: {missing}")
 
     def test_tiers_within_schema(self):
+        # A non-None tier must be schema-legal. None is legitimate missing
+        # data (e.g. a CPU-only rig with no VRAM tier), not a contract break —
+        # the same rule the validator applies.
         valid = {t["id"] for t in self.schema["tiers"]}
         for sub in self.subs:
             with self.subTest(id=sub["id"]):
-                self.assertIn(sub["tier"], valid)
+                if sub["tier"] is not None:
+                    self.assertIn(sub["tier"], valid)
 
     def test_vendors_within_schema(self):
         valid = set(self.schema["hardware_vendors"])

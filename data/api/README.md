@@ -32,7 +32,7 @@ Top level (all seven keys required):
 
 | Field | Type | Meaning |
 |-------|------|---------|
-| `version` | string | The API version (`major.minor`) — currently `1.1`. |
+| `version` | string | The API version (`major.minor`) — currently `1.2`. |
 | `generated_at` | string (ISO 8601) | When the pipeline last produced this dataset. |
 | `schema_version` | string | The `tools/schema.json` version the data was parsed against. |
 | `source_thread` | string (URL) | The forum thread the data came from. |
@@ -40,16 +40,16 @@ Top level (all seven keys required):
 | `skipped_templates` | integer | Unfilled template posts excluded from `submissions`. |
 | `submissions` | array | The records — see below. |
 
-Each submission record (20-key canonical shape; the full formal definition
+Each submission record (21-key canonical shape; the full formal definition
 is [`v1/schema.json`](v1/schema.json)):
 
 | Field | Type | Meaning |
 |-------|------|---------|
 | `id` | string | Stable unique ID: `post_<n>_<username>_<i>`. |
-| `source` | object | `{post_number, post_id, username, submitted_at}` — provenance + credit. |
+| `source` | object | `{post_number, post_id, username, submitted_at, marked}` — provenance + credit. `marked` is `false` for entries recovered from an unmarked structured post (v1.2). |
 | `type` | string | `"full"` (complete template) or `"quick"` (minimal report). |
 | `raw` | object | The original `[COMMUNITY-SUBMISSION]` block, verbatim. For provenance — use the normalized fields. |
-| `tier` | string | VRAM tier `t1`…`t6` (≤16GB → 196-256GB+). |
+| `tier` | string or null | VRAM tier `t1`…`t6` (≤16GB → 196-256GB+). `null` = no VRAM tier (e.g. a CPU-only rig); renders under the matrix's "Unclassified" group (v1.2). |
 | `hardware` | object | `{description, vendor}` — free text + `NVIDIA`/`AMD`/`Apple`/`Intel`/`Mixed`. |
 | `backend` | string | Inference engine as reported (leading token is canonical: `vLLM (…MTP=8)` → `vLLM`). |
 | `os_driver` | string | OS / driver stack as reported (e.g. `Linux/ROCm`, `Windows 11 Pro + WSL2/Ubuntu 24.04`); `""` = unreported. Displayed in the matrix detail panel. (Added in v1.1.) |
@@ -65,6 +65,7 @@ is [`v1/schema.json`](v1/schema.json)):
 | `lifecycle` | string | `current` / `watch` / `superseded` / `discontinued`. |
 | `highlight` | boolean | Curator flag. |
 | `tags` | string[] | Curator tags. |
+| `inherited_from` | object | *(optional, v1.2)* Provenance for fields inherited from the post's primary block (cross-block inheritance): a map of field → source block id, e.g. `{"hardware": "block_0"}`. Present only when the block omitted hardware/backend/quant its post's primary block supplied. |
 
 > **Honesty note:** the performance and context fields are *community-
 > reported strings*, not lab measurements — that's the nature of the data.
@@ -102,9 +103,14 @@ conformance check of `data.json` against the schema on every CI run.
 - The changelog is below. If you build on this data, pin the major version
   in your code and check `version` at runtime.
 
-### Changelog
+ ### Changelog
 
-- **v1.1 — 2026-10-13** — added the optional `os_driver` field to each
+ - **v1.2 — 2026-10-13** — additive P1 data-recovery fields: `source.marked`
+   (`false` for entries recovered from an unmarked structured post), the
+   optional `inherited_from` provenance map (cross-block inheritance), and
+   `tier` now accepts `null` (a CPU-only rig has no VRAM tier and renders
+   under the matrix's "Unclassified" group). Same `v1/` path.
+ - **v1.1 — 2026-10-13** — added the optional `os_driver` field to each
   submission record (OS / driver stack, shown in the detail panel);
   placeholder template values are now blanked across every field, and
   compound speed strings ("PP 120t/s, TG 2.5 t/s") are split into

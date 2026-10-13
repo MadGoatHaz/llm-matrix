@@ -30,8 +30,8 @@ from tests.util import ROOT, load_json
 from tests.test_generate import TagChecker
 
 SVG_RE = re.compile(r"<svg[^>]*>.*?</svg>", re.DOTALL)
-# The chart palette has 6 slots; a donut with more backends cycles it.
-MAX_SEGMENTS = 6
+# The chart palette has 7 slots; a donut with more backends cycles it.
+MAX_SEGMENTS = 7
 
 
 def _svgs(text: str) -> list[str]:
