@@ -27,8 +27,8 @@ endif
 help:
 	@echo "Local AI Stack — common commands"
 	@echo ""
-	@echo "  make pull      Run the full data pipeline (pull -> diff -> parse ->"
-	@echo "                 parse_thread -> validate -> build) — the manual weekly cycle"
+	@echo "  make pull      One-click data pull (./pull.sh): env -> pull -> diff ->"
+	@echo "                 parse -> validate -> build -> commit -> push"
 	@echo "  make test      Run the full unittest suite (the CI quality gate)"
 	@echo "  make build     Regenerate the site (all pages + data.json)"
 	@echo "  make lint      Byte-compile all .py files + validate all JSON"
@@ -58,14 +58,16 @@ validate:
 check: lint validate test
 
 # --- Data pipeline (the manual weekly cycle — see work/docs/manual-pull.md) --
+#
+# `make pull` is a thin wrapper around ./pull.sh, which does the entire cycle
+# in one go: environment setup (venv + deps) -> pull -> diff -> parse ->
+# validate -> site generation -> commit -> push. It stops early with "No new
+# data" on a quiet week and never pushes data that fails validation. Use
+# `./pull.sh --dry-run` to inspect changes without committing, or
+# `./pull.sh --no-push` to commit locally without pushing.
 
 pull:
-	$(PYTHON) tools/pull.py
-	$(PYTHON) tools/diff.py
-	$(PYTHON) tools/parse.py
-	$(PYTHON) tools/parse_thread.py
-	$(PYTHON) tools/validate.py
-	$(PYTHON) -m tools.site
+	./pull.sh
 
 # --- Site generation --------------------------------------------------------
 
