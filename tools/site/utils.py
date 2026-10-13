@@ -212,9 +212,12 @@ def real_submissions(data: dict) -> list[dict]:
 
 
 #: The fields the client-side tools (launch-command generator, comparison
-#: view) actually need from a submission. The verbose ``raw`` block and the
-#: ``source``/``confidence``/``lifecycle``/``highlight``/``tags`` metadata are
-#: dropped to keep the baked JSON island small.
+#: view, recommend engine, detail panel) actually need from a submission. The
+#: verbose ``raw`` block and the ``tags`` curation metadata are dropped to keep
+#: the baked JSON island small. ``source`` (the forum deep link) plus
+#: ``confidence`` / ``lifecycle`` / ``highlight`` are kept: the recommend
+#: engine weights its ranking by confidence + lifecycle, and the detail panel
+#: shows a "Community highlight" badge for highlighted entries.
 CLIENT_SUBMISSION_FIELDS = (
     "id", "tier", "hardware", "backend", "os_driver", "model", "quant",
     "weight_precision", "use_cases", "context", "performance",
@@ -228,8 +231,11 @@ def trim_for_client(s: dict) -> dict:
     ``hardware`` / ``model`` / ``context`` / ``performance`` are kept whole
     (they are small structured objects); the flat scalar fields are copied
     verbatim. ``source`` is kept (post id + username + date) so the row
-    detail panel can build the original forum deep link (``#post-N``).
-    Missing keys default to empty so the JSON shape is stable.
+    detail panel can build the original forum deep link (``#post-N``). The
+    curation metadata ``confidence`` / ``lifecycle`` / ``highlight`` is kept
+    so the recommend engine can weight its ranking and the detail panel can
+    show the highlight badge. Missing keys default to empty (``highlight``
+    defaults to ``False``) so the JSON shape is stable.
     """
     out: dict[str, Any] = {}
     for key in CLIENT_SUBMISSION_FIELDS:
@@ -244,6 +250,12 @@ def trim_for_client(s: dict) -> dict:
         "submitted_at": src.get("submitted_at", ""),
     }
     out["username"] = out["source"]["username"]
+    # Curation metadata (A2: recommend ranking; A5: detail-panel highlight
+    # badge). ``confidence`` + ``lifecycle`` default to the common reported
+    # state; ``highlight`` is a boolean flag (default off).
+    out["confidence"] = s.get("confidence") or "community-reported"
+    out["lifecycle"] = s.get("lifecycle") or "current"
+    out["highlight"] = bool(s.get("highlight"))
     return out
 
 

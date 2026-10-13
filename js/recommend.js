@@ -2,14 +2,19 @@
 //
 // Answers "what should I run, on what I have, for what I need?" entirely in
 // the browser. It reads the schema pick-lists from the #recommend-config
-// island, fetches the local data.json (one request, cached), and ranks the
-// community's real submissions against the user's VRAM tier, use case,
-// vendor, and priority. No server, no frameworks, no dependencies.
+// island and the community submissions from the baked #commands-config
+// island (no network request — the page works offline straight from disk,
+// including file://), and ranks them against the user's VRAM tier, use case,
+// vendor, and priority. A data.json fetch is kept only as a fallback for the
+// (rare) case where the island is missing. No server, no frameworks, no
+// dependencies.
 //
 // The hard gate is VRAM: a setup only appears if it fits the user's tier (or
-// a smaller one). Use case, vendor, and priority shape the ranking. Every
-// result carries a plain-English "why this matched" and a deep link to its
-// row in the Matrix.
+// a smaller one). Use case, vendor, and priority shape the ranking, and the
+// submission's confidence + lifecycle state weight it (a superseded or
+// discontinued setup ranks below a current one, and lower-corroborated
+// reports rank below verified ones). Every result carries a plain-English
+// "why this matched" and a deep link to its row in the Matrix.
 
 (function () {
   'use strict';
@@ -144,6 +149,7 @@
   // ------------------------------------------------------------------
   document.addEventListener('DOMContentLoaded', function () {
     var configEl = document.getElementById('recommend-config');
+    var dataEl = document.getElementById('commands-config');
     var tierSel = document.getElementById('rec-tier');
     var useSel = document.getElementById('rec-usecase');
     var vendorSel = document.getElementById('rec-vendor');
@@ -174,29 +180,46 @@
           useCases: matchUseCases(s.use_cases),
           speed: parseSpeed(s.performance && s.performance.decode_tps),
           context: parseContext(s.context && s.context.stable),
-          precision: precisionRank(s)
+          precision: precisionRank(s),
+          confidence: s.confidence || 'community-reported',
+          lifecycle: s.lifecycle || 'current'
         };
       });
       ready = true;
       render();
     }
 
-    // data.json sits at the repo root; this page is one level down. The
-    // relative path resolves against the document URL, not the script.
-    fetch('../data.json')
-      .then(function (r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.json();
-      })
-      .then(preload)
-      .catch(function (err) {
-        resultsEl.innerHTML =
-          '<div class="rec-error"><p>Couldn\'t load the community data ' +
-          '(<code>data.json</code>). If you opened this file straight from ' +
-          'disk, serve it over HTTP — the rankings run entirely in your ' +
-          'browser.</p></div>';
-        console.error('recommend.js: failed to load data.json', err);
-      });
+    // A4: the submissions live in the baked #commands-config island (the same
+    // island the Matrix detail panel reads), so the page makes no network
+    // request and works offline straight from disk (file://). The island
+    // carries every field the engine ranks on, including confidence +
+    // lifecycle. A data.json fetch is the fallback, used only if the island is
+    // missing for some reason (e.g. an older page).
+    function boot() {
+      var island = null;
+      if (dataEl) {
+        try { island = JSON.parse(dataEl.textContent); } catch (e) { island = null; }
+      }
+      if (island && Array.isArray(island.submissions) && island.submissions.length) {
+        preload(island);
+        return;
+      }
+      // Fallback: fetch data.json (it sits at the repo root; this page is one
+      // level down, so the relative path resolves against the document URL).
+      fetch('../data.json')
+        .then(function (r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.json();
+        })
+        .then(preload)
+        .catch(function (err) {
+          resultsEl.innerHTML =
+            '<div class="rec-error"><p>Couldn\'t load the community data. ' +
+            'Reload the page — the rankings run entirely in your browser.</p></div>';
+          console.error('recommend.js: failed to load data', err);
+        });
+    }
+    boot();
 
     [tierSel, useSel, vendorSel, prioritySel].forEach(function (el) {
       if (el) el.addEventListener('change', render);
@@ -212,6 +235,25 @@
         vendor: vendorSel ? vendorSel.value : '',
         priority: prioritySel ? prioritySel.value : 'balanced'
       };
+    }
+
+    // A2: weight a submission by how well-corroborated and current it is.
+    // Lifecycle is the strongest signal (a discontinued setup is shown last,
+    // a superseded one clearly below the current field); within a lifecycle
+    // tier the confidence level refines the weight. The multiplier keeps the
+    // relative ordering inside each trust band intact while pushing lower-
+    // trust entries down the list.
+    function trustWeight(s) {
+      var lifecycle = s.lifecycle || 'current';
+      if (lifecycle === 'discontinued') return 0.2;
+      if (lifecycle === 'superseded') return 0.4;
+      if (lifecycle === 'watch') return 0.85; // between current and superseded
+      var confidence = s.confidence || 'community-reported';
+      if (confidence === 'op-verified') return 1.0;
+      if (confidence === 'community-verified') return 0.95;
+      if (confidence === 'community-reported') return 0.9;
+      if (confidence === 'unverified') return 0.75;
+      return 1.0;
     }
 
     // Score + sort a pool of submissions for the given selection.
@@ -237,9 +279,19 @@
 
         return {
           sub: s,
-          total: primary + vendorBonus + tierBonus
+          total: (primary + vendorBonus + tierBonus) * trustWeight(s)
         };
       }).sort(function (a, b) { return b.total - a.total; });
+    }
+
+    // A2: a plain-English confidence phrase for the "why this matched" line —
+    // the trust level a user can weigh when two setups score alike.
+    function confidencePhrase(s) {
+      var c = s.confidence || '';
+      if (c === 'op-verified') return 'Op-verified setup';
+      if (c === 'community-verified') return 'Community-verified setup';
+      if (c === 'unverified') return 'Unverified report';
+      return 'Recently reported';
     }
 
     // A one-line, plain-English "why this matched".
@@ -255,7 +307,35 @@
       if (sel.priority === 'speed' && s.speed) parts.push(s.speed + ' t/s decode');
       else if (sel.priority === 'quality' && s.precision.key !== 'unknown') parts.push(s.precision.key + ' precision');
       else if (sel.priority === 'context' && s.context) parts.push(s.context.toLocaleString() + ' tokens of context');
-      return parts.slice(0, 3).join(' · ');
+      parts.push(confidencePhrase(s)); // A2: surface the trust level
+      return parts.slice(0, 4).join(' · ');
+    }
+
+    // A2: a small badge next to the contributor name showing how
+    // well-corroborated the report is (green = verified, blue = community,
+    // gray = unverified).
+    function confidenceBadge(s) {
+      var c = s.confidence || '';
+      if (c === 'op-verified' || c === 'community-verified') {
+        return ' <span class="rec-conf rec-conf-verified" title="Verified report">✓ verified</span>';
+      }
+      if (c === 'unverified') {
+        return ' <span class="rec-conf rec-conf-unverified" title="Unverified report">unverified</span>';
+      }
+      return ' <span class="rec-conf rec-conf-community" title="Community-reported">community</span>';
+    }
+
+    // A2: a subtle label for non-current entries (superseded / discontinued),
+    // so a stale setup is clearly marked without being hidden.
+    function lifecycleLabel(s) {
+      var l = s.lifecycle || 'current';
+      if (l === 'superseded') {
+        return '<div class="rec-lifecycle rec-lifecycle-superseded">older option</div>';
+      }
+      if (l === 'discontinued') {
+        return '<div class="rec-lifecycle rec-lifecycle-discontinued">no longer recommended</div>';
+      }
+      return '';
     }
 
     function cardHtml(rank, entry, sel) {
@@ -277,13 +357,14 @@
           '<div class="rec-rank" aria-hidden="true">' + rank + '</div>' +
           '<div class="rec-body">' +
             '<h3 class="rec-model">' + esc(shortModel(s.model)) + '</h3>' +
+            lifecycleLabel(s) +
             '<div class="rec-meta">' + esc(s.hardware) +
               (s.vendor ? ' · ' + esc(s.vendor) : '') +
               (s.backend ? ' · ' + esc(shortBackend(s.backend)) : '') + '</div>' +
             '<div class="rec-badges">' + badges.join(' ') + '</div>' +
             '<p class="rec-why"><strong>Why:</strong> ' + esc(whyLine(s, sel)) + '</p>' +
             '<div class="rec-actions">' + actions + '</div>' +
-            '<div class="rec-contributor">by <strong>' + esc(s.username) + '</strong></div>' +
+            '<div class="rec-contributor">by <strong>' + esc(s.username) + '</strong>' + confidenceBadge(s) + '</div>' +
           '</div>' +
         '</article>';
     }

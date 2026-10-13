@@ -10,8 +10,9 @@ what I need?" — with a fully client-side tool. The page carries:
 * a **config island** (``<script type="application/json"
   id="recommend-config">``) that embeds the schema's tier / use-case / vendor
   lists, so the client needs no extra network request for them;
-* a results container that ``js/recommend.js`` fills by ranking
-  ``data.json``.
+* a results container that ``js/recommend.js`` fills by ranking the sibling
+  ``#commands-config`` island (the baked submissions) — no network request,
+  so the page works offline straight from disk (file://).
 
 The page lives at ``recommend/index.html`` (depth 1) and loads the extra
 ``js/recommend.js`` after the shared ``js/main.js``.
@@ -32,11 +33,12 @@ RECOMMEND_DEPTH = 1
 def _config_island(schema: dict) -> str:
     """Embed the schema's pick-lists as a JSON island for the client.
 
-    The client ranks ``data.json`` and needs the canonical tier / use-case /
-    vendor lists. Baking them in at generation time means the whole tool runs
-    on a single local ``data.json`` fetch — no extra schema request, fully
-    client-side. The payload is compact (P2-7) and brace-safe for the
-    template-leak check via :func:`utils.compact_json`.
+    The client ranks the sibling ``#commands-config`` island (the baked
+    submissions) and needs the canonical tier / use-case / vendor lists.
+    Baking them in at generation time means the whole tool runs fully
+    client-side — no network request for the schema and none for the data.
+    The payload is compact (P2-7) and brace-safe for the template-leak check
+    via :func:`utils.compact_json`.
     """
     config = {
         "tiers": schema.get("tiers", []),

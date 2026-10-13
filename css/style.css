@@ -1037,6 +1037,27 @@ tr.highlighted { border-left: 3px solid var(--warning); }
     padding: 0.7rem 0.75rem;  /* ≥ 44px touch target */
 }
 .rec-contributor { color: var(--text-muted); font-size: 0.85rem; }
+/* A2: the confidence badge next to the contributor name (verified / community
+   / unverified) and the lifecycle labels for non-current entries. */
+.rec-conf {
+    display: inline-block;
+    margin-left: 0.4rem;
+    padding: 0.05rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    vertical-align: middle;
+}
+.rec-conf-verified { background: rgba(16, 185, 129, 0.15); color: var(--success); }
+.rec-conf-community { background: var(--accent-glow); color: var(--accent); }
+.rec-conf-unverified { background: rgba(132, 148, 171, 0.18); color: var(--text-muted); }
+.rec-lifecycle {
+    font-size: 0.78rem;
+    font-weight: 700;
+    margin: 0.15rem 0 0.5rem;
+}
+.rec-lifecycle-superseded { color: var(--warning); }
+.rec-lifecycle-discontinued { color: var(--danger); }
 .rec-count {
     text-align: center;
     color: var(--text-muted);
