@@ -23,6 +23,38 @@
 // Vanilla, zero dependencies. Page-specific tools (compare.js,
 // commands.js, recommend.js) load after this file where needed.
 
+// ---------------------------------------------------------------------------
+// Shared numeric parsers (E7) — the ONE client-side implementation of the
+// generator's speed / context conventions. Exposed on window so the
+// page-specific tools (recommend.js, commands.js) parse identically
+// instead of each carrying a private copy (they all load after this file).
+// ---------------------------------------------------------------------------
+
+// First numeric token of a decode-speed string, as a float (the Python
+// parse_speed convention: "120t/s code, 70t/s chat" -> 120).
+function parseSpeed(tps) {
+    if (!tps) return 0;
+    var m = String(tps).match(/(\d+(?:\.\d+)?)/);
+    return m ? parseFloat(m[1]) : 0;
+}
+
+// Context length in tokens from the free-text "stable" string
+// ("65536" -> 65536, "~240k" -> 240000, "1.5m"/"million" -> 1500000).
+function parseContext(stable) {
+    if (!stable) return 0;
+    var s = String(stable).toLowerCase();
+    var m = s.match(/(\d+(?:\.\d+)?)\s*(k|m|million)?/);
+    if (!m) return 0;
+    var n = parseFloat(m[1]);
+    if (m[2] === 'k') n *= 1000;
+    else if (m[2] === 'm' || m[2] === 'million') n *= 1e6;
+    return Math.round(n) || 0;
+}
+
+// Explicit window binding: the contract the other scripts rely on.
+window.parseSpeed = parseSpeed;
+window.parseContext = parseContext;
+
 // P4-2 sort coordination: shared between initSorting (column headers) and
 // initFilters (the sort dropdown). Clicking a column header while a
 // dropdown sort is active returns the table to the default tier grouping

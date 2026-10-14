@@ -122,6 +122,31 @@ class TestRecommendPage(unittest.TestCase):
         self.assertEqual(config["use_cases"], schema["use_cases"])
         self.assertEqual(config["vendors"], schema["hardware_vendors"])
 
+    def test_config_island_keyword_map_matches_python_source(self):
+        # E1 sync guard: the island's use-case keyword map must equal the
+        # Python source of truth (tools/site/utils.py USE_CASE_KEYWORDS) —
+        # the client and the generator can never drift.
+        text = self._page()
+        m = re.search(
+            r'<script type="application/json" id="recommend-config">'
+            r'(.*?)</script>',
+            text, re.DOTALL)
+        self.assertIsNotNone(m, "config island missing from the page")
+        config = json.loads(m.group(1))
+        if str(ROOT) not in sys.path:
+            sys.path.insert(0, str(ROOT))
+        from tools.site import utils
+        expected = {k: list(v) for k, v in utils.USE_CASE_KEYWORDS.items()}
+        self.assertEqual(config.get("use_case_keywords"), expected,
+                         "the island's keyword map drifted from the Python "
+                         "source of truth")
+        # Every schema use case (minus Other) is covered by the map.
+        schema = load_json("tools/schema.json")
+        for cat in schema["use_cases"]:
+            if cat != "Other":
+                self.assertIn(cat, expected,
+                              f"schema use case {cat!r} has no keyword entry")
+
     # --- form controls + accessibility --------------------------------
     def test_form_controls_have_labels(self):
         text = self._page()
@@ -272,6 +297,63 @@ class TestQualityRankingContract(unittest.TestCase):
     def test_why_line_surfaces_model_and_quant(self):
         self.assertIn("s.modelSize + ' model'", self.js)
         self.assertIn("s.precision.key + ' precision'", self.js)
+
+
+class TestNoDuplicatedClientState(unittest.TestCase):
+    """E1 + E7: recommend.js carries NO private copies of shared state.
+
+    * The use-case keyword map (E1) is baked into the page's config island
+      from the Python source of truth — a hardcoded copy in the JS is how
+      the matrix filter and the recommend engine drift apart.
+    * The speed / context parsers (E7) live once in js/main.js (window.*) —
+      private copies in the page scripts are how the same string parses two
+      different ways.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        cls.js = (ROOT / "js" / "recommend.js").read_text(encoding="utf-8")
+        cls.main_js = (ROOT / "js" / "main.js").read_text(encoding="utf-8")
+
+    # --- E1: the keyword map comes from the island ----------------------
+    def test_no_hardcoded_keyword_map(self):
+        self.assertNotIn("USE_CASE_KEYWORDS", self.js,
+                         "recommend.js must not define its own keyword map")
+        # No category names hardcoded (they arrive via the island / form).
+        for cat in ("Agentic Coding", "Repo Editing", "Security Research",
+                    "Production Serving"):
+            self.assertNotIn(cat, self.js,
+                             f"{cat!r} is hardcoded in recommend.js")
+        # No keyword literals from the map (spot the most distinctive).
+        for kw in ("opencode", "vulnerab", "openai-compatible"):
+            self.assertNotIn(kw, self.js,
+                             f"keyword {kw!r} is hardcoded in recommend.js")
+
+    def test_reads_keyword_map_from_island(self):
+        self.assertIn("use_case_keywords", self.js,
+                      "recommend.js must read the map from the island")
+
+    # --- E7: the shared parsers come from main.js -----------------------
+    def test_no_private_parsers(self):
+        self.assertNotIn("function parseSpeed", self.js,
+                         "recommend.js must not define its own parseSpeed")
+        self.assertNotIn("function parseContext", self.js,
+                         "recommend.js must not define its own parseContext")
+        self.assertIn("window.parseSpeed", self.js)
+        self.assertIn("window.parseContext", self.js)
+
+    def test_main_js_is_the_shared_source(self):
+        self.assertIn("function parseSpeed", self.main_js)
+        self.assertIn("function parseContext", self.main_js)
+        self.assertIn("window.parseSpeed = parseSpeed", self.main_js)
+        self.assertIn("window.parseContext = parseContext", self.main_js)
+        # The shared parsers must be defined at load time (top level), before
+        # the DOMContentLoaded handler — the page scripts rely on them at
+        # evaluation time.
+        self.assertLess(
+            self.main_js.index("function parseSpeed"),
+            self.main_js.index("DOMContentLoaded"),
+            "parseSpeed must be defined before the DOM handlers run")
 
 
 if __name__ == "__main__":

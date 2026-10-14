@@ -5,8 +5,16 @@ description: What's new and what changed
 
 ## v2.1 — October 2026
 
-- "Start Here" 3-step wizard on the Recommend page
-- Changelog page (this one)
+- "Start Here" 3-step wizard for first-time users
+- Changelog page
+- Structured community benchmark + rig data (API)
+- Verification badges (verified/community/unverified) across all views
+- Decision-support comparison (tradeoff analysis + winner markers)
+- Quality-aware recommendations (model capability × quant)
+- Disjoint VRAM tiers (32GB class added)
+- Dataset protection (wipe guards in pull + validate)
+- Guide stats auto-update with data
+- Branding unified: "The Local AI Stack"
 
 ## v2.0 — October 2026
 

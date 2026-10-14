@@ -7,6 +7,10 @@
 // schema's backend/tier lists) so there is no network request and it works
 // offline straight from disk.
 //
+// E7: speed / context parsing uses the shared window.parseSpeed /
+// window.parseContext from js/main.js (which always loads first) — this file
+// carries no private copies.
+//
 // Every command is clearly labeled an *example* (not a guarantee): the model
 // path and a few flags will differ on your machine. Backends we have a solid
 // template for (llama.cpp, llama-swap, Ollama, vLLM, Radiance, MLX, …) get a
@@ -100,23 +104,9 @@
     return s;
   }
 
-  // Context length in tokens from the free-text "stable" string.
-  function parseContext(stable) {
-    if (!stable) return 0;
-    var s = String(stable).toLowerCase();
-    var m = s.match(/(\d+(?:\.\d+)?)\s*(k|m|million)?/);
-    if (!m) return 0;
-    var n = parseFloat(m[1]);
-    if (m[2] === 'k') n *= 1000;
-    else if (m[2] === 'm' || m[2] === 'million') n *= 1e6;
-    return Math.round(n) || 0;
-  }
-
-  function parseSpeed(tps) {
-    if (!tps) return 0;
-    var m = String(tps).match(/(\d+(?:\.\d+)?)/);
-    return m ? parseFloat(m[1]) : 0;
-  }
+  // E7: parseContext / parseSpeed are the SHARED implementations from
+  // js/main.js (window.parseContext / window.parseSpeed) — main.js always
+  // loads before this file, and both conventions match the Python generator.
 
   // How many GPUs the hardware line implies ("2x R9700" -> 2).
   function countGpus(hw) {
@@ -541,7 +531,9 @@
     modelFile: modelFile,
     repoId: repoId,
     ollamaTag: ollamaTag,
-    parseContext: parseContext,
+    // E7: the shared parsers from js/main.js (no private copies here).
+    parseContext: window.parseContext,
+    parseSpeed: window.parseSpeed,
     countGpus: countGpus,
     estimateVram: estimateVram,
     buildTips: buildTips,

@@ -90,6 +90,27 @@ def load_json(path):
     with open(path) as f:
         return json.load(f)
 
+# E2: the GPU / model / vendor token lists live in tools/schema.json (the
+# single source of truth) — adding a new GPU or model is a schema edit, not
+# a code change. The module-level constants below are BUILT from the schema
+# at import time.
+_SCHEMA_CACHE = None
+
+def _schema():
+    """Load tools/schema.json (cached for the module's lifetime).
+
+    A missing/corrupt schema degrades to an empty view at IMPORT time so
+    importing this module never breaks (tests load it as a file); main()
+    loads the schema itself and fails loudly if it is genuinely broken.
+    """
+    global _SCHEMA_CACHE
+    if _SCHEMA_CACHE is None:
+        try:
+            _SCHEMA_CACHE = load_json(SCHEMA)
+        except (OSError, ValueError):
+            _SCHEMA_CACHE = {}
+    return _SCHEMA_CACHE
+
 def strip_html(cooked):
     """Remove HTML tags, decode entities, normalize whitespace."""
     text = re.sub(r'<br\s*/?>', '\n', cooked)
@@ -535,14 +556,48 @@ FIRST_PERSON_SETUP_RE = re.compile(
     r"|\bmy (?:system|systems|rig|use|setup|GPU|hardware|evals|workload)\b",
     re.IGNORECASE,
 )
+# E2: the known-GPU list from schema.json. "R9700" / "RTX 4090" style names
+# carry the vendor prefix in their canonical form, but the community writes
+# them as bare numbers ("I run a 9700"), so each name also yields a bare
+# search token: drop a leading "rtx " (decorative) and a single leading "r"
+# when what remains is all digits ("R9700" -> "9700"). Everything else
+# ("mi210", "a100", "v620", "4090", ...) is its own token.
+KNOWN_GPUS = _schema().get("known_gpus", [])
+
+def _gpu_token(name):
+    """The searchable (lowercase) token for a known GPU name."""
+    tok = name.lower()
+    tok = re.sub(r"^rtx\s+", "", tok)
+    tok = re.sub(r"^r(?=\d+$)", "", tok)
+    return tok
+
+def _hardware_signal_pattern():
+    """The hardware/model-signal regex, built from schema.json (E2).
+
+    Canonical GPU names first, then any bare search tokens they yield that
+    are not already present (case-insensitively), then the VRAM-amount
+    shapes, the schema's model families, and the backend names.
+    """
+    gpu_alts = list(KNOWN_GPUS)
+    for name in KNOWN_GPUS:
+        tok = _gpu_token(name)
+        if not any(a.lower() == tok for a in gpu_alts):
+            gpu_alts.append(tok)
+    families = [re.escape(f) for f in _schema().get("known_model_families", [])]
+    backends = [
+        r"LiteLLM", r"llama\.cpp", r"vLLM", r"Ollama", r"Strata",
+        r"Radiance", r"Colibri", r"MLX", r"Unsloth",
+    ]
+    parts = [
+        "|".join(gpu_alts),
+        r"\d+\s?GB", r"\d+\s?gig",
+        "|".join(families),
+        "|".join(backends),
+    ]
+    return "|".join(p for p in parts if p)
+
 # An explicit hardware / model / VRAM / backend signal.
-HARDWARE_SIGNAL_RE = re.compile(
-    r"R9700|R9600|MI210|MI250|MI300|MI325|4090|5090|5080|A100|H100|H200|"
-    r"v620|W7900|9700|9600|\d+\s?GB|\d+\s?gig|"
-    r"DeepSeek|Qwen|Gemma|GLM|Kimi|Llama|Swift|Nemotron|GPT|MiMo|Carnice|"
-    r"LiteLLM|llama\.cpp|vLLM|Ollama|Strata|Radiance|Colibri|MLX|Unsloth",
-    re.IGNORECASE,
-)
+HARDWARE_SIGNAL_RE = re.compile(_hardware_signal_pattern(), re.IGNORECASE)
 # A first line opening with a question word marks a question, not a submission.
 _QUESTION_FIRST_RE = re.compile(
     r"^(How|What|Why|When|Where|Who|Which|Do|Does|Did|Have|Has|Had|"
@@ -550,22 +605,15 @@ _QUESTION_FIRST_RE = re.compile(
     re.IGNORECASE,
 )
 
-_GPU_TOKENS = {
-    "9700": "R9700", "9600": "R9600", "mi210": "MI210", "mi250": "MI250",
-    "mi300": "MI300", "mi325": "MI325", "4090": "4090", "5090": "5090",
-    "5080": "5080", "a100": "A100", "h100": "H100", "h200": "H200",
-    "v620": "v620", "w7900": "W7900",
-}
+# Search token -> canonical name (the candidate queue's GPU field).
+_GPU_TOKENS = {_gpu_token(n): n for n in KNOWN_GPUS}
 _BACKEND_TOKENS = (
     "LiteLLM", "llama.cpp", "llama-cpp", "vLLM", "Ollama",
     "Strata", "Radiance", "Colibri", "MLX", "Unsloth",
 )
-_MODEL_TOKENS = (
-    "DeepSeek V4 Flash", "DeepSeek 4.1 Flash", "DeepSeek-V4.1-Flash",
-    "Swift_Qwen3.8", "Swift Qwen3.8", "Qwen 3.8 27B", "Qwen3.8-27B",
-    "Qwen 3.8 Flash Next", "Gemma 4 31B", "Gemma4", "GLM 5", "GLM-5",
-    "DeepSeek-R1",
-)
+# Named-model tokens (schema.json "known_models"): full model names the
+# community writes in prose, for the candidate queue's models field.
+_MODEL_TOKENS = tuple(_schema().get("known_models", ()))
 
 
 def extract_candidate(post):
@@ -716,21 +764,31 @@ def is_template_submission(data_dict):
 # Vendor inference (B5: multi-vendor aware)
 # ---------------------------------------------------------------------------
 
-# GPU vendor signals. CPU names (Xeon, Ryzen, Threadripper, EPYC) are
-# deliberately ABSENT — a CPU is not a GPU vendor, so "RTX 5090 + IceLake
-# Xeon" stays NVIDIA, not Mixed.
-_VENDOR_SUBSTRINGS = {
-    "NVIDIA": ('nvidia', 'rtx', 'geforce', 'a100', 'h100', 'h200', 'quadro',
-               '2080', '3080', '3090', '4080', '4090', '5080', '5090'),
-    "AMD": ('amd', 'r9700', 'r9600', 'mi210', 'mi250', 'mi300', 'radeon',
-            'rx 7', 'w7900', 'v620'),
-    "Apple": ('apple', 'mac', 'mlx'),
-    "Intel": ('intel',),
-}
+# GPU vendor signals (E2: schema.json "vendor_keywords"). CPU names
+# (Xeon, Ryzen, Threadripper, EPYC) are deliberately ABSENT — a CPU is not
+# a GPU vendor, so "RTX 5090 + IceLake Xeon" stays NVIDIA, not Mixed.
+def _vendor_substrings():
+    vk = _schema().get("vendor_keywords", {})
+    out = {}
+    for vendor, toks in vk.items():
+        if vendor == "Apple":
+            # M-series chip tokens (m1..m4) are NOT plain substrings — they
+            # match via _APPLE_CHIP_RE with word boundaries (see below).
+            out[vendor] = tuple(t for t in toks
+                                if not re.fullmatch(r"m[1-4]", t))
+        else:
+            out[vendor] = tuple(toks)
+    return out
+
+_VENDOR_SUBSTRINGS = _vendor_substrings()
 # Apple M-series chips need word boundaries: the substring "m2" appears
 # inside RAM-module names ("CMK64GX4M2D3") and would otherwise flip a
-# single-NVIDIA rig to Mixed.
-_APPLE_CHIP_RE = re.compile(r'\bm[1-4]\b')
+# single-NVIDIA rig to Mixed. Schema tokens shaped "m<digit>" get the
+# word-boundary treatment.
+_M_CHIP_TOKENS = [t for t in _schema().get("vendor_keywords", {})
+                  .get("Apple", ()) if re.fullmatch(r"m[1-4]", t)]
+_APPLE_CHIP_RE = (re.compile(r"\b(?:" + "|".join(_M_CHIP_TOKENS) + r")\b")
+                  if _M_CHIP_TOKENS else None)
 
 
 def infer_vendor(hardware_str):
@@ -744,7 +802,7 @@ def infer_vendor(hardware_str):
     s = (hardware_str or '').lower()
     found = {vendor for vendor, signals in _VENDOR_SUBSTRINGS.items()
              if any(sig in s for sig in signals)}
-    if _APPLE_CHIP_RE.search(s):
+    if _APPLE_CHIP_RE is not None and _APPLE_CHIP_RE.search(s):
         found.add("Apple")
     if len(found) == 1:
         return found.pop()

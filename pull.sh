@@ -130,8 +130,11 @@ info "Fetching all monitored threads from forum.level1techs.com ..."
 CURRENT_STEP="diff"
 step "STEP 3: Diff (what changed since last pull)"
 
-# diff.py updates data/last_seen.json as a side effect; capture its output so we
-# can both show it and decide whether there is anything new to process.
+# diff.py updates data/last_seen.json (per-thread state: main/crucible/rigs/
+# category) as a side effect; capture its output so we can both show it and
+# decide whether there is anything new to process. E5: the summary is the
+# "Total:" line across ALL threads — the "no changes" condition is no changes
+# in any of them.
 diff_output="$("$PY" tools/diff.py)"
 echo "$diff_output"
 
@@ -144,8 +147,8 @@ if echo "$diff_output" | grep -q "FIRST RUN"; then
   N_SUBS="$(echo "$diff_output" | grep -cE '^  # ' || true)"
   [ -z "$N_SUBS" ] && N_SUBS=0
   ok "First run — baseline established, ${N_SUBS} post(s) in the thread."
-elif diff_line="$(echo "$diff_output" | grep -E 'DIFF: [0-9]+ new, [0-9]+ updated, [0-9]+ removed')"; then
-  new_count="$(echo "$diff_line"  | sed -E 's/.*DIFF: ([0-9]+) new.*/\1/')"
+elif diff_line="$(echo "$diff_output" | grep -E '^Total: [0-9]+ new, [0-9]+ updated, [0-9]+ removed')"; then
+  new_count="$(echo "$diff_line"  | sed -E 's/.*Total: ([0-9]+) new.*/\1/')"
   upd_count="$(echo  "$diff_line" | sed -E 's/.* ([0-9]+) updated.*/\1/')"
   N_SUBS=$(( new_count + upd_count ))
   [ "$N_SUBS" -gt 0 ] && HAS_CHANGES=1
@@ -230,7 +233,7 @@ if [ "$DRY_RUN" -eq 1 ]; then
   exit 0
 fi
 
-commit_msg="data: pull $(date +%F) — ${N_SUBS} new/updated submissions"
+commit_msg="data: pull $(date +%F) — ${N_SUBS} new/updated post(s) across all threads"
 git commit -m "$commit_msg"
 ok "Committed: ${commit_msg}"
 

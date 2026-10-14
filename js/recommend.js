@@ -1,13 +1,18 @@
 // recommend.js — the client-side recommendation engine (P2-1).
 //
 // Answers "what should I run, on what I have, for what I need?" entirely in
-// the browser. It reads the schema pick-lists from the #recommend-config
+// the browser. It reads the schema pick-lists AND the use-case keyword map
+// (E1: baked from the Python source of truth) from the #recommend-config
 // island and the community submissions from the baked #commands-config
 // island (no network request — the page works offline straight from disk,
 // including file://), and ranks them against the user's VRAM tier, use case,
 // vendor, and priority. A data.json fetch is kept only as a fallback for the
 // (rare) case where the island is missing. No server, no frameworks, no
 // dependencies.
+//
+// E7: the numeric parsers (parseSpeed / parseContext) live ONCE in
+// js/main.js (which always loads first) on window — this file has no
+// private copies.
 //
 // The hard gate is VRAM, estimated honestly (A3): a setup only appears if
 // its ESTIMATED VRAM — an explicit "N GB" in its notes, else in its hardware
@@ -30,25 +35,16 @@
   // ------------------------------------------------------------------
   // Free-text use case -> schema category.
   // A submission's use_cases is free text; we match keywords against the
-  // canonical schema use cases so a user picking "Agentic Coding" finds
+  // canonical schema use cases so a user picking a coding category finds
   // "LLM-assisted coding / technical documentation".
+  //
+  // E1: the keyword map is NOT hardcoded here — it is baked into the
+  // #recommend-config island at build time from the Python source of truth
+  // (the use-case keyword map in tools/site/utils.py), so the client's
+  // matching can never drift from the generator's data-use-case attributes.
+  // matchUseCases is therefore defined inside the DOMContentLoaded handler,
+  // where the island has been parsed.
   // ------------------------------------------------------------------
-  var USE_CASE_KEYWORDS = {
-    'Agentic Coding': ['coding', 'code', 'agentic', 'programming', 'developer', 'software', 'judge', 'opencode'],
-    'Repo Editing': ['repo', 'repository', 'codebase'],
-    'Deep Reasoning': ['reasoning', 'deep reason', 'think', 'analysis'],
-    'Math/Logic': ['math', 'logic', 'arithmetic', 'calculat'],
-    'RAG': ['rag', 'retrieval'],
-    'Document Ingestion': ['document', 'ingest', 'q&a', 'qa'],
-    'Creative Writing': ['creative', 'writing', 'story', 'fiction'],
-    'Roleplay': ['roleplay', 'character'],
-    'General Chat': ['chat', 'conversation', 'general', 'brainstorm', 'planning'],
-    'Translation': ['translation', 'translate', 'language'],
-    'Security Research': ['security', 'dos', 'vulnerab', 'exploit'],
-    'Multimodal': ['multimodal', 'vision', 'image', 'audio', 'video'],
-    'Production Serving': ['production', 'serving', 'api', 'openai-compatible'],
-    'Embeddings': ['embedding']
-  };
 
   // True if ``kw`` occurs in ``text`` (already lowercased). Single
   // alphanumeric tokens require word boundaries (so "rag" never matches
@@ -58,20 +54,6 @@
       return new RegExp('\\b' + kw + '\\b').test(text);
     }
     return text.indexOf(kw) !== -1;
-  }
-
-  // The set of schema use-case categories a free-text string covers.
-  function matchUseCases(raw) {
-    if (!raw) return [];
-    var s = String(raw).toLowerCase();
-    var out = [];
-    Object.keys(USE_CASE_KEYWORDS).forEach(function (cat) {
-      var kws = USE_CASE_KEYWORDS[cat];
-      for (var i = 0; i < kws.length; i++) {
-        if (keywordIn(s, kws[i])) { out.push(cat); break; }
-      }
-    });
-    return out;
   }
 
   // ------------------------------------------------------------------
@@ -170,24 +152,10 @@
     return m ? m[0].replace(/\s+/g, '') : '';
   }
 
-  // First numeric token of a decode-speed string, as a float (matches the
-  // Python parse_speed convention).
-  function parseSpeed(tps) {
-    if (!tps) return 0;
-    var m = String(tps).match(/(\d+(?:\.\d+)?)/);
-    return m ? parseFloat(m[1]) : 0;
-  }
-
-  // Context length in tokens from the "stable" string ("65536", "~240k", …).
-  function parseContext(stable) {
-    if (!stable) return 0;
-    var m = String(stable).toLowerCase().match(/(\d+(?:\.\d+)?)\s*(k|m|million)?/);
-    if (!m) return 0;
-    var n = parseFloat(m[1]);
-    if (m[2] === 'k') n *= 1000;
-    else if (m[2] === 'm' || m[2] === 'million') n *= 1e6;
-    return Math.round(n);
-  }
+  // E7: speed / context parsing lives ONCE in js/main.js (window.parseSpeed /
+  // window.parseContext, the client port of the Python parse_speed
+  // convention). This file has no private copies — main.js always loads
+  // first.
 
   // ------------------------------------------------------------------
   // Small helpers
@@ -231,6 +199,24 @@
     var tierIndex = {}, tierLabel = {};
     config.tiers.forEach(function (t, i) { tierIndex[t.id] = i; tierLabel[t.id] = t.label; });
 
+    // E1: the use-case keyword map from the island (baked at build time from
+    // the Python source of truth) — this file carries no hardcoded copy.
+    var useCaseKeywords = config.use_case_keywords || {};
+
+    // The set of schema use-case categories a free-text string covers.
+    function matchUseCases(raw) {
+      if (!raw) return [];
+      var s = String(raw).toLowerCase();
+      var out = [];
+      Object.keys(useCaseKeywords).forEach(function (cat) {
+        var kws = useCaseKeywords[cat];
+        for (var i = 0; i < kws.length; i++) {
+          if (keywordIn(s, kws[i])) { out.push(cat); break; }
+        }
+      });
+      return out;
+    }
+
     var subs = [];
     var ready = false;
 
@@ -248,8 +234,8 @@
           modelUrl: (s.model && s.model.url) ? s.model.url : '',
           username: (s.source && s.source.username) ? s.source.username : '',
           useCases: matchUseCases(s.use_cases),
-          speed: parseSpeed(s.performance && s.performance.decode_tps),
-          context: parseContext(s.context && s.context.stable),
+          speed: window.parseSpeed(s.performance && s.performance.decode_tps),
+          context: window.parseContext(s.context && s.context.stable),
           precision: precisionRank(s),
           modelScore: modelCapabilityScore(s), // B1: 60% of quality
           modelSize: modelSizeLabel(s),

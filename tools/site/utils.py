@@ -293,9 +293,12 @@ def trim_for_client(s: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 #: Keyword map for reducing a submission's free-text ``use_cases`` string to
-#: the schema's canonical categories. Mirrors ``js/recommend.js`` (the
-#: client-side recommendation engine) so the generation-time filter
-#: attributes (``data-use-case``) and the recommend tooling agree.
+#: the schema's canonical categories. THIS map is the single source of truth:
+#: at build time the recommend page bakes it into its ``recommend-config``
+#: island (``tools/site/pages/recommend.py``) and ``js/recommend.js`` reads it
+#: from there — the client carries no hardcoded copy, so the matrix filter
+#: attributes (``data-use-case``) and the recommend tooling can never drift
+#: (tests/test_recommend.py enforces the sync).
 USE_CASE_KEYWORDS: dict[str, tuple[str, ...]] = {
     "Agentic Coding": ("coding", "code", "agentic", "programming", "developer",
                       "software", "judge", "opencode"),
@@ -676,9 +679,32 @@ def group_by_contributor(subs: list[dict]) -> list[tuple[str, list[dict]]]:
 # Quant/format/author tokens used to reduce a raw (messy, repo-prefixed,
 # comma-separated) model name down to a clean "family" label for trend
 # grouping — e.g. "Swift-Qwen3.8-27B-Uncensored-FP8" -> "Qwen3.8-27B".
-FAMILY_AUTHOR_PREFIX = re.compile(
-    r"^(?:swift|carnice|unsloth|bartowski|deadbydawn101|d0xin|"
-    r"maziyarpanahi|samuelcardillo|kwaipilot)[-_]?", re.I)
+#
+# E2: the author/org name prefixes come from schema.json
+# ("model_author_prefixes") — a new quant publisher is a schema edit, not
+# a code change. Built at import time; ``None`` when the schema is missing
+# or carries no prefixes (model_family() then keeps names un-stripped).
+_SCHEMA_CACHE: dict | None = None
+
+
+def _schema() -> dict:
+    """Load tools/schema.json (cached for the module's lifetime)."""
+    global _SCHEMA_CACHE
+    if _SCHEMA_CACHE is None:
+        try:
+            _SCHEMA_CACHE = load_json(SCHEMA)
+        except (OSError, ValueError):
+            _SCHEMA_CACHE = {}
+    return _SCHEMA_CACHE
+
+
+_MODEL_AUTHOR_PREFIXES = _schema().get("model_author_prefixes", [])
+FAMILY_AUTHOR_PREFIX = (
+    re.compile(
+        r"^(?:" + "|".join(re.escape(p) for p in _MODEL_AUTHOR_PREFIXES)
+        + r")[-_]?", re.I)
+    if _MODEL_AUTHOR_PREFIXES else None
+)
 FAMILY_TAIL_TOKEN = re.compile(
     r"[-_](?:gguf|sft|fp16|fp8|bf16|nvfp4|mxfp4|iq\d[\w.]*|q\d[\w.]*|"
     r"i-nano|uncensored|w\d+a\d+|exl2[\w.]*|the-defiant[\w-]*|"
@@ -694,7 +720,8 @@ def model_family(name: Any) -> str:
     if "/" in s and not s.lower().startswith(("http", "www")):
         s = s.split("/", 1)[1].strip()
     s = re.sub(r"\s*\([^)]*\)\s*$", "", s).strip()   # drop trailing parenthetical
-    s = FAMILY_AUTHOR_PREFIX.sub("", s).strip()
+    if FAMILY_AUTHOR_PREFIX is not None:
+        s = FAMILY_AUTHOR_PREFIX.sub("", s).strip()
     for _ in range(6):  # peel trailing quant/format tokens one at a time
         new = FAMILY_TAIL_TOKEN.sub("", s).strip(" -_")
         if new == s:

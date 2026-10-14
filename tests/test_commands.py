@@ -134,6 +134,18 @@ class TestCommands(unittest.TestCase):
         self.assertIn('role="dialog"', js)
         self.assertIn("aria-modal", js)
 
+    def test_no_private_speed_context_parsers(self):
+        # E7: parseSpeed / parseContext live ONCE in js/main.js (window.*) —
+        # commands.js must consume the shared implementations, not its own
+        # copies (duplicate parsers are how the same string ends up two
+        # different numbers).
+        js = (ROOT / "js" / "commands.js").read_text(encoding="utf-8")
+        self.assertNotIn("function parseSpeed", js)
+        self.assertNotIn("function parseContext", js)
+        # The test-suite export points at the shared window functions.
+        self.assertIn("parseContext: window.parseContext", js)
+        self.assertIn("parseSpeed: window.parseSpeed", js)
+
 
 if __name__ == "__main__":
     unittest.main()

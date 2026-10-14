@@ -7,12 +7,18 @@ depend on this file's shape. These tests lock its structure in place:
 * exactly 6 VRAM tiers, ordered, with contiguous ranges;
 * every enum non-empty and string-typed;
 * well-formed, unique, https ``monitored_threads`` (with the ``main``
-  submissions thread present, since ``parse.py`` depends on it).
+  submissions thread present, since ``parse.py`` depends on it);
+* the E2 token lists (known_gpus / known_model_families / known_models /
+  vendor_keywords / model_author_prefixes) non-empty and properly formatted,
+  and parse.py / site utils building their regexes from them — adding a new
+  GPU or model is a schema edit, not a code change.
 """
 
+import re
+import sys
 import unittest
 
-from tests.util import load_json, load_tool
+from tests.util import ROOT, load_json, load_tool
 
 ENUM_KEYS = (
     "hardware_vendors",
@@ -167,6 +173,107 @@ class TestFieldsRegistry(unittest.TestCase):
             self.assertIn(
                 encouraged, optional,
                 f"{encouraged} must be optional (encouraged) per B10")
+
+
+class TestTokenLists(unittest.TestCase):
+    """E2: the GPU / model / vendor token lists live in schema.json.
+
+    These tests lock the token lists' SHAPE (non-empty, string-typed, no
+    blanks, no duplicates) so a bad edit is caught here instead of silently
+    degrading the parser's signal detection — and they verify the code side
+    (parse.py / site utils) actually builds from the schema, so the two can
+    never drift.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        if str(ROOT) not in sys.path:
+            sys.path.insert(0, str(ROOT))
+        cls.schema = load_json("tools/schema.json")
+        cls.parse = load_tool("tools/parse.py")
+
+    def _strings(self, values):
+        self.assertIsInstance(values, list)
+        self.assertTrue(values, "token list is empty")
+        self.assertTrue(
+            all(isinstance(v, str) and v.strip() for v in values),
+            "token list contains non-string/blank entries")
+        self.assertEqual(len(values), len(set(values)), "token list has duplicates")
+
+    # --- shape ------------------------------------------------------------
+    def test_known_gpus_well_formed(self):
+        self._strings(self.schema["known_gpus"])
+
+    def test_known_model_families_well_formed(self):
+        self._strings(self.schema["known_model_families"])
+
+    def test_known_models_well_formed(self):
+        self._strings(self.schema["known_models"])
+
+    def test_model_author_prefixes_well_formed(self):
+        self._strings(self.schema["model_author_prefixes"])
+
+    def test_vendor_keywords_well_formed(self):
+        vk = self.schema["vendor_keywords"]
+        self.assertIsInstance(vk, dict)
+        self.assertTrue(vk, "vendor_keywords is empty")
+        # Every vendor key is a schema vendor (Mixed is an outcome, not a
+        # signal source), and each carries a non-empty token list.
+        vendors = set(self.schema["hardware_vendors"])
+        for vendor, tokens in vk.items():
+            with self.subTest(vendor=vendor):
+                self.assertIn(vendor, vendors, f"unknown vendor {vendor!r}")
+                self.assertNotEqual(vendor, "Mixed",
+                                    "Mixed is never a signal source")
+                self._strings(tokens)
+
+    # --- the code builds from the schema (drift guard) ---------------------
+    def test_parse_gpu_tokens_built_from_schema(self):
+        expected = {self.parse._gpu_token(n): n for n in self.schema["known_gpus"]}
+        self.assertEqual(self.parse._GPU_TOKENS, expected,
+                         "parse._GPU_TOKENS must be derived from schema known_gpus")
+
+    def test_parse_model_tokens_built_from_schema(self):
+        self.assertEqual(tuple(self.parse._MODEL_TOKENS),
+                         tuple(self.schema["known_models"]),
+                         "parse._MODEL_TOKENS must equal schema known_models")
+
+    def test_parse_vendor_signals_built_from_schema(self):
+        vk = self.schema["vendor_keywords"]
+        for vendor, tokens in vk.items():
+            with self.subTest(vendor=vendor):
+                if vendor == "Apple":
+                    # M-series chips match word-bounded, not as substrings.
+                    expected = tuple(t for t in tokens
+                                     if not re.fullmatch(r"m[1-4]", t))
+                else:
+                    expected = tuple(tokens)
+                self.assertEqual(self.parse._VENDOR_SUBSTRINGS.get(vendor), expected,
+                                 f"parse._VENDOR_SUBSTRINGS[{vendor}] must equal "
+                                 "schema vendor_keywords")
+
+    def test_parse_hardware_signal_re_covers_schema(self):
+        pat = self.parse.HARDWARE_SIGNAL_RE.pattern
+        for name in self.schema["known_gpus"]:
+            self.assertRegex(pat, re.escape(name),
+                             f"hardware signal regex missing GPU {name!r}")
+        for fam in self.schema["known_model_families"]:
+            self.assertRegex(pat, re.escape(fam),
+                             f"hardware signal regex missing family {fam!r}")
+
+    def test_utils_family_prefix_built_from_schema(self):
+        from tools.site import utils
+        self.assertIsNotNone(utils.FAMILY_AUTHOR_PREFIX,
+                             "FAMILY_AUTHOR_PREFIX must be built from the schema")
+        for prefix in self.schema["model_author_prefixes"]:
+            with self.subTest(prefix=prefix):
+                self.assertTrue(
+                    utils.FAMILY_AUTHOR_PREFIX.match(f"{prefix}-SomeModel"),
+                    f"utils.FAMILY_AUTHOR_PREFIX does not match {prefix!r}")
+                self.assertEqual(
+                    utils.model_family(f"{prefix}-SomeModel-27B-GGUF"),
+                    "SomeModel-27B",
+                    f"model_family does not strip the {prefix!r} author prefix")
 
 
 if __name__ == "__main__":

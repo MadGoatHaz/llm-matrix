@@ -85,6 +85,32 @@
     "op-verified", "community-verified", "community-reported", "unverified"
   ],
   "lifecycle_statuses": ["current", "watch", "superseded", "discontinued"],
+  "known_gpus": [
+    "R9700", "R9600", "MI210", "MI250", "MI300", "MI325",
+    "4090", "5090", "5080", "A100", "H100", "H200", "v620", "W7900"
+  ],
+  "known_model_families": [
+    "DeepSeek", "Qwen", "Gemma", "GLM", "Kimi", "Llama", "Swift",
+    "Nemotron", "GPT", "MiMo", "Carnice"
+  ],
+  "known_models": [
+    "DeepSeek V4 Flash", "DeepSeek 4.1 Flash", "DeepSeek-V4.1-Flash",
+    "Swift_Qwen3.8", "Swift Qwen3.8", "Qwen 3.8 27B", "Qwen3.8-27B",
+    "Qwen 3.8 Flash Next", "Gemma 4 31B", "Gemma4", "GLM 5", "GLM-5",
+    "DeepSeek-R1"
+  ],
+  "vendor_keywords": {
+    "NVIDIA": ["nvidia", "rtx", "geforce", "a100", "h100", "h200", "quadro",
+               "2080", "3080", "3090", "4080", "4090", "5080", "5090"],
+    "AMD": ["amd", "r9700", "r9600", "mi210", "mi250", "mi300", "radeon",
+            "rx 7", "w7900", "v620"],
+    "Apple": ["apple", "mac", "mlx", "m1", "m2", "m3", "m4"],
+    "Intel": ["intel"]
+  },
+  "model_author_prefixes": [
+    "swift", "carnice", "unsloth", "bartowski", "deadbydawn101", "d0xin",
+    "maziyarpanahi", "samuelcardillo", "kwaipilot"
+  ],
   "monitored_threads": [
     {
       "id": "main",

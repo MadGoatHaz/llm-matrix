@@ -47,11 +47,20 @@ def _config_island(schema: dict) -> str:
     client-side — no network request for the schema and none for the data.
     The payload is compact (P2-7) and brace-safe for the template-leak check
     via :func:`utils.compact_json`.
+
+    The use-case keyword map (E1) is baked in too: ``utils.USE_CASE_KEYWORDS``
+    is the Python source of truth, and ``js/recommend.js`` reads the map from
+    this island instead of carrying its own copy — so the client's free-text
+    matching can never drift from the generator's ``data-use-case``
+    attributes (tests/test_recommend.py enforces the sync).
     """
     config = {
         "tiers": schema.get("tiers", []),
         "use_cases": schema.get("use_cases", []),
         "vendors": schema.get("hardware_vendors", []),
+        "use_case_keywords": {
+            k: list(v) for k, v in utils.USE_CASE_KEYWORDS.items()
+        },
     }
     payload = utils.compact_json(config)
     return (
