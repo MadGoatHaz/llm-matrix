@@ -11,9 +11,163 @@
       "posts_count": 2,
       "created_at": "2024-05-01",
       "last_posted_at": "2025-07-12",
-      "views": 1557,
+      "views": 1576,
       "like_count": 0,
       "url": "https://forum.level1techs.com/t/about-the-machine-learning-llms-ai-category/210527"
+    },
+    {
+      "id": 258930,
+      "title": "H200 vs 2 + 1 rtx pro 6000 vs quad 5090 for VLA / World Model training",
+      "slug": "h200-vs-2-1-rtx-pro-6000-vs-quad-5090-for-vla-world-model-training",
+      "posts_count": 1,
+      "created_at": "2026-10-19",
+      "last_posted_at": "2026-10-19",
+      "views": 20,
+      "like_count": 0,
+      "url": "https://forum.level1techs.com/t/h200-vs-2-1-rtx-pro-6000-vs-quad-5090-for-vla-world-model-training/258930"
+    },
+    {
+      "id": 250694,
+      "title": "LLM's and Hermes Agent",
+      "slug": "llms-and-hermes-agent",
+      "posts_count": 48,
+      "created_at": "2026-05-26",
+      "last_posted_at": "2026-10-18",
+      "views": 2104,
+      "like_count": 27,
+      "url": "https://forum.level1techs.com/t/llms-and-hermes-agent/250694"
+    },
+    {
+      "id": 258130,
+      "title": "LLM Homelab patchwork - need advice",
+      "slug": "llm-homelab-patchwork-need-advice",
+      "posts_count": 2,
+      "created_at": "2026-10-08",
+      "last_posted_at": "2026-10-18",
+      "views": 131,
+      "like_count": 1,
+      "url": "https://forum.level1techs.com/t/llm-homelab-patchwork-need-advice/258130"
+    },
+    {
+      "id": 254257,
+      "title": "GLM and I created a llama.cpp fork optimized for AMD GFX906 (Mi50, Mi60, Radeon VII, GCN HIP)",
+      "slug": "glm-and-i-created-a-llama-cpp-fork-optimized-for-amd-gfx906-mi50-mi60-radeon-vii-gcn-hip",
+      "posts_count": 11,
+      "created_at": "2026-08-22",
+      "last_posted_at": "2026-10-18",
+      "views": 1620,
+      "like_count": 10,
+      "url": "https://forum.level1techs.com/t/glm-and-i-created-a-llama-cpp-fork-optimized-for-amd-gfx906-mi50-mi60-radeon-vii-gcn-hip/254257"
+    },
+    {
+      "id": 252909,
+      "title": "Creating an Agent Harness And Self Hosting Part 2: My Hardware Setup",
+      "slug": "creating-an-agent-harness-and-self-hosting-part-2-my-hardware-setup",
+      "posts_count": 16,
+      "created_at": "2026-07-20",
+      "last_posted_at": "2026-10-17",
+      "views": 745,
+      "like_count": 9,
+      "url": "https://forum.level1techs.com/t/creating-an-agent-harness-and-self-hosting-part-2-my-hardware-setup/252909"
+    },
+    {
+      "id": 250596,
+      "title": "Someone needs to figure out how to adapt MI250 GPUs to PCIe",
+      "slug": "someone-needs-to-figure-out-how-to-adapt-mi250-gpus-to-pcie",
+      "posts_count": 379,
+      "created_at": "2026-05-24",
+      "last_posted_at": "2026-10-17",
+      "views": 11494,
+      "like_count": 597,
+      "url": "https://forum.level1techs.com/t/someone-needs-to-figure-out-how-to-adapt-mi250-gpus-to-pcie/250596"
+    },
+    {
+      "id": 255709,
+      "title": "Post / Show off your Ai Rig - Whatchya got in there?",
+      "slug": "post-show-off-your-ai-rig-whatchya-got-in-there",
+      "posts_count": 49,
+      "created_at": "2026-09-10",
+      "last_posted_at": "2026-10-17",
+      "views": 1296,
+      "like_count": 95,
+      "url": "https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709"
+    },
+    {
+      "id": 258701,
+      "title": "School me on image and TTS models",
+      "slug": "school-me-on-image-and-tts-models",
+      "posts_count": 4,
+      "created_at": "2026-10-15",
+      "last_posted_at": "2026-10-16",
+      "views": 127,
+      "like_count": 1,
+      "url": "https://forum.level1techs.com/t/school-me-on-image-and-tts-models/258701"
+    },
+    {
+      "id": 258410,
+      "title": "Gotcha of the day: preserve_reasoning on local backends vs. framework overrides",
+      "slug": "gotcha-of-the-day-preserve-reasoning-on-local-backends-vs-framework-overrides",
+      "posts_count": 3,
+      "created_at": "2026-10-12",
+      "last_posted_at": "2026-10-15",
+      "views": 104,
+      "like_count": 1,
+      "url": "https://forum.level1techs.com/t/gotcha-of-the-day-preserve-reasoning-on-local-backends-vs-framework-overrides/258410"
+    },
+    {
+      "id": 252453,
+      "title": "I need an AI sanity check (9700 Pro x2)",
+      "slug": "i-need-an-ai-sanity-check-9700-pro-x2",
+      "posts_count": 64,
+      "created_at": "2026-07-10",
+      "last_posted_at": "2026-10-15",
+      "views": 2341,
+      "like_count": 25,
+      "url": "https://forum.level1techs.com/t/i-need-an-ai-sanity-check-9700-pro-x2/252453"
+    },
+    {
+      "id": 254422,
+      "title": "Making Qwen 3.8 27B fast on Strix Halo gfx1151",
+      "slug": "making-qwen-3-8-27b-fast-on-strix-halo-gfx1151",
+      "posts_count": 26,
+      "created_at": "2026-08-26",
+      "last_posted_at": "2026-10-15",
+      "views": 3278,
+      "like_count": 26,
+      "url": "https://forum.level1techs.com/t/making-qwen-3-8-27b-fast-on-strix-halo-gfx1151/254422"
+    },
+    {
+      "id": 248447,
+      "title": "Llama.cpp for OpenVINO. How does a half-baked build stack up against Vulkan?",
+      "slug": "llama-cpp-for-openvino-how-does-a-half-baked-build-stack-up-against-vulkan",
+      "posts_count": 11,
+      "created_at": "2026-04-05",
+      "last_posted_at": "2026-10-14",
+      "views": 3049,
+      "like_count": 7,
+      "url": "https://forum.level1techs.com/t/llama-cpp-for-openvino-how-does-a-half-baked-build-stack-up-against-vulkan/248447"
+    },
+    {
+      "id": 255535,
+      "title": "Local LLM Based Coding on HPC Equipment",
+      "slug": "local-llm-based-coding-on-hpc-equipment",
+      "posts_count": 33,
+      "created_at": "2026-09-09",
+      "last_posted_at": "2026-10-14",
+      "views": 1030,
+      "like_count": 34,
+      "url": "https://forum.level1techs.com/t/local-llm-based-coding-on-hpc-equipment/255535"
+    },
+    {
+      "id": 251420,
+      "title": "AI Workflow - Nvidia V100 32gb vs Radeon ai pro r9700",
+      "slug": "ai-workflow-nvidia-v100-32gb-vs-radeon-ai-pro-r9700",
+      "posts_count": 4,
+      "created_at": "2026-06-14",
+      "last_posted_at": "2026-10-13",
+      "views": 1411,
+      "like_count": 7,
+      "url": "https://forum.level1techs.com/t/ai-workflow-nvidia-v100-32gb-vs-radeon-ai-pro-r9700/251420"
     },
     {
       "id": 258397,
@@ -22,8 +176,8 @@
       "posts_count": 6,
       "created_at": "2026-10-11",
       "last_posted_at": "2026-10-13",
-      "views": 157,
-      "like_count": 9,
+      "views": 483,
+      "like_count": 10,
       "url": "https://forum.level1techs.com/t/175-t-s-on-rdna4-with-180b-models-testing-radiance-on-many-r9700s-and-r9600ds-some-qualitative-breakout-fun/258397"
     },
     {
@@ -33,8 +187,8 @@
       "posts_count": 32,
       "created_at": "2026-09-18",
       "last_posted_at": "2026-10-13",
-      "views": 1893,
-      "like_count": 39,
+      "views": 2137,
+      "like_count": 44,
       "url": "https://forum.level1techs.com/t/the-local-llm-matrix-best-models-quants-by-vram-tier-16gb-256gb/256443"
     },
     {
@@ -44,8 +198,8 @@
       "posts_count": 2,
       "created_at": "2026-10-13",
       "last_posted_at": "2026-10-13",
-      "views": 44,
-      "like_count": 3,
+      "views": 200,
+      "like_count": 5,
       "url": "https://forum.level1techs.com/t/qwen-3-8-swift-1-5-flash-next-is-nuts/258505"
     },
     {
@@ -55,20 +209,9 @@
       "posts_count": 4,
       "created_at": "2026-10-12",
       "last_posted_at": "2026-10-13",
-      "views": 75,
+      "views": 119,
       "like_count": 0,
       "url": "https://forum.level1techs.com/t/has-anyone-tried-to-run-upstream-glm-5-3-flash-on-3x-dgx-spark/258459"
-    },
-    {
-      "id": 255535,
-      "title": "Local LLM Based Coding on HPC Equipment",
-      "slug": "local-llm-based-coding-on-hpc-equipment",
-      "posts_count": 30,
-      "created_at": "2026-09-09",
-      "last_posted_at": "2026-10-13",
-      "views": 910,
-      "like_count": 28,
-      "url": "https://forum.level1techs.com/t/local-llm-based-coding-on-hpc-equipment/255535"
     },
     {
       "id": 258407,
@@ -77,7 +220,7 @@
       "posts_count": 6,
       "created_at": "2026-10-12",
       "last_posted_at": "2026-10-13",
-      "views": 155,
+      "views": 214,
       "like_count": 4,
       "url": "https://forum.level1techs.com/t/turnstone-judging-with-strix-halo-npu/258407"
     },
@@ -88,7 +231,7 @@
       "posts_count": 14,
       "created_at": "2026-10-08",
       "last_posted_at": "2026-10-12",
-      "views": 294,
+      "views": 381,
       "like_count": 7,
       "url": "https://forum.level1techs.com/t/nvidia-v100-vs-amd-395/258040"
     },
@@ -99,20 +242,9 @@
       "posts_count": 24,
       "created_at": "2026-10-01",
       "last_posted_at": "2026-10-12",
-      "views": 487,
+      "views": 529,
       "like_count": 13,
       "url": "https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531"
-    },
-    {
-      "id": 258410,
-      "title": "Gotcha of the day: preserve_reasoning on local backends vs. framework overrides",
-      "slug": "gotcha-of-the-day-preserve-reasoning-on-local-backends-vs-framework-overrides",
-      "posts_count": 1,
-      "created_at": "2026-10-12",
-      "last_posted_at": "2026-10-12",
-      "views": 49,
-      "like_count": 1,
-      "url": "https://forum.level1techs.com/t/gotcha-of-the-day-preserve-reasoning-on-local-backends-vs-framework-overrides/258410"
     },
     {
       "id": 258400,
@@ -121,20 +253,9 @@
       "posts_count": 2,
       "created_at": "2026-10-11",
       "last_posted_at": "2026-10-12",
-      "views": 108,
+      "views": 161,
       "like_count": 1,
       "url": "https://forum.level1techs.com/t/language-model-on-a-19-graphics-card/258400"
-    },
-    {
-      "id": 252909,
-      "title": "Creating an Agent Harness And Self Hosting Part 2: My Hardware Setup",
-      "slug": "creating-an-agent-harness-and-self-hosting-part-2-my-hardware-setup",
-      "posts_count": 14,
-      "created_at": "2026-07-20",
-      "last_posted_at": "2026-10-11",
-      "views": 627,
-      "like_count": 9,
-      "url": "https://forum.level1techs.com/t/creating-an-agent-harness-and-self-hosting-part-2-my-hardware-setup/252909"
     },
     {
       "id": 255275,
@@ -143,7 +264,7 @@
       "posts_count": 7,
       "created_at": "2026-09-07",
       "last_posted_at": "2026-10-11",
-      "views": 480,
+      "views": 524,
       "like_count": 5,
       "url": "https://forum.level1techs.com/t/i-didnt-know-it-was-impossible-i-just-needed-it-400k-context-on-qwen-3-6-moe-35b-on-a-single-16gb-gpu-rtx-5060-ti-at-25-t-s/255275"
     },
@@ -154,20 +275,9 @@
       "posts_count": 2,
       "created_at": "2026-10-11",
       "last_posted_at": "2026-10-11",
-      "views": 101,
+      "views": 126,
       "like_count": 0,
       "url": "https://forum.level1techs.com/t/running-llms-on-a-repurposed-kintex-7-pcie-card-opentpu/258369"
-    },
-    {
-      "id": 254422,
-      "title": "Making Qwen 3.8 27B fast on Strix Halo gfx1151",
-      "slug": "making-qwen-3-8-27b-fast-on-strix-halo-gfx1151",
-      "posts_count": 25,
-      "created_at": "2026-08-26",
-      "last_posted_at": "2026-10-11",
-      "views": 3074,
-      "like_count": 23,
-      "url": "https://forum.level1techs.com/t/making-qwen-3-8-27b-fast-on-strix-halo-gfx1151/254422"
     },
     {
       "id": 258290,
@@ -176,8 +286,8 @@
       "posts_count": 8,
       "created_at": "2026-10-10",
       "last_posted_at": "2026-10-10",
-      "views": 219,
-      "like_count": 7,
+      "views": 275,
+      "like_count": 8,
       "url": "https://forum.level1techs.com/t/how-can-i-learn-to-have-my-own-local-llm-agent/258290"
     },
     {
@@ -187,8 +297,8 @@
       "posts_count": 20,
       "created_at": "2026-03-06",
       "last_posted_at": "2026-10-10",
-      "views": 1316,
-      "like_count": 36,
+      "views": 1370,
+      "like_count": 37,
       "url": "https://forum.level1techs.com/t/the-rig-3-0/247047"
     },
     {
@@ -198,7 +308,7 @@
       "posts_count": 5,
       "created_at": "2026-10-10",
       "last_posted_at": "2026-10-10",
-      "views": 123,
+      "views": 151,
       "like_count": 8,
       "url": "https://forum.level1techs.com/t/displayport-as-gpu-p2p-fabric/258266"
     },
@@ -209,7 +319,7 @@
       "posts_count": 8,
       "created_at": "2026-07-26",
       "last_posted_at": "2026-10-10",
-      "views": 456,
+      "views": 474,
       "like_count": 3,
       "url": "https://forum.level1techs.com/t/will-6-cores-be-enough-to-run-a-homelab-and-local-ai-agents-at-the-same-time/253146"
     },
@@ -220,119 +330,9 @@
       "posts_count": 35,
       "created_at": "2026-07-21",
       "last_posted_at": "2026-10-10",
-      "views": 2185,
+      "views": 2233,
       "like_count": 17,
       "url": "https://forum.level1techs.com/t/bang-for-buck-ai-performance/252951"
-    },
-    {
-      "id": 252453,
-      "title": "I need an AI sanity check (9700 Pro x2)",
-      "slug": "i-need-an-ai-sanity-check-9700-pro-x2",
-      "posts_count": 59,
-      "created_at": "2026-07-10",
-      "last_posted_at": "2026-10-09",
-      "views": 2096,
-      "like_count": 25,
-      "url": "https://forum.level1techs.com/t/i-need-an-ai-sanity-check-9700-pro-x2/252453"
-    },
-    {
-      "id": 258250,
-      "title": "Running a chat model and an SDXL model together on an iPhone: what I learned building Anvil",
-      "slug": "running-a-chat-model-and-an-sdxl-model-together-on-an-iphone-what-i-learned-building-anvil",
-      "posts_count": 1,
-      "created_at": "2026-10-09",
-      "last_posted_at": "2026-10-09",
-      "views": 30,
-      "like_count": 0,
-      "url": "https://forum.level1techs.com/t/running-a-chat-model-and-an-sdxl-model-together-on-an-iphone-what-i-learned-building-anvil/258250"
-    },
-    {
-      "id": 255027,
-      "title": "Intel has brought Local LLM tools to the normie masses",
-      "slug": "intel-has-brought-local-llm-tools-to-the-normie-masses",
-      "posts_count": 5,
-      "created_at": "2026-09-03",
-      "last_posted_at": "2026-10-09",
-      "views": 449,
-      "like_count": 4,
-      "url": "https://forum.level1techs.com/t/intel-has-brought-local-llm-tools-to-the-normie-masses/255027"
-    },
-    {
-      "id": 257974,
-      "title": "Getting the feeling of getting behind because of not wanting to rely on AI",
-      "slug": "getting-the-feeling-of-getting-behind-because-of-not-wanting-to-rely-on-ai",
-      "posts_count": 15,
-      "created_at": "2026-10-07",
-      "last_posted_at": "2026-10-09",
-      "views": 441,
-      "like_count": 18,
-      "url": "https://forum.level1techs.com/t/getting-the-feeling-of-getting-behind-because-of-not-wanting-to-rely-on-ai/257974"
-    },
-    {
-      "id": 256645,
-      "title": "Creating a custom homelab machine for LLM usage on a budget",
-      "slug": "creating-a-custom-homelab-machine-for-llm-usage-on-a-budget",
-      "posts_count": 16,
-      "created_at": "2026-09-20",
-      "last_posted_at": "2026-10-09",
-      "views": 694,
-      "like_count": 13,
-      "url": "https://forum.level1techs.com/t/creating-a-custom-homelab-machine-for-llm-usage-on-a-budget/256645"
-    },
-    {
-      "id": 251758,
-      "title": "Open source models for coding?",
-      "slug": "open-source-models-for-coding",
-      "posts_count": 24,
-      "created_at": "2026-06-24",
-      "last_posted_at": "2026-10-09",
-      "views": 1213,
-      "like_count": 18,
-      "url": "https://forum.level1techs.com/t/open-source-models-for-coding/251758"
-    },
-    {
-      "id": 258151,
-      "title": "GitHub - storytold/photocraft: An open-source, clean-room reimplementation of",
-      "slug": "github-storytold-photocraft-an-open-source-clean-room-reimplementation-of",
-      "posts_count": 1,
-      "created_at": "2026-10-09",
-      "last_posted_at": "2026-10-09",
-      "views": 118,
-      "like_count": 5,
-      "url": "https://forum.level1techs.com/t/github-storytold-photocraft-an-open-source-clean-room-reimplementation-of/258151"
-    },
-    {
-      "id": 258130,
-      "title": "LLM Homelab patchwork - need advice",
-      "slug": "llm-homelab-patchwork-need-advice",
-      "posts_count": 1,
-      "created_at": "2026-10-08",
-      "last_posted_at": "2026-10-08",
-      "views": 85,
-      "like_count": 0,
-      "url": "https://forum.level1techs.com/t/llm-homelab-patchwork-need-advice/258130"
-    },
-    {
-      "id": 250596,
-      "title": "Someone needs to figure out how to adapt MI250 GPUs to PCIe",
-      "slug": "someone-needs-to-figure-out-how-to-adapt-mi250-gpus-to-pcie",
-      "posts_count": 377,
-      "created_at": "2026-05-24",
-      "last_posted_at": "2026-10-07",
-      "views": 11091,
-      "like_count": 594,
-      "url": "https://forum.level1techs.com/t/someone-needs-to-figure-out-how-to-adapt-mi250-gpus-to-pcie/250596"
-    },
-    {
-      "id": 257778,
-      "title": "Harnesses, orchestration and multi-agent tools",
-      "slug": "harnesses-orchestration-and-multi-agent-tools",
-      "posts_count": 3,
-      "created_at": "2026-10-05",
-      "last_posted_at": "2026-10-07",
-      "views": 140,
-      "like_count": 0,
-      "url": "https://forum.level1techs.com/t/harnesses-orchestration-and-multi-agent-tools/257778"
     }
   ]
 }

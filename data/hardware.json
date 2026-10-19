@@ -2,7 +2,7 @@
   "source": "Show Off Your AI Rig",
   "thread_id": "rigs",
   "url": "https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709",
-  "count": 22,
+  "count": 24,
   "items": [
     {
       "id": "rigs_post_2_0",
@@ -442,6 +442,46 @@
       "workload": null,
       "notes": "1W at idle",
       "preview": "My \"ai rig\" is a boring 128GB M4 Max. On one site its kinda slow to process requests but on the bright side it literally uses measured 1W at idle.",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_44_0",
+      "post_id": 4129415,
+      "post_number": 44,
+      "contributor": "Adam_Zhang",
+      "date": "2026-10-15",
+      "gpu": {
+        "model": "R9700",
+        "count": 2
+      },
+      "vram_total_gb": 64.0,
+      "cpu": null,
+      "ram_gb": 128.0,
+      "storage": null,
+      "os": null,
+      "workload": null,
+      "notes": null,
+      "preview": "9950x3d 2x R9700 32gb 128gb DDR5 ASrock x870e MOBO humble stuff",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_46_0",
+      "post_id": 4129420,
+      "post_number": 46,
+      "contributor": "djsumdog",
+      "date": "2026-10-15",
+      "gpu": {
+        "model": "AMD R9700",
+        "count": 1
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": 96.0,
+      "storage": "1TB storage + 2TB storage",
+      "os": null,
+      "workload": null,
+      "notes": "also 5090 | also 3080",
+      "preview": "I was using the AMD R9700 in my main box for all my comfy-ui generation workflows: But the AMD ROCm drivers just suck. I've had one too many mornings where I'd come down and the displays had crashed (Linux, Gentoo, XLibre) and the kernel logs would be filled with AMD errors. Sometimes I'd just be cr",
       "structured": true
     }
   ]
