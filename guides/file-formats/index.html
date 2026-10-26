@@ -64,7 +64,7 @@
 <div class="callout callout--info"><p><b>One file, every quant, every consumer backend.</b> The default choice for local LLMs.</p></div>
 
 <p>GGUF is the unified file format born out of llama.cpp (the successor of the older GGML format). Weights, config, tokenizer, and metadata all live in a single file — no stitching, no index, no surprises. It carries the entire GGUF quantization ladder, from <code>Q8_0</code> down through <code>Q4_K_M</code>, <code>IQ3_S</code>, and <code>I-Nano</code>, which is why it is the format of choice for bandwidth-constrained and VRAM-constrained machines.</p>
-<p>The Matrix is a good snapshot of the ecosystem: <strong>21 of 26 community submissions run GGUF</strong> — through llama.cpp, llama-swap, Ollama, and Strata. Its main limitation is that it is a <em>quants-first</em> format: the FP8 weight ecosystem lives in safetensors, not GGUF. So if a model is only published as native FP8, GGUF is not where you'll find it.</p>
+<p>The Matrix is a good snapshot of the ecosystem: <strong>44 of 50 community submissions run GGUF</strong> — through llama.cpp, llama-swap, Ollama, and Strata. Its main limitation is that it is a <em>quants-first</em> format: the FP8 weight ecosystem lives in safetensors, not GGUF. So if a model is only published as native FP8, GGUF is not where you'll find it.</p>
 <h3 id="safetensors-the-pytorchvllm-standard">Safetensors — the PyTorch/vLLM standard</h3>
 <div class="callout callout--info"><p><b>Sharded, full-precision or FP8.</b> What training tools output and what vLLM serves.</p></div>
 
@@ -164,7 +164,7 @@
 </ul>
 <p>So the practical flow is: find the model's safetensors (or its MLX conversion), then produce the GGUF quant your backend wants. Converting is cheap; downloading three formats is not.</p>
 <h2 id="how-this-fits-the-matrix">How this fits the Matrix</h2>
-<p>The Matrix's quant column is really <em>format + level</em> combined: "GGUF Q4_K_M", "FP8", "GGUF I-Nano". Now you can read each row's packaging — and you know why the data skews GGUF (21 of 26 submissions) with the FP8/safetensors rows concentrated in the vLLM setups. When you submit your own, name the format and the level together, and the next person can pick the right file for their backend.</p>
+<p>The Matrix's quant column is really <em>format + level</em> combined: "GGUF Q4_K_M", "FP8", "GGUF I-Nano". Now you can read each row's packaging — and you know why the data skews GGUF (44 of 50 submissions) with the FP8/safetensors rows concentrated in the vLLM setups. When you submit your own, name the format and the level together, and the next person can pick the right file for their backend.</p>
 
   <section class="guide-related">
     <h2>Related guides</h2>

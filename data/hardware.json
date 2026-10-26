@@ -2,7 +2,7 @@
   "source": "Show Off Your AI Rig",
   "thread_id": "rigs",
   "url": "https://forum.level1techs.com/t/post-show-off-your-ai-rig-whatchya-got-in-there/255709",
-  "count": 24,
+  "count": 26,
   "items": [
     {
       "id": "rigs_post_2_0",
@@ -483,6 +483,46 @@
       "notes": "also 5090 | also 3080",
       "preview": "I was using the AMD R9700 in my main box for all my comfy-ui generation workflows: But the AMD ROCm drivers just suck. I've had one too many mornings where I'd come down and the displays had crashed (Linux, Gentoo, XLibre) and the kernel logs would be filled with AMD errors. Sometimes I'd just be cr",
       "structured": true
+    },
+    {
+      "id": "rigs_post_50_0",
+      "post_id": 4131167,
+      "post_number": 50,
+      "contributor": "igormp",
+      "date": "2026-10-19",
+      "gpu": {
+        "model": "3090",
+        "count": 2
+      },
+      "vram_total_gb": null,
+      "cpu": "5950x",
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": "Qwen3.8 via llama.cpp",
+      "notes": "also 3060",
+      "preview": "My current setup is a 9950x + 256GB RAM and 2x 3090s, mostly running Qwen3.8 FN via Strata, but I also sometimes run Qwen3.8 27B via ik_llama.cpp, as well as other vision models that I train myself and run for my PhD, and some minor stuff like ASR models and whatnot: Official Post your PC guts threa",
+      "structured": true
+    },
+    {
+      "id": "rigs_post_51_0",
+      "post_id": 4131305,
+      "post_number": 51,
+      "contributor": "4-8-15-16-23-42",
+      "date": "2026-10-20",
+      "gpu": {
+        "model": null,
+        "count": null
+      },
+      "vram_total_gb": null,
+      "cpu": null,
+      "ram_gb": null,
+      "storage": null,
+      "os": null,
+      "workload": "Llama 3.2 | AVX (1) so models run at an agonizing 1~2 t/s GPU brought token generation up from 10~12 t/s to ~20 t/s on Llama 3.2",
+      "notes": null,
+      "preview": "This has been my staging inference box for a while. Things that I don't yet trust to run on my main workstation get put to trial here. The CPUs only support AVX (1) so models run at an agonizing 1~2 t/s. However, the 64GB DDR3 can comfortably fit some of the more intriguing models. Smaller models ca",
+      "structured": false
     }
   ]
 }

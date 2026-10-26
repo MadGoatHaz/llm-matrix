@@ -3,7 +3,7 @@
   "source": "Crucible: LLM Bench",
   "thread_id": "crucible",
   "url": "https://forum.level1techs.com/t/crucible-llm-bench-your-llm-and-server-is-it-fast-enough-for-everyone/257531",
-  "count": 16,
+  "count": 17,
   "items": [
     {
       "id": "crucible_post_1_0",
@@ -21,10 +21,10 @@
         "ttft_s": null
       },
       "context_length": null,
-      "power_w": null,
-      "notes": null,
+      "power_w": 200.0,
+      "notes": "This release also folds in the corrections from 0.1.6: I'd been hardcoding a per-GPU TDP table so the power clamp knew, say, \"an A4000 is 200 W\" - the kind of assumption a general benchmarking tool shouldn't make - so I removed it. | A sub-10 ms answer window (say, a 2-token answer delivered in one batch) used to divide by a clamped 1 ms sliver and mint a fake ~2000 t/s - the old \"C2 avg 799 t/s on a 27B model.\" Now an unmeasurable window reads n/a and is excluded from the averages, instead of a fabricated number.",
       "preview": "I built Crucible LLM - a terminal-based benchmarking suite that stress-tests any OpenAI-compatible inference server and measures what a real user actually experiences. One static Rust binary. No Python. No venv. No dependencies. Why it exists Most benchmarks shout \"xx.x tokens/sec!\" and stop. But wh",
-      "structured": false
+      "structured": true
     },
     {
       "id": "crucible_post_2_0",
@@ -339,6 +339,27 @@
       "power_w": null,
       "notes": null,
       "preview": "Hey @MadGoat , Nice work on the bench! I got to know about this one after @Strawberry told me. The issues only help anybody using it, even myself so I'm glad they could be fixed. I might have a couple more regarding the GPU power monitoring, but I need to verify first if it's actually a quirk of my ",
+      "structured": false
+    },
+    {
+      "id": "crucible_post_25_0",
+      "post_id": 4133452,
+      "post_number": 25,
+      "contributor": "MadGoat",
+      "date": "2026-10-25",
+      "model": null,
+      "hardware": null,
+      "backend": null,
+      "performance": {
+        "decode_tps": null,
+        "prefill_tps": null,
+        "vram_gb": null,
+        "ttft_s": null
+      },
+      "context_length": null,
+      "power_w": null,
+      "notes": null,
+      "preview": "Crucible LLM is at v0.1.9 : a measurement-integrity pass so every number means what it says. No more phantom token rates (an unmeasurable window reads n/a , a paste-ready run-end [DIGEST] , and an unambiguous multi-GPU hardware line. The easiest way to add your rig to the Local LLM Matrix - run it, ",
       "structured": false
     }
   ]
