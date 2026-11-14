@@ -69,6 +69,32 @@ def _table_area() -> str:
   <div class="compare-edit-row"><button class="btn" id="compare-edit" type="button" hidden>{utils.icon("✎")} Edit selection</button></div>'''
 
 
+def _picker_label(s: dict, schema: dict, tier_labels: dict[str, str]) -> str:
+    """The visible label of one picker option (mirrors js/compare.js)."""
+    tier = s.get("tier") or ""
+    parts = (
+        utils.short_model(utils.model_name(s)) or "",
+        utils.normalize_backend(s.get("backend") or "", schema) or "",
+        tier_labels.get(tier, tier) or "",
+    )
+    return " · ".join(parts)
+
+
+def _picker_order(subs: list[dict], schema: dict) -> list[dict]:
+    """Submissions in picker order: alphabetical by the visible option label.
+
+    The island order is what js/compare.js renders, so sorting here (rather
+    than in the client) keeps the options alphabetical by model name — the
+    first thing in the label — with the id as a stable tie-breaker.
+    """
+    tier_labels = {t["id"]: t.get("label", t["id"])
+                   for t in schema.get("tiers", [])}
+    return sorted(subs, key=lambda s: (
+        _picker_label(s, schema, tier_labels).casefold(),
+        s.get("id", ""),
+    ))
+
+
 def render(subs: list[dict], schema: dict,
            guides_menu: list[tuple[str, str]] | None = None) -> str:
     """Render the comparison page document.
@@ -81,6 +107,7 @@ def render(subs: list[dict], schema: dict,
     Returns:
         The full ``compare/index.html`` document (depth 1).
     """
+    subs = _picker_order(subs, schema)
     intro = f'''
   <div class="page-header">
     <h1>Compare Setups</h1>
