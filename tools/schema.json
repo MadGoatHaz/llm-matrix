@@ -57,7 +57,7 @@
   "backends": [
     "vLLM", "llama.cpp", "llama-swap", "Ollama", "LM Studio",
     "Unsloth Desktop", "Strata", "Radiance", "Colibri",
-    "TensorRT-LLM", "MLX", "Other"
+    "TensorRT-LLM", "MLX", "Basalt", "Other"
   ],
   "os_drivers": [
     "Linux/CUDA", "Linux/ROCm", "Linux/Vulkan",

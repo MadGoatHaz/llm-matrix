@@ -845,6 +845,12 @@ class TestBackendNormalization(unittest.TestCase):
         self.assertEqual(self.parse.split_backend("llama-cpp", self.schema),
                          ("llama.cpp", ""))
 
+    def test_basalt_is_a_known_backend(self):
+        self.assertEqual(self.parse.split_backend("Basalt", self.schema),
+                         ("Basalt", ""))
+        self.assertEqual(self.parse.split_backend("basalt 0.2.0", self.schema),
+                         ("Basalt", ""))
+
     def test_version_and_parenthetical_handling(self):
         # A trailing version is not detail; a parenthetical is.
         self.assertEqual(self.parse.split_backend("radiance 1.3.0", self.schema),
