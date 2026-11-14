@@ -66,6 +66,13 @@ class TestSubmitForm(unittest.TestCase):
     def _js(self):
         return (ROOT / "js" / "submit.js").read_text(encoding="utf-8")
 
+    def _config(self):
+        m = re.search(
+            r'<script type="application/json" id="submit-config">(.*?)</script>',
+            self._page(), re.DOTALL)
+        self.assertIsNotNone(m, "submit-config island missing")
+        return json.loads(m.group(1))
+
     # --- page existence --------------------------------------------------
     def test_page_written_nonempty(self):
         path = self.tmp / "submit" / "index.html"
@@ -103,6 +110,14 @@ class TestSubmitForm(unittest.TestCase):
             "optional fields must carry a '(optional)' label")
 
     # --- the encouragement copy -------------------------------------------
+    def test_backend_picker_comes_from_schema(self):
+        config = self._config()
+        schema = json.loads(
+            (ROOT / "tools" / "schema.json").read_text(encoding="utf-8"))
+        self.assertEqual(config["backends"], schema["backends"])
+        self.assertIn("Basalt", config["backends"],
+                      "Basalt must be selectable as a backend")
+
     def test_use_case_hint_not_sure(self):
         text = self._page()
         self.assertIn("Not sure? Pick the closest", text,

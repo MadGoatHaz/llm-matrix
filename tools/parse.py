@@ -586,7 +586,7 @@ def _hardware_signal_pattern():
     families = [re.escape(f) for f in _schema().get("known_model_families", [])]
     backends = [
         r"LiteLLM", r"llama\.cpp", r"vLLM", r"Ollama", r"Strata",
-        r"Radiance", r"Colibri", r"MLX", r"Unsloth",
+        r"Radiance", r"Colibri", r"MLX", r"Unsloth", r"Basalt",
     ]
     parts = [
         "|".join(gpu_alts),
