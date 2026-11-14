@@ -123,6 +123,19 @@ class TestComparePage(unittest.TestCase):
         self.assertEqual({s["id"] for s in config["submissions"]},
                          {s["id"] for s in real})
 
+    def test_picker_options_are_sorted_alphabetically(self):
+        from tools.site.pages.compare import _picker_label
+
+        config = self._island(self._page())
+        schema = load_json("tools/schema.json")
+        tier_labels = {t["id"]: t.get("label", t["id"])
+                       for t in schema.get("tiers", [])}
+        labels = [_picker_label(s, schema, tier_labels)
+                  for s in config["submissions"]]
+        self.assertEqual(
+            labels, sorted(labels, key=str.casefold),
+            "Compare picker options must be alphabetical by model name")
+
     def test_island_submissions_are_trimmed(self):
         config = self._island(self._page())
         for s in config["submissions"]:
